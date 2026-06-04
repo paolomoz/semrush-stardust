@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Wheeler Cat → EDS · whitepaper</title>
+<style>
+  :root {
+    --ink: #0a1024;
+    --ink-deep: #060a14;
+    --ink-soft: #141b3a;
+    --ink-line: #1c244a;
+    --dust: #f5f0e6;
+    --dust-80: rgba(245,240,230,0.8);
+    --dust-50: rgba(245,240,230,0.5);
+    --dust-30: rgba(245,240,230,0.3);
+    --dust-15: rgba(245,240,230,0.15);
+    --dust-08: rgba(245,240,230,0.08);
+    --amber: #e8b95e;
+    --amber-light: #ffd98a;
+    --amber-deep: #c9822d;
+    --green: #6acf8c;
+    --red: #ff7a7a;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ink-deep);
+    color: var(--dust);
+    font: 15px/1.55 -apple-system, "SF Pro Text", system-ui, sans-serif;
+    font-feature-settings: "ss01", "ss02";
+  }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 56px; }
+  .eyebrow {
+    font: 500 11px/1 "SF Mono", ui-monospace, monospace;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber);
+    display: block; margin-bottom: 14px;
+  }
+  h1, h2, h3, h4 { font-family: "SF Pro Display", system-ui, sans-serif; font-weight: 600; letter-spacing: -0.015em; margin: 0; }
+  h1 { font-size: 76px; line-height: 0.95; letter-spacing: -0.03em; }
+  h2 { font-size: 36px; line-height: 1.1; margin: 0 0 12px; }
+  h3 { font-size: 18px; line-height: 1.3; margin: 0 0 6px; letter-spacing: -0.005em; }
+  h4 { font-size: 14px; line-height: 1.3; margin: 0 0 4px; }
+  p { margin: 0 0 14px; color: var(--dust-80); max-width: 64ch; }
+  p.lede { font-size: 18px; line-height: 1.5; color: rgba(245,240,230,0.9); max-width: 52ch; }
+  section { padding: 88px 0; border-top: 1px solid var(--dust-08); }
+  section:first-of-type { border-top: 0; }
+  a { color: var(--amber); text-decoration: none; }
+  .mono { font-family: "SF Mono", ui-monospace, monospace; }
+
+  /* HERO */
+  .hero {
+    padding: 96px 0 100px;
+    position: relative; overflow: hidden;
+    background: radial-gradient(ellipse at 72% 38%, #1a2450 0%, #070c1e 65%, #060a14 100%);
+    border-top: 0;
+  }
+  .hero .container { position: relative; z-index: 2; }
+  .hero .mark { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.24em; color: var(--amber); margin-bottom: 28px; }
+  .hero h1 { font-size: 96px; letter-spacing: -0.04em; line-height: 0.9; margin-bottom: 28px; max-width: 12ch; }
+  .hero h1 .accent { color: var(--amber); }
+  .hero .lede { font-size: 22px; line-height: 1.45; color: var(--dust-80); max-width: 52ch; margin-bottom: 56px; }
+  .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 920px; }
+  .stat { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 24px; }
+  .stat .n { font-family: "SF Pro Display", system-ui; font-size: 38px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+  .stat .n .unit { font-size: 18px; color: var(--amber); margin-left: 6px; }
+  .stat .lbl { font: 500 10px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dust-50); margin-top: 10px; }
+
+  .dust-layer {
+    position: absolute; inset: 0; z-index: 1;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 24%, rgba(245,240,230,0.4), transparent 60%),
+      radial-gradient(1px 1px at 88% 12%, rgba(245,240,230,0.35), transparent 60%),
+      radial-gradient(1.3px 1.3px at 22% 82%, rgba(245,240,230,0.3), transparent 60%),
+      radial-gradient(1px 1px at 72% 78%, rgba(245,240,230,0.38), transparent 60%),
+      radial-gradient(0.8px 0.8px at 50% 10%, rgba(245,240,230,0.26), transparent 60%),
+      radial-gradient(0.9px 0.9px at 6% 58%, rgba(245,240,230,0.28), transparent 60%),
+      radial-gradient(1.2px 1.2px at 94% 54%, rgba(245,240,230,0.33), transparent 60%);
+  }
+
+  /* PHASE FLOW */
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-top: 40px; }
+  .phase {
+    background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px;
+    padding: 22px 18px; position: relative;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .phase .num { font: 500 11px/1 "SF Mono", ui-monospace, monospace; color: var(--amber); letter-spacing: 0.12em; }
+  .phase h4 { font-size: 14px; color: var(--dust); letter-spacing: -0.005em; }
+  .phase p { font-size: 12px; color: var(--dust-50); margin: 0; line-height: 1.5; }
+  .flow.row2 { margin-top: 12px; }
+
+  /* TWO COL */
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+  .two-3-2 { display: grid; grid-template-columns: 3fr 2fr; gap: 48px; align-items: start; }
+  .two-2-3 { display: grid; grid-template-columns: 2fr 3fr; gap: 48px; align-items: start; }
+
+  /* PANEL */
+  .panel { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 16px; padding: 28px; }
+  .panel .roleline { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); margin-bottom: 18px; }
+  .panel h3 { font-size: 22px; margin-bottom: 8px; }
+  .panel p { font-size: 13.5px; color: var(--dust-50); margin: 0 0 8px; }
+  .panel ul { margin: 12px 0 0; padding: 0; list-style: none; }
+  .panel li { font-size: 13px; color: var(--dust-80); padding: 6px 0 6px 18px; position: relative; }
+  .panel li::before { content: "▸"; color: var(--amber); position: absolute; left: 0; }
+
+  /* CODE BLOCKS */
+  pre {
+    background: var(--ink); border: 1px solid var(--dust-08); border-radius: 12px;
+    padding: 20px; font-family: "SF Mono", ui-monospace, monospace; font-size: 12px; line-height: 1.55;
+    color: var(--dust-80); overflow-x: auto; margin: 16px 0;
+  }
+  pre .kw { color: var(--amber); }
+  pre .str { color: #c6dffb; }
+  pre .com { color: var(--dust-30); font-style: italic; }
+  pre .num { color: var(--amber-light); }
+
+  /* ARROW between sections in flow */
+  .arrows { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 6px 0; padding: 0 8px; }
+  .arrows .a { text-align: center; font-family: "SF Mono", ui-monospace, monospace; color: var(--amber); opacity: 0.4; font-size: 14px; }
+
+  /* INVENTORY TABLE */
+  .inventory {
+    background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px;
+    margin-top: 24px; overflow: hidden;
+  }
+  .inventory table { width: 100%; border-collapse: collapse; }
+  .inventory th, .inventory td { padding: 12px 20px; text-align: left; font-size: 13px; border-bottom: 1px solid var(--dust-08); }
+  .inventory th { font: 500 10px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dust-50); }
+  .inventory td.n { text-align: right; font-family: "SF Mono", ui-monospace, monospace; color: var(--amber); }
+  .inventory tr:last-child td { border-bottom: 0; }
+  .inventory tr.total td { background: var(--ink-line); color: var(--dust); font-weight: 600; }
+
+  /* BEFORE / AFTER */
+  .ba { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: stretch; margin-top: 24px; }
+  .ba .col { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 20px 24px; min-height: 90px; display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+  .ba .col.before { border-left: 3px solid var(--red); }
+  .ba .col.after  { border-left: 3px solid var(--green); }
+  .ba .col h4 { font: 500 10px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dust-50); margin: 0; }
+  .ba .col .v  { font: 600 22px/1 "SF Pro Display", system-ui; letter-spacing: -0.01em; }
+  .ba .col.before .v { color: var(--red); }
+  .ba .col.after  .v { color: var(--green); }
+  .ba .arr { display: flex; align-items: center; color: var(--amber); font-family: "SF Mono", ui-monospace, monospace; font-size: 22px; }
+
+  /* CLS sparkline */
+  .cls-strip { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 28px 32px; margin-top: 20px; }
+  .cls-strip .row { display: grid; grid-template-columns: 130px 1fr 80px; gap: 16px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--dust-08); }
+  .cls-strip .row:last-child { border-bottom: 0; }
+  .cls-strip .row .label { font: 500 11px/1.3 "SF Mono", ui-monospace, monospace; color: var(--dust-50); letter-spacing: 0.06em; }
+  .cls-strip .row .bar { height: 6px; background: var(--ink); border-radius: 3px; overflow: hidden; }
+  .cls-strip .row .bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--amber), var(--amber-light)); border-radius: 3px; }
+  .cls-strip .row .v { font: 500 13px/1 "SF Mono", ui-monospace, monospace; color: var(--amber); text-align: right; }
+  .cls-strip .row.good .v { color: var(--green); }
+  .cls-strip .row.good .bar > span { background: linear-gradient(90deg, var(--green), #98e3ad); }
+
+  /* CHIPS */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .chip { background: var(--ink); border: 1px solid var(--dust-15); border-radius: 999px; padding: 6px 12px; font: 500 11px/1 "SF Mono", ui-monospace, monospace; color: var(--amber); letter-spacing: 0.05em; }
+
+  /* FOOTER */
+  footer { padding: 60px 0 80px; border-top: 1px solid var(--dust-08); color: var(--dust-50); font: 500 12px/1.5 "SF Mono", ui-monospace, monospace; letter-spacing: 0.06em; }
+  footer .container { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  footer .tag { color: var(--amber); }
+
+  ::selection { background: var(--amber); color: var(--ink); }
+
+  /* SIDE-BY-SIDE COMPARISON */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 36px; }
+  .compare figure { margin: 0; }
+  .compare .frame {
+    background: #fff; border: 1px solid var(--dust-08); border-radius: 14px; overflow: hidden;
+    position: relative; aspect-ratio: 3456 / 3280;
+  }
+  .compare .frame img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+  .compare .tag {
+    position: absolute; top: 14px; left: 14px; z-index: 2;
+    font: 500 10px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 999px;
+  }
+  .compare .tag.before { background: rgba(255,122,122,0.16); color: #ffb3b3; border: 1px solid rgba(255,122,122,0.4); }
+  .compare .tag.after  { background: rgba(232,185,94,0.18); color: var(--amber-light); border: 1px solid rgba(232,185,94,0.45); }
+  .compare figcaption { color: var(--dust-50); font: 500 11px/1.4 "SF Mono", ui-monospace, monospace; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 12px; }
+
+  /* TEMPLATE STRIP */
+  .tplstrip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+  .tplstrip .tile {
+    background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .tplstrip .tile .thumb { aspect-ratio: 3446 / 5067; overflow: hidden; background: #fff; display: block; max-height: 460px; }
+  .tplstrip .tile .thumb img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+  .tplstrip .tile .meta { padding: 16px 18px 18px; border-top: 1px solid var(--dust-08); }
+  .tplstrip .tile h4 { font: 600 14px/1.2 "SF Pro Display", system-ui; margin: 0 0 4px; color: var(--dust); }
+  .tplstrip .tile .role { font: 500 10px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; }
+
+  /* PAGESPEED REPORT */
+  .pagespeed-frame {
+    background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; overflow: hidden;
+    margin-top: 28px;
+    display: grid; grid-template-columns: 1.1fr 1fr; align-items: stretch;
+  }
+  .pagespeed-frame .shot { background: #fff; overflow: hidden; max-height: 560px; }
+  .pagespeed-frame .shot img { width: 100%; display: block; object-fit: cover; object-position: top center; }
+  .pagespeed-frame .annot { padding: 36px 36px 36px 32px; display: flex; flex-direction: column; gap: 18px; justify-content: center; }
+  .pagespeed-frame .annot .roleline { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+  .pagespeed-frame .annot h3 { font-size: 22px; }
+  .pagespeed-frame .annot p { font-size: 13.5px; color: var(--dust-80); margin: 0; }
+  .pagespeed-frame .annot .url { font: 500 10.5px/1.4 "SF Mono", ui-monospace, monospace; color: var(--dust-50); word-break: break-all; }
+  .pagespeed-frame .metric-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .pagespeed-frame .m {
+    background: var(--ink); border: 1px solid var(--dust-08); border-radius: 10px; padding: 12px 14px;
+  }
+  .pagespeed-frame .m .l { font: 500 9.5px/1 "SF Mono", ui-monospace, monospace; color: var(--dust-50); letter-spacing: 0.1em; text-transform: uppercase; }
+  .pagespeed-frame .m .v { font: 600 18px/1 "SF Pro Display", system-ui; color: var(--green); margin-top: 6px; }
+
+  /* DYNAMIC BLOCK WIREFRAME (SVG) */
+  .wireframe { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 32px; margin-top: 28px; }
+  .wireframe svg { width: 100%; height: auto; display: block; }
+  .wireframe .caption { font: 500 12px/1.55 "SF Mono", ui-monospace, monospace; letter-spacing: 0.04em; color: var(--dust-50); margin-top: 18px; max-width: 64ch; }
+  .wireframe .caption strong { color: var(--amber); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- ============================= HERO ============================= -->
+<section class="hero">
+  <div class="dust-layer"></div>
+  <div class="container">
+    <div class="mark">EXPERIMENTAL POC · STARDUST × AEM EDS · 2026</div>
+    <h1>wheelercat.com — <span class="accent">Redesign. Replatform. Uplift.</span></h1>
+    <p class="lede">A WordPress catalog with ~8,000 source pages across 23 sitemaps, reimagined and partially re-built on AEM Edge Delivery. Not a complete cutover — a deliberate, partial import covering the load-bearing templates and content shapes, sized to prove the approach end-to-end before scaling it.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="n">1,923<span class="unit">pages</span></div><div class="lbl">imported · live</div></div>
+      <div class="stat"><div class="n">10<span class="unit">templates</span></div><div class="lbl">redesigned + built</div></div>
+      <div class="stat"><div class="n">99<span class="unit">/100</span></div><div class="lbl">pagespeed · mobile</div></div>
+      <div class="stat"><div class="n">100<span class="unit">%</span></div><div class="lbl">chrome links resolve</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= STARTING POINT ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">01 · The starting point</span>
+    <h2>A typical WordPress catalog dealer.</h2>
+    <p class="lede">8,240 pages across 23 sitemaps. Heavy template repetition (1,000+ used-equipment pages, 250+ new-machine pages), uneven info content, no design system. Long-tail SEO + dealer chrome built up over a decade.</p>
+
+    <div class="inventory">
+      <table>
+        <thead><tr><th>Bucket</th><th>Shape</th><th class="n">Pages</th></tr></thead>
+        <tbody>
+          <tr><td>Cat used-equipment</td><td>detail pages, ~6 sitemaps</td><td class="n">5,142</td></tr>
+          <tr><td>Cat new-attachments</td><td>detail pages, 2 sitemaps</td><td class="n">1,834</td></tr>
+          <tr><td>Cat new-machines</td><td>nested-accordion spec pages</td><td class="n">249</td></tr>
+          <tr><td>New-allied / power / technology</td><td>catalog detail variants</td><td class="n">316</td></tr>
+          <tr><td>Category & family listings</td><td>listing-of-listings</td><td class="n">124</td></tr>
+          <tr><td>Locations (branches + drop-boxes)</td><td>address + services per branch</td><td class="n">49</td></tr>
+          <tr><td>Editorial / industries / about</td><td>info pages</td><td class="n">253</td></tr>
+          <tr><td>Misc (blog, sponsorships, video pages, etc.)</td><td>info-derivative</td><td class="n">273</td></tr>
+          <tr class="total"><td>Source site total</td><td></td><td class="n">8,240</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="compare">
+      <figure>
+        <div class="frame">
+          <span class="tag before">Before · live</span>
+          <img src="assets/home-before.png" alt="wheelercat.com live home page — before" />
+        </div>
+        <figcaption>wheelercat.com · live home, captured 2026</figcaption>
+      </figure>
+      <figure>
+        <div class="frame">
+          <span class="tag after">After · prototype</span>
+          <img src="assets/home-after.png" alt="stardust prototype home page — after" />
+        </div>
+        <figcaption>stardust prototype · home-A-rich · approved direction</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= PHASE FLOW ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">02 · The 10-phase flow</span>
+    <h2>From source to skill, in one arc.</h2>
+    <p class="lede">Each phase has its own deliverable + user-review gate. The flow was discovered by building this site; it's now the canonical aem-import-site workflow.</p>
+
+    <div class="flow">
+      <div class="phase"><div class="num">-1</div><h4>Pre-flight</h4><p>Token, repo, structure checks before any work.</p></div>
+      <div class="phase"><div class="num">00</div><h4>Inventory</h4><p>Walk sitemaps; cluster URLs into templates.</p></div>
+      <div class="phase"><div class="num">01</div><h4>Mode pick</h4><p>Per-template: prototype (A) vs build-direct (C); assign pageType.</p></div>
+      <div class="phase"><div class="num">02</div><h4>Representative</h4><p>One pixel-perfect page per template + CLS Day-1 gate.</p></div>
+      <div class="phase"><div class="num">03</div><h4>Hubs FIRST</h4><p>Author every chrome destination before any batch.</p></div>
+    </div>
+    <div class="arrows"><div class="a">→</div><div class="a">→</div><div class="a">→</div><div class="a">→</div><div class="a">↓</div></div>
+    <div class="flow row2">
+      <div class="phase"><div class="num">04</div><h4>Fill script</h4><p>Per-template extractor + renderer. No LLM at fill time.</p></div>
+      <div class="phase"><div class="num">05</div><h4>Smoke-test</h4><p>--limit 5; review; approve.</p></div>
+      <div class="phase"><div class="num">06</div><h4>Full batch</h4><p>Worker pool, concurrency 4, publish + index.</p></div>
+      <div class="phase"><div class="num">07</div><h4>Link audit</h4><p>Crawl + cross-check; weighted-by-inbound missing list.</p></div>
+      <div class="phase"><div class="num">08·09</div><h4>Gap-fill + polish</h4><p>Top missing pages; redirects; CLS; orphan cleanup.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= PROTOTYPING ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">03 · Stardust prototype phase</span>
+    <h2>Design before code, once per template.</h2>
+    <div class="two-3-2">
+      <div>
+        <p class="lede">LLMs craft the creative work once per template — a static HTML prototype with all chrome canon, brand canon, content-shape canon spelled out. The user reviews + iterates on a single representative page. Approval locks the design.</p>
+        <p>The home page (A-rich Wheeler chrome) was the first prototype. Its tokens, fonts, motion, and chrome inheritance cascaded to every subsequent template — equipment-detail-new, equipment-detail-used, category-listing, location, info — all extended the same cascade-layer scaffold.</p>
+        <p>What stardust gives a project at this phase: a static HTML file you can open in a browser, edit in chat-driven iteration, and approve as the design contract. No EDS plumbing yet.</p>
+      </div>
+      <div class="panel">
+        <div class="roleline">Templates prototyped</div>
+        <ul>
+          <li>home (A-rich)</li>
+          <li>equipment-detail-new</li>
+          <li>equipment-detail-used</li>
+          <li>customer-value-agreements</li>
+          <li>service hub</li>
+          <li>category-listing (dynamic)</li>
+          <li>location</li>
+          <li>info-page</li>
+          <li>hubs (universal pattern)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tplstrip">
+      <div class="tile">
+        <div class="thumb"><img src="assets/tpl-cva.png" alt="Customer Value Agreements prototype" /></div>
+        <div class="meta">
+          <div class="role">customer-value-agreements</div>
+          <h4>Pick a Plan</h4>
+        </div>
+      </div>
+      <div class="tile">
+        <div class="thumb"><img src="assets/tpl-equipment-new.png" alt="Equipment detail (new) prototype — 988 Wheel Loader" /></div>
+        <div class="meta">
+          <div class="role">equipment-detail-new</div>
+          <h4>988 Wheel Loader</h4>
+        </div>
+      </div>
+      <div class="tile">
+        <div class="thumb"><img src="assets/tpl-service.png" alt="Service hub prototype" /></div>
+        <div class="meta">
+          <div class="role">service-hub</div>
+          <h4>Heavy Equipment Repair</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= AEM IMPORT ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">04 · stardust:aem-import</span>
+    <h2>Prototype → authorable EDS, pixel-faithful.</h2>
+    <div class="two">
+      <div>
+        <p class="lede">aem-import takes an approved prototype and emits the production EDS artifacts: per-theme stylesheet (cascade-layered), chrome fragments, DA-shaped content, engine patches.</p>
+        <p>Every prototype-to-EDS round-trip surfaced a discrete DA-pipeline trap or EDS-decorate quirk that got captured back into the skill's conventions catalogue. Each known-once-known finding bakes in so subsequent projects don't hit the same wall.</p>
+        <div class="chips">
+          <div class="chip">8 sections in conventions.md</div>
+          <div class="chip">42 documented traps</div>
+          <div class="chip">DA pipeline + decorate guards</div>
+          <div class="chip">CLS catalog</div>
+          <div class="chip">Cascade-layer scaffold</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="roleline">Captured-once findings</div>
+        <ul>
+          <li>The &lt;dl&gt; lottery → author post-conversion shape</li>
+          <li>The &lt;details&gt;/&lt;summary&gt; lottery → same fix</li>
+          <li>Each DA "row" becomes its own &lt;div&gt;&lt;div&gt; cell — grid the outer .block</li>
+          <li>Block resolution uses the FIRST class — chain variants from there</li>
+          <li>DA strips inline data-* — use &lt;code&gt; sentinel tokens</li>
+          <li>decorateButton skips &lt;a&gt; containing &lt;img&gt;</li>
+          <li>Filename-hash dedup for path-prefixed DA media</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= TEMPLATE ITERATION ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">05 · Iterating from one template to many</span>
+    <h2>Each template, a thin variant on the last.</h2>
+    <div class="two-2-3">
+      <div class="panel">
+        <div class="roleline">Inheritance arc</div>
+        <ul>
+          <li><strong>home-A-rich</strong> — chrome + cascade scaffold</li>
+          <li><strong>+ CVA</strong> — split-lockup hero variant</li>
+          <li><strong>+ new (detail)</strong> — listing hero variant + specs accordion</li>
+          <li><strong>+ new (catalog)</strong> — at-a-glance stat strip; dedup-aware Related Products</li>
+          <li><strong>+ used (detail)</strong> — features.list + gallery grid</li>
+          <li><strong>+ listings/hubs</strong> — dynamic-block variants from query-index</li>
+          <li><strong>+ locations/info</strong> — derived chrome + info bands</li>
+        </ul>
+      </div>
+      <div>
+        <p class="lede">First template costs the most. Each next template extends the previous theme's cascade-layer scaffold and adds only its variant rules in <span class="mono">@layer variant</span>.</p>
+        <p>By the catalog template (allied/power/technology), the fill script was a thin wrapper around equipment-new's extractor — just a different URL-pattern parser. By the location template, the chrome was inherited and only the address + services-list panels were new.</p>
+        <p>This is the leverage point: <strong>creative work once, mechanical fill at scale</strong>. The first prototype is a multi-day design; the tenth template is a one-day delta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= PROGRAMMATIC IMPORT ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">06 · Programmatic content import</span>
+    <h2>Fill scripts + batches: verbatim at scale.</h2>
+    <p class="lede">Each template gets a <span class="mono">fill-&lt;template&gt;.mjs</span> (per-page extractor + DA renderer) and a <span class="mono">batch-&lt;template&gt;.mjs</span> (worker pool). No LLM at fill time — pure mechanical mapping, reproducible, verbatim.</p>
+
+<pre><span class="com">// scripts/aem-import/fill-equipment-new.mjs (excerpt)</span>
+<span class="kw">export async function</span> extractPage(url, browser) {
+  <span class="com">// Playwright fetch, scroll, capture nested-accordion specs</span>
+  <span class="com">// → returns { h1, heroImage, specs: [...], videos, relatedAttachments }</span>
+}
+<span class="kw">export function</span> renderDA(data) {
+  <span class="com">// Emit DA-shaped HTML — breadcrumb, hero, specs, gallery, related,</span>
+  <span class="com">// cta-bar, metadata block. Verbatim content interpolation.</span>
+}
+<span class="kw">export async function</span> pushToDA(path, htmlPath, { publish }) {
+  <span class="com">// PUT admin.da.live → POST preview → POST live → POST index</span>
+}</pre>
+
+    <div class="inventory">
+      <table>
+        <thead><tr><th>Template family</th><th>Pages migrated</th><th class="n">Batch wall-time</th><th class="n">Concurrency</th></tr></thead>
+        <tbody>
+          <tr><td>equipment-new (Cat catalog)</td><td>247</td><td class="n">15 min</td><td class="n">4</td></tr>
+          <tr><td>equipment-used</td><td>961</td><td class="n">58 min</td><td class="n">4</td></tr>
+          <tr><td>category-listings</td><td>124</td><td class="n">11 min</td><td class="n">4</td></tr>
+          <tr><td>catalog (allied/power/tech)</td><td>311</td><td class="n">26 min</td><td class="n">4</td></tr>
+          <tr><td>locations</td><td>18</td><td class="n">2 min</td><td class="n">3</td></tr>
+          <tr><td>info pages</td><td>233</td><td class="n">18 min</td><td class="n">4</td></tr>
+          <tr><td>hubs + sub-pages + action-pages</td><td>30</td><td class="n">~10 min</td><td class="n">sequential</td></tr>
+          <tr class="total"><td>Total programmatic</td><td>1,924</td><td class="n">~2.3 hours</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CONTENT MODELING ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">07 · Content modeling in DA</span>
+    <h2>helix-query + pageType taxonomy + dynamic blocks.</h2>
+    <p class="lede">Three pieces wired together turn DA from per-page CMS into a queryable content surface. Every page declares its structural role; every dynamic block filters the same /query-index.json.</p>
+
+    <div class="two">
+      <div>
+        <h3>helix-query.yaml — the schema</h3>
+<pre>properties:
+  title:       { select: head &gt; meta[property=&quot;og:title&quot;] }
+  image:       { select: head &gt; meta[property=&quot;og:image&quot;] }
+  template:    { select: head &gt; meta[name=&quot;template&quot;] }
+  category:    { select: head &gt; meta[name=&quot;category&quot;] }
+  <span class="kw">pageType</span>:    { select: head &gt; meta[name=&quot;pagetype&quot;] }</pre>
+        <p>Every page emits its pageType in the metadata block. Indexed once, queryable forever.</p>
+      </div>
+      <div>
+        <h3>The 7 pageType taxonomy</h3>
+        <div class="inventory">
+          <table>
+            <tbody>
+              <tr><td class="mono">detail</td><td>One product/unit/SKU</td><td class="n">1,767</td></tr>
+              <tr><td class="mono">info</td><td>Static editorial</td><td class="n">237</td></tr>
+              <tr><td class="mono">listing</td><td>Category members</td><td class="n">124</td></tr>
+              <tr><td class="mono">hub</td><td>Top-level entry</td><td class="n">24</td></tr>
+              <tr><td class="mono">location</td><td>Physical branch</td><td class="n">18</td></tr>
+              <tr><td class="mono">portal</td><td>External-system stub</td><td class="n">6</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="two" style="margin-top: 40px;">
+      <div class="panel">
+        <div class="roleline">Three dynamic-block variants</div>
+        <ul>
+          <li><strong>.cards.related.dynamic</strong> — on detail pages. Filter: same template + same category. Cap: 3.</li>
+          <li><strong>.cards.listing.dynamic</strong> — on category-listing pages. Filter: same category, URL prefix. No cap. Empty-state fallback.</li>
+          <li><strong>.cards.hub.dynamic</strong> — on hubs. Filter: any non-detail nested under hub URL. Photo-tiles with image-fallback chain + sticky reveal-on-hover.</li>
+        </ul>
+        <p style="margin-top: 12px;">Same fetch+filter pattern, three filter shapes. One block JS, ~120 lines.</p>
+      </div>
+      <div class="panel">
+        <div class="roleline">Derive-from-URL: breadcrumb</div>
+        <p>Authoring breadcrumbs per page = 2,200× the maintenance cost. The breadcrumb block derives the trail from <span class="mono">window.location.pathname</span> + a slug→label override map. Page title used for the leaf when no override exists.</p>
+        <p>Migration script stripped 1,920 static breadcrumb HTML blocks in 6 hours — zero authored breadcrumbs remain.</p>
+      </div>
+    </div>
+
+    <div class="wireframe" style="margin-top: 40px;">
+      <svg viewBox="0 0 1040 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Wireframe of the .cards.related.dynamic block">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#e8b95e" />
+          </marker>
+          <pattern id="dashed" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+            <rect width="6" height="6" fill="transparent" />
+          </pattern>
+        </defs>
+
+        <!-- LEFT: detail page silhouette -->
+        <g transform="translate(20,30)">
+          <rect x="0" y="0" width="280" height="400" rx="10" fill="#0a1024" stroke="rgba(245,240,230,0.15)" />
+          <text x="14" y="22" font-family="SF Mono, monospace" font-size="9" fill="#e8b95e" letter-spacing="1.5">PAGE · DETAIL</text>
+          <text x="14" y="38" font-family="SF Mono, monospace" font-size="8" fill="rgba(245,240,230,0.5)">/new/machines/large-wheel-loaders/988-wheel-loader</text>
+          <!-- breadcrumb -->
+          <rect x="14" y="52" width="170" height="6" rx="2" fill="rgba(245,240,230,0.18)" />
+          <!-- hero -->
+          <rect x="14" y="68" width="252" height="80" rx="4" fill="rgba(232,185,94,0.12)" stroke="rgba(232,185,94,0.35)" />
+          <text x="20" y="84" font-family="SF Pro Display, sans-serif" font-size="11" font-weight="600" fill="#f5f0e6">988 Wheel Loader</text>
+          <rect x="20" y="92" width="180" height="4" rx="2" fill="rgba(245,240,230,0.3)" />
+          <rect x="20" y="100" width="140" height="4" rx="2" fill="rgba(245,240,230,0.3)" />
+          <rect x="20" y="120" width="60" height="14" rx="7" fill="#e8b95e" />
+          <!-- specs -->
+          <rect x="14" y="160" width="252" height="6" rx="2" fill="rgba(245,240,230,0.18)" />
+          <rect x="14" y="170" width="252" height="6" rx="2" fill="rgba(245,240,230,0.12)" />
+          <rect x="14" y="180" width="252" height="6" rx="2" fill="rgba(245,240,230,0.12)" />
+          <rect x="14" y="190" width="252" height="6" rx="2" fill="rgba(245,240,230,0.12)" />
+          <rect x="14" y="200" width="252" height="6" rx="2" fill="rgba(245,240,230,0.12)" />
+          <!-- gallery -->
+          <rect x="14" y="218" width="78" height="50" rx="3" fill="rgba(245,240,230,0.08)" />
+          <rect x="100" y="218" width="78" height="50" rx="3" fill="rgba(245,240,230,0.08)" />
+          <rect x="186" y="218" width="80" height="50" rx="3" fill="rgba(245,240,230,0.08)" />
+
+          <!-- The dynamic block region — highlighted -->
+          <rect x="6" y="288" width="268" height="104" rx="6" fill="rgba(232,185,94,0.07)" stroke="#e8b95e" stroke-dasharray="4 3" />
+          <text x="14" y="302" font-family="SF Mono, monospace" font-size="8" fill="#e8b95e" letter-spacing="1.2">.CARDS.RELATED.DYNAMIC</text>
+          <!-- 3 card placeholders -->
+          <g>
+            <rect x="14" y="310" width="78" height="76" rx="3" fill="#141b3a" stroke="rgba(245,240,230,0.15)" />
+            <rect x="14" y="310" width="78" height="48" fill="rgba(245,240,230,0.08)" />
+            <rect x="20" y="362" width="50" height="3" rx="1.5" fill="#f5f0e6" />
+            <rect x="20" y="368" width="36" height="3" rx="1.5" fill="rgba(245,240,230,0.4)" />
+            <rect x="20" y="376" width="20" height="3" rx="1.5" fill="#e8b95e" />
+          </g>
+          <g>
+            <rect x="100" y="310" width="78" height="76" rx="3" fill="#141b3a" stroke="rgba(245,240,230,0.15)" />
+            <rect x="100" y="310" width="78" height="48" fill="rgba(245,240,230,0.08)" />
+            <rect x="106" y="362" width="50" height="3" rx="1.5" fill="#f5f0e6" />
+            <rect x="106" y="368" width="36" height="3" rx="1.5" fill="rgba(245,240,230,0.4)" />
+            <rect x="106" y="376" width="20" height="3" rx="1.5" fill="#e8b95e" />
+          </g>
+          <g>
+            <rect x="186" y="310" width="80" height="76" rx="3" fill="#141b3a" stroke="rgba(245,240,230,0.15)" />
+            <rect x="186" y="310" width="80" height="48" fill="rgba(245,240,230,0.08)" />
+            <rect x="192" y="362" width="50" height="3" rx="1.5" fill="#f5f0e6" />
+            <rect x="192" y="368" width="36" height="3" rx="1.5" fill="rgba(245,240,230,0.4)" />
+            <rect x="192" y="376" width="20" height="3" rx="1.5" fill="#e8b95e" />
+          </g>
+        </g>
+
+        <!-- MIDDLE arrows + filter -->
+        <g transform="translate(320, 200)">
+          <path d="M0,140 L70,140" stroke="#e8b95e" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+          <text x="0" y="128" font-family="SF Mono, monospace" font-size="9" fill="#e8b95e">render</text>
+        </g>
+
+        <g transform="translate(410, 30)">
+          <!-- Filter spec box -->
+          <rect x="0" y="180" width="200" height="160" rx="10" fill="#0a1024" stroke="#e8b95e" />
+          <text x="14" y="200" font-family="SF Mono, monospace" font-size="9" fill="#e8b95e" letter-spacing="1.5">FILTER · @ RENDER TIME</text>
+          <text x="14" y="222" font-family="SF Mono, monospace" font-size="10" fill="rgba(245,240,230,0.85)">template ==</text>
+          <text x="14" y="236" font-family="SF Mono, monospace" font-size="10" fill="#ffd98a">  equipment-new-v2</text>
+          <text x="14" y="258" font-family="SF Mono, monospace" font-size="10" fill="rgba(245,240,230,0.85)">category ==</text>
+          <text x="14" y="272" font-family="SF Mono, monospace" font-size="10" fill="#ffd98a">  large-wheel-loaders</text>
+          <text x="14" y="294" font-family="SF Mono, monospace" font-size="10" fill="rgba(245,240,230,0.85)">path !=</text>
+          <text x="14" y="308" font-family="SF Mono, monospace" font-size="10" fill="#ffd98a">  current page</text>
+          <text x="14" y="328" font-family="SF Mono, monospace" font-size="10" fill="rgba(245,240,230,0.85)">cap: 3</text>
+
+          <path d="M-30,260 L0,260" stroke="#e8b95e" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+        </g>
+
+        <!-- RIGHT: query-index source -->
+        <g transform="translate(720, 30)">
+          <rect x="0" y="0" width="300" height="400" rx="10" fill="#0a1024" stroke="rgba(245,240,230,0.15)" />
+          <text x="14" y="22" font-family="SF Mono, monospace" font-size="9" fill="#e8b95e" letter-spacing="1.5">SOURCE · /QUERY-INDEX.JSON</text>
+          <text x="14" y="38" font-family="SF Mono, monospace" font-size="8" fill="rgba(245,240,230,0.5)">helix-query · indexed at publish</text>
+
+          <!-- row headers -->
+          <g font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.4)">
+            <text x="14" y="60">path</text>
+            <text x="148" y="60">template</text>
+            <text x="234" y="60">category</text>
+          </g>
+          <line x1="14" y1="66" x2="286" y2="66" stroke="rgba(245,240,230,0.1)" />
+
+          <!-- 6 rows, 3 highlighted as matches -->
+          <g font-family="SF Mono, monospace" font-size="8.5" fill="rgba(245,240,230,0.75)">
+            <text x="14" y="82">/.../986-wheel-loader</text>
+            <text x="148" y="82" fill="#6acf8c">equip-new</text>
+            <text x="234" y="82" fill="#6acf8c">large-wl</text>
+            <rect x="280" y="74" width="14" height="12" rx="3" fill="rgba(106,207,140,0.2)" />
+            <text x="283" y="83" fill="#6acf8c" font-size="8">✓</text>
+
+            <text x="14" y="100">/.../992-wheel-loader</text>
+            <text x="148" y="100" fill="#6acf8c">equip-new</text>
+            <text x="234" y="100" fill="#6acf8c">large-wl</text>
+            <rect x="280" y="92" width="14" height="12" rx="3" fill="rgba(106,207,140,0.2)" />
+            <text x="283" y="101" fill="#6acf8c" font-size="8">✓</text>
+
+            <text x="14" y="118">/.../994-wheel-loader</text>
+            <text x="148" y="118" fill="#6acf8c">equip-new</text>
+            <text x="234" y="118" fill="#6acf8c">large-wl</text>
+            <rect x="280" y="110" width="14" height="12" rx="3" fill="rgba(106,207,140,0.2)" />
+            <text x="283" y="119" fill="#6acf8c" font-size="8">✓</text>
+
+            <text x="14" y="136" fill="rgba(245,240,230,0.4)">/.../d6n-track-tractor</text>
+            <text x="148" y="136" fill="rgba(255,122,122,0.6)">equip-used</text>
+            <text x="234" y="136" fill="rgba(255,122,122,0.6)">tracks</text>
+
+            <text x="14" y="154" fill="rgba(245,240,230,0.4)">/.../789c-mining-truck</text>
+            <text x="148" y="154" fill="#ffd98a">equip-new</text>
+            <text x="234" y="154" fill="rgba(255,122,122,0.6)">off-hwy</text>
+
+            <text x="14" y="172" fill="rgba(245,240,230,0.4)">/.../cedar-city</text>
+            <text x="148" y="172" fill="rgba(255,122,122,0.6)">location</text>
+            <text x="234" y="172" fill="rgba(255,122,122,0.6)">—</text>
+
+            <text x="14" y="190" fill="rgba(245,240,230,0.4)">/.../service-hub</text>
+            <text x="148" y="190" fill="rgba(255,122,122,0.6)">info</text>
+            <text x="234" y="190" fill="rgba(255,122,122,0.6)">—</text>
+          </g>
+
+          <line x1="14" y1="200" x2="286" y2="200" stroke="rgba(245,240,230,0.1)" />
+          <text x="14" y="218" font-family="SF Mono, monospace" font-size="8" fill="rgba(245,240,230,0.4)">… 2,176 rows</text>
+
+          <!-- summary -->
+          <rect x="14" y="240" width="272" height="56" rx="6" fill="rgba(232,185,94,0.07)" stroke="rgba(232,185,94,0.3)" />
+          <text x="24" y="260" font-family="SF Mono, monospace" font-size="9" fill="#e8b95e" letter-spacing="1.2">RESULT</text>
+          <text x="24" y="278" font-family="SF Pro Text, sans-serif" font-size="11" fill="#f5f0e6">3 matching · capped at 3 cards</text>
+
+          <text x="14" y="328" font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.5)">No authored cards on this</text>
+          <text x="14" y="342" font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.5)">page. No authored cards on</text>
+          <text x="14" y="356" font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.5)">any of the other 1,767 detail</text>
+          <text x="14" y="370" font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.5)">pages. When a new model</text>
+          <text x="14" y="384" font-family="SF Mono, monospace" font-size="9" fill="rgba(245,240,230,0.5)">ships, every peer page links it.</text>
+        </g>
+      </svg>
+
+      <div class="caption">
+        <strong>.cards.related.dynamic</strong> on a detail page renders nothing at author time. At render, it fetches <strong>/query-index.json</strong>, filters by template + category, excludes self, caps at 3 — then paints the cards. Author once, link the long tail forever. The same pattern, with different filter shapes, powers category listings and hub photo-grids.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= QA / LINK AUDIT ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">08 · QA: link audit + verify</span>
+    <h2>What's broken? Sorted by who's broken first.</h2>
+    <div class="two-2-3">
+      <div>
+        <p class="lede">Crawl one page per (template, pageType) bucket. Extract every internal href. Cross-check against /query-index.json. Sort missing destinations by weighted inbound link count.</p>
+        <p>Chrome links count as N × inbound (where N = total page count). Sampled-main links scale by template-family size. Dynamic-block links count as 1.</p>
+        <p>Result: 5–10 missing pages typically account for 80% of broken navigation. Building those 5–10 first unlocks the site.</p>
+      </div>
+      <div class="panel">
+        <div class="roleline">Audit results — three passes</div>
+        <ul>
+          <li><strong>Pass 1</strong>: 50 destinations · 7 live · 43 missing</li>
+          <li><strong>Pass 2</strong> (after hubs): 117 destinations · 89 live · 28 missing</li>
+          <li><strong>Pass 3</strong> (after sprint): 117 destinations · 113 live · <strong>4 missing</strong></li>
+        </ul>
+        <p style="margin-top: 12px;">Remaining 4 are all linked from a single source (low-impact long tail or deferred attachment templates).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= PERFORMANCE / CLS ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">09 · Performance</span>
+    <h2>99 / 100 mobile, sitewide.</h2>
+    <p class="lede">EDS's edge-served HTML + lazy block decoration is the right starting point. The work was protecting it: locking chrome height, decorating critical blocks eagerly, metric-matching the fallback font, reserving footer + main height. Measured on a Cedar City location page on emulated Moto G Power, 4× CPU, slow 4G.</p>
+
+    <div class="pagespeed-frame">
+      <div class="shot">
+        <img src="assets/pagespeed-99.png" alt="PageSpeed Insights — 99 Performance, 0.036 CLS, 1.2s FCP, 1.8s LCP, 0ms TBT" />
+      </div>
+      <div class="annot">
+        <div class="roleline">PageSpeed Insights · mobile</div>
+        <h3>Cedar City location page</h3>
+        <div class="metric-row">
+          <div class="m"><div class="l">Performance</div><div class="v">99</div></div>
+          <div class="m"><div class="l">LCP</div><div class="v">1.8s</div></div>
+          <div class="m"><div class="l">FCP</div><div class="v">1.2s</div></div>
+          <div class="m"><div class="l">TBT</div><div class="v">0ms</div></div>
+          <div class="m"><div class="l">CLS</div><div class="v">0.036</div></div>
+          <div class="m"><div class="l">Speed Idx</div><div class="v">1.2s</div></div>
+        </div>
+        <p>Measured 2026-06-02 on the live preview. Same template-class numbers across sampled equipment-detail, listing, and info pages.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 56px;">CLS as a worked example.</h3>
+    <p>CLS isn't the headline — but it is the most instructive metric, because the default EDS lifecycle (async chrome, async per-theme CSS, font swap, lazy decorate, lazy images) shifts layout in seven distinct events. Each fix exposes the next dominant source. The progression below is the actual diagnostic loop.</p>
+
+    <div class="cls-strip">
+      <div class="row">
+        <div class="label">No fixes</div>
+        <div class="bar"><span style="width: 100%"></span></div>
+        <div class="v">0.40</div>
+      </div>
+      <div class="row">
+        <div class="label">+ chrome reserve</div>
+        <div class="bar"><span style="width: 26%"></span></div>
+        <div class="v">0.10</div>
+      </div>
+      <div class="row">
+        <div class="label">+ above-fold reveal skip</div>
+        <div class="bar"><span style="width: 17%"></span></div>
+        <div class="v">0.07</div>
+      </div>
+      <div class="row">
+        <div class="label">+ utility-strip lock</div>
+        <div class="bar"><span style="width: 11%"></span></div>
+        <div class="v">0.046</div>
+      </div>
+      <div class="row good">
+        <div class="label">+ font-fallback metrics</div>
+        <div class="bar"><span style="width: 11%"></span></div>
+        <div class="v">~0</div>
+      </div>
+      <div class="row good">
+        <div class="label">+ main { min-height: 100vh }</div>
+        <div class="bar"><span style="width: 11%"></span></div>
+        <div class="v">~0</div>
+      </div>
+    </div>
+
+    <p style="margin-top: 24px;">All fixes ship in global <span class="mono">styles.css</span> + per-theme cascade-layer rules + a tiny motion-script guard. Zero per-page work.</p>
+
+    <div class="two" style="margin-top: 32px;">
+      <div>
+        <h3>Diagnostic recipe</h3>
+        <p>Playwright + CDP throttling (1.5 Mbps + 4× CPU) reproduces Lighthouse-class measurements locally. Source-attribution on every shift makes diagnosis a 30-second loop instead of guesswork.</p>
+      </div>
+      <div>
+        <h3>+ /redirects.json</h3>
+        <p>2,428 entries (trailing-slash + orphan-to-canonical mappings) ship as a single file. Closes the 404 gap on legacy URLs + cleans up 253 mid-restructure orphans without re-batching content.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= CAPTURED TO SKILL ============================= -->
+<section>
+  <div class="container">
+    <span class="eyebrow">10 · Captured back to the skill</span>
+    <h2>Everything we learned is now in stardust.</h2>
+    <p class="lede">The aem-import-skill branch on adobe/skills now carries the full workflow: 10-phase canonical flow, 7-pageType taxonomy, CLS day-1 checklist, dynamic-block recipes, mass-edit utility, link-audit utility, redirects pattern, completion-report template, and the ready-to-copy .mjs utilities.</p>
+
+    <div class="two">
+      <div class="panel">
+        <div class="roleline">stardust:aem-import (per-page)</div>
+        <ul>
+          <li>§1 DA pipeline transforms (10+ traps)</li>
+          <li>§2 EDS decorate-function guards</li>
+          <li>§3 Authoring shape conventions</li>
+          <li>§4 Per-block CSS patterns</li>
+          <li>§5 Image + asset pipeline</li>
+          <li>§6 Section substrate transitions</li>
+          <li>§7 Per-variant inheritance traps</li>
+          <li>§8 CLS / layout-shift control + Day-1 checklist</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="roleline">stardust:aem-import-site (orchestration)</div>
+        <ul>
+          <li>SKILL.md — 10-phase canonical flow</li>
+          <li>page-type-taxonomy.md — 7 pageType values</li>
+          <li>page-shape-inventory.md — typical catalog mix</li>
+          <li>dynamic-vs-static.md — decision tree</li>
+          <li>admin-api-and-publish-flow.md — token / concurrency / dynamic blocks / redirects</li>
+          <li>link-audit-workflow.md + .mjs template</li>
+          <li>mass-edit-utility.md + .mjs template</li>
+          <li>completion-report.md — final deliverable</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================= FOOTER ============================= -->
+<footer>
+  <div class="container">
+    <div>WHEELER CAT × ADOBE EDS · STARDUST CASE STUDY · 2026</div>
+    <div class="tag">build · learn · capture · repeat</div>
+  </div>
+</footer>
+
+</body>
+</html>

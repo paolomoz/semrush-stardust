@@ -19,7 +19,8 @@ Landing page → `index.html` links to each project report.
 │   ├── home-C-proposed.html  · Variant C static fallback
 │   └── assets/
 ├── moneyhub/               ← Moneyhub uplift
-└── cecreditsonline/        ← CE Credits Online uplift
+├── cecreditsonline/        ← CE Credits Online uplift
+└── wheelercat/             ← Wheeler Cat redesign + EDS replatform whitepaper
 ```
 
 Each project folder is self-contained. Web fonts load from Google Fonts;
