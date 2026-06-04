@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- stardust:provenance
+  writtenBy:        stardust:uplift (prototype phase 2.4 — cinematic)
+  writtenAt:        2026-06-04T00:00:00Z
+  page:             home
+  variant:          C (motion as identity)
+  pageUrl:          https://moneyhub.com/
+  againstDirection: stardust/direction.md (Active 2026-06-04)
+  readArtifacts:
+    - stardust/current/pages/home.json
+    - stardust/current/_brand-extraction.json
+    - DESIGN.md / DESIGN-C.json
+  paletteSource:    Mode A (captured, pinned)
+  motion:
+    register:       live-systems
+    registerSource: direct (DESIGN-C.json)
+    runtime:        self-contained (native scroll + IntersectionObserver + canvas rAF; no external Lenis dependency)
+    attributesEmitted: [data-tile-anim, data-countup, data-fill, data-anim]
+    reducedMotion:  fragments freeze assembled; count-ups jump to target; fills set to width; sweep/pulse off
+    noJS:           all content visible by default (progressive enhancement); canvas absent, CSS fragment fallback shown
+  unsourcedContent:
+    - selector: "section[data-section=\"metrics\"] [data-countup]"
+      type: stat
+      reason: "design demands an impact-metric row; current/pages/home.json provides no statistics — rendered as PLACEHOLDER"
+  stardustVersion:  0.6.0
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home - Moneyhub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+<noscript><style>
+  [data-anim],[data-tile-anim]{opacity:1 !important;transform:none !important}
+  #hero-canvas{display:none !important}
+  .hero__fallback{opacity:1 !important}
+</style></noscript>
+<style>
+  :root{
+    --heading-font-family:'Raleway',system-ui,sans-serif;
+    --body-font-family:'Lato',system-ui,sans-serif;
+    --heading-xxl:64px;--heading-xl:48px;--heading-lg:32px;--heading-md:24px;
+    --body:18px;--body-sm:15px;
+    --line-height-heading:1.1;--line-height-body:1.6;
+    --color-bg:#ffffff;--color-fg:#293338;--color-fg-soft:#525c61;
+    --color-accent:#ef551f;--color-dark:#293338;--color-darker:#1d272b;
+    --color-surface:#f4f4f4;--color-border:#dbdfe0;--color-muted:#aaaaaa;
+    --spacing-xs:4px;--spacing-sm:8px;--spacing-md:16px;--spacing-lg:24px;--spacing-xl:48px;--spacing-2xl:88px;
+    --section-padding:88px;--max-width:1200px;--radius:6px;
+    --shadow-card:rgba(0,0,0,0.10) 0 4px 21px;
+    /* motion tokens (live-systems) */
+    --ease-out-cubic:cubic-bezier(0.25,0.46,0.45,0.94);
+    --ease-expo:cubic-bezier(0.16,1,0.3,1);
+    --enter-duration:600ms;--enter-stagger:100ms;--fill-duration:1100ms;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(--body-font-family);font-size:var(--body);line-height:var(--line-height-body);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:var(--heading-font-family);line-height:var(--line-height-heading);margin:0;text-wrap:balance}
+  p{margin:0;text-wrap:pretty}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--max-width);margin:0 auto;padding:0 32px}
+  .accent{color:var(--color-accent)}
+  .eyebrow{font-family:var(--body-font-family);font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent)}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--color-accent);color:#fff;font-family:var(--body-font-family);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:14px;padding:14px 28px;border-radius:var(--radius);border:0;cursor:pointer;transition:transform .18s,box-shadow .18s}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(239,85,31,.32)}
+  .btn--ghost{background:transparent;border:1px solid var(--color-border);color:var(--color-fg)}
+  .skip{position:absolute;left:-999px;background:var(--color-dark);color:#fff;padding:10px 16px;z-index:300}
+  .skip:focus{left:8px;top:8px}
+
+  header.site{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--color-border)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .nav__logo{display:flex;align-items:center;gap:9px;font-family:var(--heading-font-family);font-weight:800;font-size:22px;color:var(--color-dark)}
+  .nav__logo .dot{width:18px;height:18px;background:var(--color-accent);border-radius:50%;position:relative}
+  .nav__logo .dot::after{content:"";position:absolute;width:7px;height:7px;background:var(--color-accent);border-radius:50%;top:-9px;right:-6px;opacity:.7}
+  .nav__links{display:flex;gap:30px;align-items:center;list-style:none;margin:0;padding:0}
+  .nav__links a{font-family:var(--body-font-family);font-weight:600;font-size:15px;color:var(--color-dark);padding:4px 0;position:relative}
+  .nav__links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--color-accent);transition:width .2s}
+  .nav__links a:hover::after{width:100%}
+  .nav__pill{background:var(--color-dark);color:#fff;padding:11px 24px;border-radius:9999px;font-weight:700;font-size:14px}
+  .ds-nav-burger{display:none}
+
+  .announce{background:var(--color-surface);border-bottom:1px solid var(--color-border)}
+  .announce__inner{display:flex;align-items:center;gap:10px;justify-content:center;padding:9px 16px;font-size:13.5px;color:var(--color-fg-soft)}
+  .announce__tag{font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--color-accent);padding:3px 8px;border-radius:3px}
+
+  /* hero with canvas particle field */
+  .hero{position:relative;overflow:hidden;min-height:88vh;display:flex;align-items:center;background:radial-gradient(120% 120% at 70% 20%, #fbfcfc 0%, #f1f4f5 100%)}
+  #hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+  .hero__fallback{position:absolute;inset:0;z-index:0;opacity:0;pointer-events:none}
+  .hero .wrap{position:relative;z-index:2;width:100%}
+  .hero__inner{max-width:760px}
+  .hero h1{font-size:clamp(48px,7.2vw,88px);font-weight:800;letter-spacing:-.02em;color:var(--color-dark)}
+  .hero p.lede{font-size:22px;color:var(--color-fg-soft);margin:24px 0 32px;max-width:34ch}
+  .hero__actions{display:flex;gap:14px;flex-wrap:wrap}
+  .hero__hint{margin-top:42px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-muted);display:flex;align-items:center;gap:10px}
+  .hero__hint .dotpulse{width:8px;height:8px;border-radius:50%;background:var(--color-accent)}
+
+  /* live pipeline strip */
+  .pipeline{background:var(--color-dark);color:#fff;position:relative;overflow:hidden}
+  .live-sweep::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,rgba(239,85,31,.16) 50%,transparent 70%);transform:translateX(-110%);pointer-events:none}
+  .live-sweep.sweep::after{transform:translateX(110%);transition:transform 1.7s var(--ease-expo)}
+  .pipeline__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+  .pstep{padding:36px 30px;border-left:1px solid rgba(255,255,255,.12);position:relative}
+  .pstep:first-child{border-left:0}
+  .pstep .idx{font-family:var(--heading-font-family);font-weight:800;font-size:13px;color:var(--color-accent);letter-spacing:.08em}
+  .pstep h3{color:#fff;font-size:22px;margin:8px 0 6px;display:flex;align-items:center;gap:10px}
+  .pstep p{color:rgba(255,255,255,.66);font-size:14px}
+  .pulse{width:9px;height:9px;border-radius:50%;background:var(--color-accent);flex:none}
+  .pbar{height:4px;background:rgba(255,255,255,.12);border-radius:2px;margin-top:16px;overflow:hidden}
+  .pbar i{display:block;height:100%;width:0;background:var(--color-accent);border-radius:2px;transition:width var(--fill-duration) var(--ease-expo)}
+
+  /* metrics (placeholders) */
+  .metrics{background:var(--color-darker);color:#fff;padding:64px 0}
+  .metrics__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+  .metric{text-align:center;border:2px dashed var(--color-accent);border-radius:var(--radius);padding:26px 18px;background:rgba(239,85,31,.06)}
+  .metric .ph-eyebrow{display:block;font-family:var(--body-font-family);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px}
+  .metric .num{font-family:var(--heading-font-family);font-weight:800;font-size:52px;color:#fff;line-height:1}
+  .metric .num .suf{font-size:30px}
+  .metric .lbl{font-size:13.5px;color:rgba(255,255,255,.66);margin-top:8px}
+
+  section{scroll-margin-top:80px}
+  .band{padding:var(--section-padding) 0}
+  .band--surface{background:var(--color-surface)}
+  .sec-head{max-width:62ch}
+  .sec-head h2{font-size:var(--heading-lg);font-weight:800}
+  .sec-head p{color:var(--color-fg-soft);margin-top:12px}
+
+  .clients{padding:46px 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)}
+  .clients__label{text-align:center;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:26px}
+  .clients__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:44px}
+  .clients__row img{height:30px;opacity:.6;filter:grayscale(1);transition:.2s}
+  .clients__row img:hover{opacity:1;filter:none}
+
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+  .split__card{position:relative;border-radius:var(--radius);overflow:hidden;min-height:280px;display:flex;align-items:flex-end;color:#fff;background:var(--color-dark)}
+  .split__card .ph{position:absolute;inset:0;object-fit:cover;opacity:.45}
+  .split__card .body{position:relative;padding:28px;z-index:2}
+  .split__card h3{color:#fff;font-size:26px}
+  .split__card p{margin-top:8px;color:rgba(255,255,255,.82);font-size:15px}
+  .split__card .more{display:inline-flex;gap:8px;margin-top:16px;font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:var(--color-accent)}
+
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+  .pcard{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow-card);position:relative}
+  .pcard .pidx{font-family:var(--heading-font-family);font-weight:800;font-size:13px;color:var(--color-accent);letter-spacing:.08em}
+  .pcard h3{font-size:21px;margin:10px 0 8px;display:flex;align-items:center;gap:8px}
+  .pcard p{font-size:14.5px;color:var(--color-fg-soft)}
+
+  .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+  .case{display:flex;flex-direction:column;background:#fff;border:1px solid var(--color-border);border-radius:var(--radius);overflow:hidden}
+  .case__top{height:8px;background:linear-gradient(90deg,var(--color-accent),#ff8a5c)}
+  .case__body{padding:24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .case__client{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);font-weight:700}
+  .case h3{font-size:19px;line-height:1.25}
+  .case__more{margin-top:auto;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--color-accent)}
+
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+  .quote{padding:30px;border-left:3px solid var(--color-accent);background:#fff}
+  .quote__mark{font-family:var(--heading-font-family);font-weight:800;font-size:48px;line-height:.6;color:var(--color-accent)}
+  .quote p{font-size:16px;margin:10px 0 18px}
+  .quote__who{font-weight:700;font-size:14px}
+  .quote__role{font-size:13px;color:var(--color-fg-soft)}
+
+  .cta{background:var(--color-dark);color:#fff;text-align:center;padding:104px 0;position:relative;overflow:hidden}
+  .cta h2{color:#fff;font-size:var(--heading-xl);font-weight:800}
+  .cta p{color:rgba(255,255,255,.8);margin:16px auto 30px;max-width:46ch}
+  .cta__actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .cta .btn--ghost{color:#fff;border-color:rgba(255,255,255,.4)}
+
+  footer.site{background:var(--color-darker);color:rgba(255,255,255,.8);padding:64px 0 40px}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+  .foot__brand .nav__logo{color:#fff}
+  .foot h4{color:#fff;font-size:15px;margin-bottom:14px}
+  .foot ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .foot a{font-size:14px;color:rgba(255,255,255,.72)}
+  .foot a:hover{color:#fff}
+  .foot__base{margin-top:48px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:10px}
+
+  @media (prefers-reduced-motion: reduce){
+    .live-sweep.sweep::after{transition:none}
+    .pbar i{transition:none}
+  }
+  @media (max-width:980px){
+    .split{grid-template-columns:1fr}
+    .pipeline__grid,.metrics__grid,.pgrid,.cases,.quotes{grid-template-columns:repeat(2,1fr)}
+    .foot{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wrap{padding:0 20px}
+    :root{--heading-lg:26px;--section-padding:56px}
+    .nav__links{display:none}
+    .ds-nav-burger{display:inline-flex;flex-direction:column;gap:4px;background:none;border:0;padding:8px;cursor:pointer}
+    .ds-nav-burger span{width:22px;height:2px;background:var(--color-dark);display:block}
+    .nav__links.open{display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;background:#fff;padding:18px 32px;gap:16px;border-bottom:1px solid var(--color-border)}
+    .pipeline__grid,.metrics__grid,.pgrid,.cases,.quotes,.foot{grid-template-columns:1fr}
+    .pstep{border-left:0;border-top:1px solid rgba(255,255,255,.12)}
+    .pstep:first-child{border-top:0}
+  }
+</style>
+</head>
+<body data-template="landing">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site" data-section="header" data-intent="navigate" data-layout="contained" data-nav-collapse="hamburger">
+  <div class="wrap nav">
+    <a class="nav__logo" href="#" aria-label="Moneyhub home"><span class="dot"></span>moneyhub</a>
+    <nav aria-label="Primary">
+      <ul class="nav__links" id="primary-nav">
+        <li><a href="#solutions">Solutions</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#">Developers</a></li>
+        <li><a href="#cases">Discover</a></li>
+        <li><a href="#">About</a></li>
+        <li><a class="nav__pill" href="#cta">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="ds-nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="announce" data-section="announcement" data-intent="surface news" data-layout="full-bleed">
+  <div class="announce__inner"><span class="announce__tag">New</span> Latest Moneyhub release puts an end to unrecognised transaction panic</div>
+</div>
+
+<main id="main">
+  <section class="hero" data-section="hero" data-intent="emotional hook" data-layout="full-bleed" data-media="animation">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <div class="hero__fallback" id="hero-fallback" aria-hidden="true"></div>
+    <div class="wrap">
+      <div class="hero__inner">
+        <span class="eyebrow">Open finance infrastructure</span>
+        <h1>Build for <span class="accent">real life</span></h1>
+        <p class="lede">We collect, enrich, and contextualise the data fragments — so you can deliver intelligent, personalised financial journeys and drive better customer outcomes.</p>
+        <div class="hero__actions">
+          <a class="btn" href="#cta">Get Started <span aria-hidden="true">→</span></a>
+          <a class="btn btn--ghost" href="#products">See the products</a>
+        </div>
+        <div class="hero__hint"><span class="dotpulse" id="heropulse"></span> Watch the fragments find order — move your cursor</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="pipeline live-sweep" id="pipeline" data-section="data-pipeline" data-intent="explain mechanic" data-layout="grid" data-items="3">
+    <div class="wrap">
+      <div class="pipeline__grid">
+        <div class="pstep" data-anim>
+          <span class="idx">01</span>
+          <h3><span class="pulse"></span> Collect</h3>
+          <p>Open-banking aggregation across accounts, pensions and investments.</p>
+          <div class="pbar"><i data-fill="96"></i></div>
+        </div>
+        <div class="pstep" data-anim>
+          <span class="idx">02</span>
+          <h3><span class="pulse"></span> Enrich</h3>
+          <p>Categorisation that turns raw transactions into meaning.</p>
+          <div class="pbar"><i data-fill="88"></i></div>
+        </div>
+        <div class="pstep" data-anim>
+          <span class="idx">03</span>
+          <h3><span class="pulse"></span> Contextualise</h3>
+          <p>Insights and recommendations your customers can act on.</p>
+          <div class="pbar"><i data-fill="79"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics" data-section="metrics" data-intent="build trust" data-layout="grid" data-items="3">
+    <div class="wrap">
+      <div class="metrics__grid">
+        <div class="metric" data-tile-anim data-placeholder="true" data-placeholder-type="stat" data-placeholder-source="design demanded impact-metric row; not in current/pages/home.json">
+          <span class="ph-eyebrow">Placeholder · stat</span>
+          <div class="num"><span data-countup="40">0</span><span class="suf">M+</span></div>
+          <div class="lbl">e.g. accounts aggregated</div>
+        </div>
+        <div class="metric" data-tile-anim data-placeholder="true" data-placeholder-type="stat" data-placeholder-source="design demanded impact-metric row; not in current/pages/home.json">
+          <span class="ph-eyebrow">Placeholder · stat</span>
+          <div class="num"><span data-countup="99">0</span><span class="suf">%</span></div>
+          <div class="lbl">e.g. transactions enriched</div>
+        </div>
+        <div class="metric" data-tile-anim data-placeholder="true" data-placeholder-type="stat" data-placeholder-source="design demanded impact-metric row; not in current/pages/home.json">
+          <span class="ph-eyebrow">Placeholder · stat</span>
+          <div class="num"><span data-countup="6">0</span><span class="suf">+</span></div>
+          <div class="lbl">e.g. institutions live</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="clients" data-section="clients" data-intent="build trust" data-layout="edge-to-edge" data-items="7">
+    <div class="wrap">
+      <p class="clients__label">Trusted by the institutions people bank, save and retire with</p>
+      <div class="clients__row">
+        <img data-tile-anim src="assets/media/42730839-Lloyds-Bank-Logo-web-1.png" alt="Lloyds Bank">
+        <img data-tile-anim src="assets/media/1da12530-Scottish-Widows-Logo-web-1.png" alt="Scottish Widows">
+        <img data-tile-anim src="assets/media/6cb34377-Admiral-money-logo-web-1.png" alt="Admiral Money">
+        <img data-tile-anim src="assets/media/8ea7c46a-Mercer_logo_web-1.png" alt="Mercer">
+        <img data-tile-anim src="assets/media/5bbdd38f-Nationwide-New-Logo-web-1.png" alt="Nationwide">
+        <img data-tile-anim src="assets/media/3de0b412-Standard_Life_Logo_web-1.png" alt="Standard Life">
+        <img data-tile-anim src="assets/media/970b571c-PARAGON_BANK_LOGO_WEB-1.png" alt="Paragon Bank">
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="solutions" data-section="solutions-split" data-intent="value proposition" data-layout="split-media" data-items="2">
+    <div class="wrap">
+      <div class="sec-head" data-anim><span class="eyebrow">Solutions</span><h2>Explore your potential with Moneyhub</h2></div>
+      <div class="split">
+        <article class="split__card" data-tile-anim>
+          <img class="ph" src="assets/media/84f915ad-shutterstock_2636134361-1500x1034-c-default.jpg" alt="People reviewing finances together">
+          <div class="body"><h3>Banking and lending solutions</h3><p>Affordability, onboarding and engagement powered by enriched open-banking data.</p><span class="more">Discover →</span></div>
+        </article>
+        <article class="split__card" data-tile-anim>
+          <div class="body"><h3>Pension and wealth solutions</h3><p>Bring held-away assets and pensions into view to drive better savings outcomes.</p><span class="more">Discover →</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--surface" id="products" data-section="product-set" data-intent="explain mechanic" data-layout="grid" data-items="6">
+    <div class="wrap">
+      <div class="sec-head" data-anim><span class="eyebrow">Products</span><h2>The platform, product by product</h2><p>Built on one engine — categorisation and enrichment — that runs as a live pipeline.</p></div>
+      <div class="pgrid">
+        <article class="pcard" data-tile-anim><div class="pidx">01</div><h3><span class="pulse"></span> Categorisation &amp; Enrichment Engine</h3><p>Turns raw transactions into clean, categorised, contextual data — continuously.</p></article>
+        <article class="pcard" data-tile-anim><div class="pidx">02</div><h3>Data Aggregation</h3><p>Connect accounts, pensions and investments through open banking and open finance.</p></article>
+        <article class="pcard" data-tile-anim><div class="pidx">03</div><h3>Data Explorer</h3><p>Query and visualise enriched financial data across your customer base.</p></article>
+        <article class="pcard" data-tile-anim><div class="pidx">04</div><h3>Insights &amp; Recommendations</h3><p>Turn context into next-best-actions customers can act on.</p></article>
+        <article class="pcard" data-tile-anim><div class="pidx">05</div><h3>Embedded Solutions &amp; Portals</h3><p>Ship money-management experiences inside your own product.</p></article>
+        <article class="pcard" data-tile-anim><div class="pidx">06</div><h3>Payments</h3><p>Move money with account-to-account pay-by-bank rails.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="cases" data-section="case-studies" data-intent="build trust" data-layout="grid" data-items="6">
+    <div class="wrap">
+      <div class="sec-head" data-anim><span class="eyebrow">Discover</span><h2>See what's possible with Moneyhub</h2></div>
+      <div class="cases">
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">Spring App</span><h3>How Spring App transformed digital savings with Moneyhub</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">Admiral Money</span><h3>Refining loan approvals and reducing risk with Admiral Money Personal Loans</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">WPS Advisory</span><h3>Bridging the advice gap with WPS Advisory</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">Mercer Money</span><h3>Transforming pensions engagement through Mercer Money</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">Loqbox</span><h3>Increasing credit scores and financial inclusivity with Loqbox</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#" data-tile-anim><div class="case__top"></div><div class="case__body"><span class="case__client">Nationwide</span><h3>Nationwide deploys real-time savings account funding through pay by bank</h3><span class="case__more">Read case →</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--surface" data-section="testimonials" data-intent="build trust" data-layout="grid" data-items="3">
+    <div class="wrap">
+      <div class="sec-head" data-anim><span class="eyebrow">In their words</span><h2>Find out how Moneyhub builds for real life</h2></div>
+      <div class="quotes">
+        <figure class="quote" data-tile-anim><div class="quote__mark">“</div><p>We've used Moneyhub to expand into new segments of customers, such as self-employed, giving us more data and confidence when looking at lending in new areas.</p><figcaption><div class="quote__who">Tim Parry</div><div class="quote__role">Personal Loans Director, Admiral</div></figcaption></figure>
+        <figure class="quote" data-tile-anim><div class="quote__mark">“</div><p>As we continue our journey to equip Mercer Master Trust members to achieve the best possible pension savings outcomes, Moneyhub's commitment and cutting-edge solutions remain integral to our success.</p><figcaption><div class="quote__who">Tim Adams</div><div class="quote__role">Head of Digital, Mercer</div></figcaption></figure>
+        <figure class="quote" data-tile-anim><div class="quote__mark">“</div><p>By partnering with Moneyhub and using Open Banking technology we are able to streamline the process and allow our members to start earning a higher rate of interest from day one.</p><figcaption><div class="quote__who">Daniel King</div><div class="quote__role">Chief Digital Product Owner, Nationwide</div></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="cta" data-section="closing-cta" data-intent="drive action" data-layout="contained">
+    <div class="wrap">
+      <h2>Ready to build for <span class="accent">real life?</span></h2>
+      <p>Talk to the team about collecting, enriching and contextualising your customers' financial data.</p>
+      <div class="cta__actions">
+        <a class="btn" href="#">Get Started <span aria-hidden="true">→</span></a>
+        <a class="btn btn--ghost" href="#">Contact</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site" data-section="footer" data-intent="navigate" data-layout="grid">
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot__brand">
+        <a class="nav__logo" href="#"><span class="dot"></span>moneyhub</a>
+        <p style="margin-top:14px;font-size:14px;max-width:34ch">Build for real life. Open finance infrastructure for banks, lenders, pensions and wealth.</p>
+      </div>
+      <div><h4>Follow us</h4><ul><li><a href="#">LinkedIn</a></li><li><a href="#">X / Twitter</a></li><li><a href="#">YouTube</a></li></ul></div>
+      <div><h4>Solutions</h4><ul><li><a href="#solutions">Banking &amp; lending</a></li><li><a href="#solutions">Pension &amp; wealth</a></li><li><a href="#products">Developers</a></li></ul></div>
+      <div><h4>Products</h4><ul><li><a href="#products">Data Aggregation</a></li><li><a href="#products">Enrichment Engine</a></li><li><a href="#products">Payments</a></li></ul></div>
+    </div>
+    <div class="foot__base"><span>© Moneyhub Financial Technology Ltd</span><span>Policies &amp; Info</span></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- mobile nav ----
+  var burger=document.querySelector('.ds-nav-burger'),pnav=document.getElementById('primary-nav');
+  if(burger&&pnav){burger.addEventListener('click',function(){var o=pnav.classList.toggle('open');burger.setAttribute('aria-expanded',o?'true':'false');});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){pnav.classList.remove('open');burger.setAttribute('aria-expanded','false');}});}
+
+  // ---- scroll-reveal (progressive enhancement: hide only if motion allowed) ----
+  var reveal=document.querySelectorAll('[data-anim],[data-tile-anim]');
+  if(!reduce){
+    reveal.forEach(function(el){el.style.opacity='0';el.style.transform=el.hasAttribute('data-tile-anim')?'translateY(26px) rotateX(7deg)':'translateY(28px)';el.style.transition='opacity .6s var(--ease-out-cubic), transform .6s var(--ease-out-cubic)';});
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var el=e.target;var peers=el.parentElement?el.parentElement.children:[el];var idx=Array.prototype.indexOf.call(peers,el);setTimeout(function(){el.style.opacity='1';el.style.transform='none';},(idx%8)*90);io.unobserve(el);}});},{threshold:.18,rootMargin:'0px 0px -8% 0px'});
+    reveal.forEach(function(el){io.observe(el);});
+  }
+
+  // ---- count-ups ----
+  var nums=document.querySelectorAll('[data-countup]');
+  function easeOut(t){return 1-Math.pow(1-t,3);}
+  if(reduce){nums.forEach(function(el){el.textContent=el.getAttribute('data-countup');});}
+  else{
+    var nio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;nio.unobserve(el);var target=+el.getAttribute('data-countup');var dur=target>20?1400:900;var t0=performance.now();(function step(now){var t=Math.min((now-t0)/dur,1);el.textContent=String(Math.round(easeOut(t)*target));if(t<1)requestAnimationFrame(step);})(performance.now());});},{threshold:.5});
+    nums.forEach(function(el){nio.observe(el);});
+  }
+
+  // ---- bar fills ----
+  var fills=document.querySelectorAll('[data-fill]');
+  if(reduce){fills.forEach(function(el){el.style.width=el.getAttribute('data-fill')+'%';});}
+  else{
+    var fio=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;fio.unobserve(el);setTimeout(function(){el.style.width=el.getAttribute('data-fill')+'%';},120);});},{threshold:.4});
+    fills.forEach(function(el){fio.observe(el);});
+  }
+
+  // ---- refresh sweep on pipeline ----
+  var sweepEl=document.querySelector('.live-sweep');
+  if(sweepEl&&!reduce){setInterval(function(){sweepEl.classList.add('sweep');setTimeout(function(){sweepEl.classList.remove('sweep');},1700);},5400);}
+
+  // ---- pulse dots (CSS-less; animate via JS opacity for reduced safety) ----
+  if(!reduce){
+    var pulses=document.querySelectorAll('.pulse,.dotpulse');var pt=0;
+    (function pulseTick(now){pt=now;var k=0.5+0.5*Math.sin(now/600);pulses.forEach(function(p){p.style.boxShadow='0 0 0 '+(k*7).toFixed(1)+'px rgba(239,85,31,'+(0.28*(1-k)).toFixed(2)+')';});requestAnimationFrame(pulseTick);})(performance.now());
+  }
+
+  // ---- HERO: data-fragments particle field that ASSEMBLES ----
+  var canvas=document.getElementById('hero-canvas');
+  var fallback=document.getElementById('hero-fallback');
+  if(!canvas||!canvas.getContext){ if(fallback)fallback.style.opacity='1'; return; }
+  var ctx=canvas.getContext('2d');
+  var DPR=Math.min(window.devicePixelRatio||1,2);
+  var W=0,H=0,parts=[],mouse={x:-9999,y:-9999},assembleT=0,running=true;
+
+  function size(){var r=canvas.parentElement.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*DPR;canvas.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);build();}
+  function rand(a,b){return a+Math.random()*(b-a);}
+
+  function build(){
+    parts=[];
+    var COUNT=Math.max(60,Math.min(150,Math.floor(W*H/9000)));
+    // assembled targets: a tilted ordered lattice in the right ~55% of the hero
+    var cols=Math.ceil(Math.sqrt(COUNT)*1.4),rows=Math.ceil(COUNT/cols);
+    var gx=W*0.40,gw=W*0.58,gy=H*0.16,gh=H*0.68;
+    var k=0;
+    for(var r=0;r<rows;r++)for(var c=0;c<cols;c++){
+      if(k>=COUNT)break;
+      var tx=gx+ (c/(cols-1))*gw + (r%2)*(gw/cols/2);
+      var ty=gy+ (r/(rows-1))*gh;
+      // tilt the lattice
+      var dx=tx-W*0.7, dy=ty-H*0.5; var ang=-0.18;
+      var rxx=W*0.7+ (dx*Math.cos(ang)-dy*Math.sin(ang));
+      var ryy=H*0.5+ (dx*Math.sin(ang)+dy*Math.cos(ang));
+      parts.push({
+        x:rand(-W*0.1,W*1.1), y:rand(-H*0.2,H*1.2),
+        tx:rxx, ty:ryy,
+        sz:rand(5,13), rot:rand(0,Math.PI*2), vr:rand(-0.01,0.01),
+        orange:Math.random()<0.18,
+        ox:0, oy:0
+      });
+      k++;
+    }
+  }
+
+  function draw(now){
+    if(!running){return;}
+    ctx.clearRect(0,0,W,H);
+    assembleT=Math.min(assembleT+0.012,1);
+    var ease=1-Math.pow(1-assembleT,3);
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      // base position = lerp from scatter to assembled lattice
+      var bx=p.x+(p.tx-p.x)*ease;
+      var by=p.y+(p.ty-p.y)*ease;
+      // gentle ambient drift once assembled
+      var drift= ease>0.9 ? Math.sin(now/2200 + i)*3 : 0;
+      // pointer repulsion
+      var ddx=bx-mouse.x, ddy=by-mouse.y, dist=Math.sqrt(ddx*ddx+ddy*ddy);
+      var push=0;
+      if(dist<130){push=(130-dist)/130;p.ox+=(ddx/dist)*push*6;p.oy+=(ddy/dist)*push*6;}
+      p.ox*=0.86;p.oy*=0.86;
+      var fx=bx+p.ox, fy=by+by*0+drift+p.oy;
+      p.rot+=p.vr + push*0.05;
+      // draw fragment (triangle)
+      ctx.save();ctx.translate(fx,fy);ctx.rotate(p.rot);
+      ctx.beginPath();var s=p.sz;
+      ctx.moveTo(0,-s*0.5);ctx.lineTo(s*0.6,s*0.4);ctx.lineTo(-s*0.6,s*0.4);ctx.closePath();
+      if(p.orange){ctx.fillStyle='rgba(239,85,31,'+(0.55+0.4*ease).toFixed(2)+')';}
+      else{ctx.fillStyle='rgba(120,134,140,'+(0.18+0.30*ease).toFixed(2)+')';}
+      ctx.fill();ctx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  // static fallback for reduced motion: render assembled state once, no rAF
+  function drawStatic(){
+    assembleT=1;ctx.clearRect(0,0,W,H);
+    for(var i=0;i<parts.length;i++){var p=parts[i];ctx.save();ctx.translate(p.tx,p.ty);ctx.rotate(p.rot);ctx.beginPath();var s=p.sz;ctx.moveTo(0,-s*0.5);ctx.lineTo(s*0.6,s*0.4);ctx.lineTo(-s*0.6,s*0.4);ctx.closePath();ctx.fillStyle=p.orange?'rgba(239,85,31,0.85)':'rgba(120,134,140,0.42)';ctx.fill();ctx.restore();}
+  }
+
+  window.addEventListener('resize',size,{passive:true});
+  canvas.parentElement.addEventListener('pointermove',function(e){var r=canvas.getBoundingClientRect();mouse.x=e.clientX-r.left;mouse.y=e.clientY-r.top;});
+  canvas.parentElement.addEventListener('pointerleave',function(){mouse.x=mouse.y=-9999;});
+  document.addEventListener('visibilitychange',function(){running=!document.hidden && !reduce; if(running)requestAnimationFrame(draw);});
+
+  size();
+  if(reduce){drawStatic();}
+  else{requestAnimationFrame(draw);}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presales Redesigns — AEM PLG</title>
+<meta name="description" content="Brand-faithful presales redesign reports and prototypes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--line:#262a33;--ink:#f4f5f7;--muted:#9aa1ad;--accent:#ff5722}
+  *{box-sizing:border-box;margin:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  header{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+  .kicker{font-size:.78rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:900;letter-spacing:-.03em;margin:14px 0 12px}
+  header p{color:var(--muted);font-size:1.15rem;max-width:640px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:48px 0 64px}
+  .card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:.2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 24px 50px rgba(0,0,0,.4)}
+  .shot{aspect-ratio:4/3;overflow:hidden;background:#0b0d11;border-bottom:1px solid var(--line)}
+  .shot img{width:100%;display:block}
+  .body{padding:20px 22px 24px}
+  .brand{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:99px;margin-bottom:12px}
+  .b-knack{background:#fae7f6;color:#982a86}
+  .b-mh{background:#fde7de;color:#ef551f}
+  .b-ce{background:#e3ece1;color:#415d43}
+  .card h2{font-size:1.25rem;font-weight:800;letter-spacing:-.01em;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:.92rem}
+  .meta{margin-top:14px;font-size:.82rem;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap}
+  .meta b{color:var(--ink);font-weight:600}
+  .open{margin-top:16px;font-weight:700;color:var(--accent);font-size:.92rem}
+  footer{border-top:1px solid var(--line);padding:32px 0 60px;color:var(--muted);font-size:.85rem}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">AEM · Presales redesigns</p>
+    <h1>Brand-faithful redesign explorations</h1>
+    <p>One-shot uplift reports for three sites. Each report reads the current design, names the tensions worth resolving, and presents three differentiated redesign variants — every one openable as a full-page prototype.</p>
+  </header>
+
+  <div class="grid">
+    <a class="card" href="knack/index.html">
+      <div class="shot"><img src="knack/assets/thumb-A.png" alt="Knack redesign preview"></div>
+      <div class="body">
+        <span class="brand b-knack">Knack</span>
+        <h2>No-code app &amp; database builder</h2>
+        <p>Magenta/coral fintech-adjacent SaaS. The variants bet on fixes, colour, and a self-building live-app hero.</p>
+        <div class="meta"><span><b>3</b> variants</span><span>Motion: <b>live-systems</b></span></div>
+        <div class="open">Open report →</div>
+      </div>
+    </a>
+
+    <a class="card" href="moneyhub/index.html">
+      <div class="shot"><img src="moneyhub/assets/thumb-B.png" alt="Moneyhub redesign preview"></div>
+      <div class="body">
+        <span class="brand b-mh">Moneyhub</span>
+        <h2>Open-banking data platform</h2>
+        <p>Restrained B2B fintech, white/slate/orange with a data-fragments motif. Variants bet on fixes, colour, and a living data pipeline.</p>
+        <div class="meta"><span><b>3</b> variants</span><span>Motion: <b>live-systems</b></span></div>
+        <div class="open">Open report →</div>
+      </div>
+    </a>
+
+    <a class="card" href="cecreditsonline/index.html">
+      <div class="shot"><img src="cecreditsonline/assets/thumb-C.png" alt="CE Credits Online redesign preview"></div>
+      <div class="body">
+        <span class="brand b-ce">CE Credits Online</span>
+        <h2>PD credits for K-12 teachers</h2>
+        <p>Warm, institutional, cream/forest-green. Variants bet on fixes, a credit-path configurator, and editorial photography with arrival motion.</p>
+        <div class="meta"><span><b>3</b> variants</span><span>Motion: <b>arrival</b></span></div>
+        <div class="open">Open report →</div>
+      </div>
+    </a>
+  </div>
+
+  <footer>
+    Brand-faithful presales explorations · generated with the stardust uplift pipeline. Visuals reuse captured brand assets; figures shown as placeholders should be verified before any production use.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- stardust:provenance
+  writtenBy:        stardust:uplift (prototype phase)
+  writtenAt:        2026-06-04T00:00:00Z
+  page:             home
+  variant:          A (faithful + improvements)
+  pageUrl:          https://moneyhub.com/
+  againstDirection: stardust/direction.md (Active 2026-06-04)
+  readArtifacts:
+    - stardust/current/pages/home.json
+    - stardust/current/_brand-extraction.json
+    - DESIGN.md / DESIGN-A.json
+  paletteSource:    Mode A (captured, pinned)
+  fontDeck:         captured (Raleway + Lato)
+  unsourcedContent: []
+  stardustVersion:  0.6.0
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home - Moneyhub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Raleway:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --heading-font-family: 'Raleway', system-ui, sans-serif;
+    --body-font-family: 'Lato', system-ui, sans-serif;
+    --heading-xxl: 64px; --heading-xl: 48px; --heading-lg: 32px; --heading-md: 24px;
+    --body: 18px; --body-sm: 15px;
+    --line-height-heading: 1.12; --line-height-body: 1.6;
+    --color-bg: #ffffff;        /* background */
+    --color-fg: #293338;        /* text-primary (darkened from captured #666 for contrast) */
+    --color-fg-soft: #525c61;   /* text-secondary */
+    --color-accent: #ef551f;    /* primary */
+    --color-dark: #293338;      /* dark slate */
+    --color-surface: #f4f4f4;
+    --color-border: #dbdfe0;
+    --color-muted: #aaaaaa;
+    --spacing-xs:4px; --spacing-sm:8px; --spacing-md:16px; --spacing-lg:24px; --spacing-xl:48px; --spacing-2xl:88px;
+    --section-padding: 88px; --max-width: 1200px; --radius: 6px;
+    --shadow-card: rgba(0,0,0,0.10) 0 4px 21px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--color-bg);color:var(--color-fg);font-family:var(--body-font-family);font-size:var(--body);line-height:var(--line-height-body);-webkit-font-smoothing:antialiased}
+  h1,h2,h3,h4{font-family:var(--heading-font-family);color:var(--color-fg);line-height:var(--line-height-heading);margin:0;text-wrap:balance}
+  p{margin:0;text-wrap:pretty}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--max-width);margin:0 auto;padding:0 32px}
+  .accent{color:var(--color-accent)}
+  .eyebrow{font-family:var(--body-font-family);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-accent)}
+  .btn{display:inline-flex;align-items:center;gap:10px;background:var(--color-accent);color:#fff;font-family:var(--body-font-family);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:14px;padding:14px 26px;border-radius:var(--radius);transition:transform .18s ease, box-shadow .18s ease;border:0;cursor:pointer}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(239,85,31,.28)}
+  .btn--ghost{background:transparent;color:var(--color-fg);border:1px solid var(--color-border)}
+  .btn--ghost:hover{box-shadow:none;border-color:var(--color-fg)}
+
+  /* skip link */
+  .skip{position:absolute;left:-999px;top:0;background:var(--color-dark);color:#fff;padding:10px 16px;z-index:200}
+  .skip:focus{left:8px;top:8px}
+
+  /* header */
+  header.site{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:saturate(1.2) blur(8px);border-bottom:1px solid var(--color-border)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .nav__logo{display:flex;align-items:center;gap:9px;font-family:var(--heading-font-family);font-weight:800;font-size:22px;color:var(--color-dark)}
+  .nav__logo .dot{width:18px;height:18px;background:var(--color-accent);border-radius:50%;position:relative}
+  .nav__logo .dot::after{content:"";position:absolute;width:7px;height:7px;background:var(--color-accent);border-radius:50%;top:-9px;right:-6px;opacity:.7}
+  .nav__links{display:flex;gap:30px;align-items:center;list-style:none;margin:0;padding:0}
+  .nav__links a{font-family:var(--body-font-family);font-weight:600;font-size:15px;color:var(--color-dark);position:relative;padding:4px 0}
+  .nav__links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:2px;background:var(--color-accent);transition:width .2s ease}
+  .nav__links a:hover::after{width:100%}
+  .nav__pill{background:var(--color-dark);color:#fff;padding:11px 24px;border-radius:9999px;font-family:var(--body-font-family);font-weight:700;font-size:14px}
+  .nav__pill:hover{background:#1d272b}
+  .ds-nav-burger{display:none}
+
+  /* announcement */
+  .announce{background:var(--color-surface);border-bottom:1px solid var(--color-border)}
+  .announce__inner{display:flex;align-items:center;gap:10px;justify-content:center;padding:9px 16px;font-size:13.5px;color:var(--color-fg-soft)}
+  .announce__tag{font-family:var(--body-font-family);font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--color-accent);padding:3px 8px;border-radius:3px}
+
+  /* hero */
+  .hero{position:relative;overflow:hidden;padding:96px 0 88px}
+  .hero__fragments{position:absolute;inset:0;pointer-events:none;z-index:0}
+  .hero__grid{position:relative;z-index:2;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center}
+  .hero h1{font-size:var(--heading-xxl);font-weight:800;letter-spacing:-.015em}
+  .hero p.lede{font-size:21px;color:var(--color-fg-soft);margin:22px 0 30px;max-width:30ch}
+  .hero__panel{background:rgba(255,255,255,.7);border:1px solid var(--color-border);border-radius:12px;padding:26px;backdrop-filter:blur(2px)}
+  .hero__panel h2{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--color-fg-soft);font-family:var(--body-font-family);font-weight:700;margin-bottom:14px}
+  .hero__panel ul{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+  .hero__panel li{display:flex;gap:11px;align-items:flex-start;font-size:15.5px}
+  .hero__panel li::before{content:"";flex:none;width:9px;height:9px;margin-top:6px;background:var(--color-accent);clip-path:polygon(0 0,100% 50%,0 100%)}
+
+  /* clients */
+  .clients{padding:44px 0;border-top:1px solid var(--color-border);border-bottom:1px solid var(--color-border)}
+  .clients__label{text-align:center;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);margin-bottom:26px}
+  .clients__row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:44px}
+  .clients__row img{height:30px;width:auto;opacity:.62;filter:grayscale(1);transition:opacity .2s ease, filter .2s ease}
+  .clients__row img:hover{opacity:1;filter:none}
+
+  /* section scaffolding */
+  section{scroll-margin-top:80px}
+  .band{padding:var(--section-padding) 0}
+  .band--surface{background:var(--color-surface)}
+  .sec-head{max-width:60ch}
+  .sec-head h2{font-size:var(--heading-lg);font-weight:700}
+  .sec-head p{color:var(--color-fg-soft);margin-top:12px}
+
+  /* solutions split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+  .split__card{position:relative;border-radius:var(--radius);overflow:hidden;min-height:280px;display:flex;align-items:flex-end;color:#fff;background:var(--color-dark)}
+  .split__card .ph{position:absolute;inset:0;object-fit:cover;opacity:.45}
+  .split__card .body{position:relative;padding:28px;z-index:2}
+  .split__card h3{color:#fff;font-size:26px}
+  .split__card p{margin-top:8px;color:rgba(255,255,255,.82);font-size:15px}
+  .split__card .more{display:inline-flex;gap:8px;margin-top:16px;font-weight:700;font-size:14px;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+  .split__card .more .accent-arrow{color:var(--color-accent)}
+
+  /* product set: lead + grid */
+  .products__lead{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;background:var(--color-dark);color:#fff;border-radius:12px;padding:40px;margin-top:40px;overflow:hidden;position:relative}
+  .products__lead .eyebrow{color:var(--color-accent)}
+  .products__lead h3{color:#fff;font-size:34px;margin:10px 0 12px}
+  .products__lead p{color:rgba(255,255,255,.82);font-size:16px;max-width:42ch}
+  .products__lead .btn{margin-top:22px}
+  .lead-glyph{position:relative;height:200px}
+  .lead-glyph .frag{position:absolute;width:0;height:0}
+  .grid-5{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px}
+  .pcard{background:#fff;border:1px solid var(--color-border);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow-card);transition:transform .2s ease, box-shadow .2s ease}
+  .pcard:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(41,51,56,.14)}
+  .pcard .pidx{font-family:var(--heading-font-family);font-weight:800;font-size:13px;color:var(--color-accent);letter-spacing:.08em}
+  .pcard h3{font-size:21px;margin:10px 0 8px}
+  .pcard p{font-size:14.5px;color:var(--color-fg-soft)}
+
+  /* case studies */
+  .cases{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+  .case{display:flex;flex-direction:column;background:#fff;border:1px solid var(--color-border);border-radius:var(--radius);overflow:hidden;transition:transform .2s ease, box-shadow .2s ease}
+  .case:hover{transform:translateY(-4px);box-shadow:var(--shadow-card)}
+  .case__top{height:8px;background:linear-gradient(90deg,var(--color-accent),#ff8a5c)}
+  .case__body{padding:24px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .case__client{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-muted);font-weight:700}
+  .case h3{font-size:19px;line-height:1.25}
+  .case__more{margin-top:auto;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--color-accent)}
+
+  /* testimonials */
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px}
+  .quote{padding:30px;border-left:3px solid var(--color-accent);background:#fff}
+  .quote__mark{font-family:var(--heading-font-family);font-weight:800;font-size:48px;line-height:.6;color:var(--color-accent)}
+  .quote p{font-size:16px;margin:10px 0 18px}
+  .quote__who{font-weight:700;font-size:14px}
+  .quote__role{font-size:13px;color:var(--color-fg-soft)}
+
+  /* cta band */
+  .cta{background:var(--color-dark);color:#fff;text-align:center;padding:96px 0;position:relative;overflow:hidden}
+  .cta h2{color:#fff;font-size:var(--heading-xl);font-weight:800}
+  .cta p{color:rgba(255,255,255,.8);margin:16px auto 30px;max-width:46ch}
+  .cta__actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .cta .btn--ghost{color:#fff;border-color:rgba(255,255,255,.4)}
+
+  /* footer */
+  footer.site{background:#1d272b;color:rgba(255,255,255,.8);padding:64px 0 40px}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+  .foot__brand .nav__logo{color:#fff}
+  .foot h4{color:#fff;font-size:15px;margin-bottom:14px}
+  .foot ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .foot a{font-size:14px;color:rgba(255,255,255,.72)}
+  .foot a:hover{color:#fff}
+  .foot__base{margin-top:48px;padding-top:22px;border-top:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:10px}
+
+  /* fragments shapes */
+  .frag-tri{position:absolute;width:0;height:0;border-style:solid}
+
+  @media (max-width:980px){
+    .hero__grid,.products__lead,.split{grid-template-columns:1fr}
+    .grid-5,.cases,.quotes{grid-template-columns:repeat(2,1fr)}
+    .foot{grid-template-columns:1fr 1fr}
+  }
+  @media (max-width:640px){
+    .wrap{padding:0 20px}
+    :root{--heading-xxl:40px;--heading-xl:32px;--heading-lg:26px;--section-padding:56px}
+    .nav__links{display:none}
+    .ds-nav-burger{display:inline-flex;flex-direction:column;gap:4px;background:none;border:0;padding:8px;cursor:pointer}
+    .ds-nav-burger span{width:22px;height:2px;background:var(--color-dark);display:block}
+    .nav__links.open{display:flex;position:absolute;top:72px;left:0;right:0;flex-direction:column;background:#fff;padding:18px 32px;gap:16px;border-bottom:1px solid var(--color-border)}
+    .grid-5,.cases,.quotes,.foot{grid-template-columns:1fr}
+    .hero h1{letter-spacing:-.01em}
+    .clients__row{gap:28px}
+  }
+</style>
+</head>
+<body data-template="landing">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site" data-section="header" data-intent="navigate" data-layout="contained" data-nav-collapse="hamburger">
+  <div class="wrap nav">
+    <a class="nav__logo" href="#" aria-label="Moneyhub home"><span class="dot"></span>moneyhub</a>
+    <nav aria-label="Primary">
+      <ul class="nav__links" id="primary-nav">
+        <li><a href="#solutions">Solutions</a></li>
+        <li><a href="#products">Products</a></li>
+        <li><a href="#">Developers</a></li>
+        <li><a href="#cases">Discover</a></li>
+        <li><a href="#">About</a></li>
+        <li><a class="nav__pill" href="#cta">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="ds-nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="announce" data-section="announcement" data-intent="surface news" data-layout="full-bleed">
+  <div class="announce__inner"><span class="announce__tag">New</span> Latest Moneyhub release puts an end to unrecognised transaction panic</div>
+</div>
+
+<main id="main">
+  <section class="hero" data-section="hero" data-intent="emotional hook" data-layout="split-media" data-media="animation">
+    <div class="hero__fragments" id="frags" aria-hidden="true"></div>
+    <div class="wrap hero__grid">
+      <div>
+        <span class="eyebrow">Open finance infrastructure</span>
+        <h1>Build for <span class="accent">real life</span></h1>
+        <p class="lede">We collect, enrich, and contextualise the data fragments — so you can deliver intelligent, personalised financial journeys and drive better customer outcomes.</p>
+        <a class="btn" href="#cta">Get Started <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="hero__panel">
+        <h2>One platform, three moves</h2>
+        <ul>
+          <li><b>Collect</b>&nbsp;— open-banking aggregation across accounts, pensions and investments.</li>
+          <li><b>Enrich</b>&nbsp;— categorisation that turns raw transactions into meaning.</li>
+          <li><b>Contextualise</b>&nbsp;— insights and recommendations your customers can act on.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="clients" data-section="clients" data-intent="build trust" data-layout="edge-to-edge" data-items="8">
+    <div class="wrap">
+      <p class="clients__label">Trusted by the institutions people bank, save and retire with</p>
+      <div class="clients__row">
+        <img src="assets/media/42730839-Lloyds-Bank-Logo-web-1.png" alt="Lloyds Bank">
+        <img src="assets/media/1da12530-Scottish-Widows-Logo-web-1.png" alt="Scottish Widows">
+        <img src="assets/media/6cb34377-Admiral-money-logo-web-1.png" alt="Admiral Money">
+        <img src="assets/media/8ea7c46a-Mercer_logo_web-1.png" alt="Mercer">
+        <img src="assets/media/5bbdd38f-Nationwide-New-Logo-web-1.png" alt="Nationwide">
+        <img src="assets/media/3de0b412-Standard_Life_Logo_web-1.png" alt="Standard Life">
+        <img src="assets/media/970b571c-PARAGON_BANK_LOGO_WEB-1.png" alt="Paragon Bank">
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="solutions" data-section="solutions-split" data-intent="value proposition" data-layout="split-media" data-items="2">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Solutions</span>
+        <h2>Explore your potential with Moneyhub</h2>
+        <p>Two solution families, built on the same data infrastructure — pick the path that matches your customers.</p>
+      </div>
+      <div class="split">
+        <article class="split__card">
+          <img class="ph" src="assets/media/84f915ad-shutterstock_2636134361-1500x1034-c-default.jpg" alt="People reviewing finances together">
+          <div class="body">
+            <h3>Banking and lending solutions</h3>
+            <p>Affordability, onboarding and engagement powered by enriched open-banking data.</p>
+            <span class="more">Discover <span class="accent-arrow" aria-hidden="true">→</span></span>
+          </div>
+        </article>
+        <article class="split__card">
+          <div class="body">
+            <h3>Pension and wealth solutions</h3>
+            <p>Bring held-away assets and pensions into view to drive better savings outcomes.</p>
+            <span class="more">Discover <span class="accent-arrow" aria-hidden="true">→</span></span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--surface" id="products" data-section="product-set" data-intent="explain mechanic" data-layout="grid" data-items="6">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Products</span>
+        <h2>The platform, product by product</h2>
+        <p>Start with the engine that turns raw data into meaning — then compose the rest.</p>
+      </div>
+
+      <article class="products__lead">
+        <div>
+          <span class="eyebrow">The spine</span>
+          <h3>Categorisation and Enrichment Engine</h3>
+          <p>Every Moneyhub product builds on one capability: turning raw transactions into clean, categorised, contextual data your systems can act on.</p>
+          <a class="btn" href="#">Explore the engine <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="lead-glyph" id="leadglyph" aria-hidden="true"></div>
+      </article>
+
+      <div class="grid-5">
+        <article class="pcard"><div class="pidx">02</div><h3>Data Aggregation</h3><p>Connect accounts, pensions and investments through open banking and open finance.</p></article>
+        <article class="pcard"><div class="pidx">03</div><h3>Data Explorer</h3><p>Query and visualise enriched financial data across your customer base.</p></article>
+        <article class="pcard"><div class="pidx">04</div><h3>Data Insights and Recommendations</h3><p>Turn context into next-best-actions that customers can act on.</p></article>
+        <article class="pcard"><div class="pidx">05</div><h3>Embedded Solutions and Portals</h3><p>Ship money-management experiences inside your own product.</p></article>
+        <article class="pcard"><div class="pidx">06</div><h3>Payments</h3><p>Move money with account-to-account pay-by-bank rails.</p></article>
+        <article class="pcard" style="display:flex;flex-direction:column;justify-content:center;background:transparent;border-style:dashed;box-shadow:none"><div class="pidx">→</div><h3 style="font-size:18px">See all products</h3><p>Browse the full Moneyhub catalogue.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="cases" data-section="case-studies" data-intent="build trust" data-layout="grid" data-items="6">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="eyebrow">Discover</span>
+        <h2>See what's possible with Moneyhub</h2>
+        <p>Six institutions, six outcomes — built on the same infrastructure.</p>
+      </div>
+      <div class="cases">
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">Spring App</span><h3>How Spring App transformed digital savings with Moneyhub</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">Admiral Money</span><h3>Refining loan approvals and reducing risk with Admiral Money Personal Loans</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">WPS Advisory</span><h3>Bridging the advice gap with WPS Advisory</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">Mercer Money</span><h3>Transforming pensions engagement through Mercer Money</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">Loqbox</span><h3>Increasing credit scores and financial inclusivity with Loqbox</h3><span class="case__more">Read case →</span></div></a>
+        <a class="case" href="#"><div class="case__top"></div><div class="case__body"><span class="case__client">Nationwide</span><h3>Nationwide deploys real-time savings account funding through pay by bank</h3><span class="case__more">Read case →</span></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band--surface" data-section="testimonials" data-intent="build trust" data-layout="grid" data-items="3">
+    <div class="wrap">
+      <div class="sec-head"><span class="eyebrow">In their words</span><h2>Find out how Moneyhub builds for real life</h2></div>
+      <div class="quotes">
+        <figure class="quote"><div class="quote__mark">“</div><p>We've used Moneyhub to expand into new segments of customers, such as self-employed, giving us more data and confidence when looking at lending in new areas.</p><figcaption><div class="quote__who">Tim Parry</div><div class="quote__role">Personal Loans Director, Admiral</div></figcaption></figure>
+        <figure class="quote"><div class="quote__mark">“</div><p>As we continue our journey to equip Mercer Master Trust members to achieve the best possible pension savings outcomes, Moneyhub's commitment and cutting-edge solutions remain integral to our success.</p><figcaption><div class="quote__who">Tim Adams</div><div class="quote__role">Head of Digital, Mercer</div></figcaption></figure>
+        <figure class="quote"><div class="quote__mark">“</div><p>By partnering with Moneyhub and using Open Banking technology we are able to streamline the process and allow our members to start earning a higher rate of interest from day one.</p><figcaption><div class="quote__who">Daniel King</div><div class="quote__role">Chief Digital Product Owner, Nationwide</div></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta" id="cta" data-section="closing-cta" data-intent="drive action" data-layout="contained">
+    <div class="wrap">
+      <h2>Ready to build for <span class="accent">real life?</span></h2>
+      <p>Talk to the team about collecting, enriching and contextualising your customers' financial data.</p>
+      <div class="cta__actions">
+        <a class="btn" href="#">Get Started <span aria-hidden="true">→</span></a>
+        <a class="btn btn--ghost" href="#">Contact</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site" data-section="footer" data-intent="navigate" data-layout="grid">
+  <div class="wrap">
+    <div class="foot">
+      <div class="foot__brand">
+        <a class="nav__logo" href="#"><span class="dot"></span>moneyhub</a>
+        <p style="margin-top:14px;font-size:14px;max-width:34ch">Build for real life. Open finance infrastructure for banks, lenders, pensions and wealth.</p>
+      </div>
+      <div><h4>Follow us</h4><ul><li><a href="#">LinkedIn</a></li><li><a href="#">X / Twitter</a></li><li><a href="#">YouTube</a></li></ul></div>
+      <div><h4>Solutions</h4><ul><li><a href="#solutions">Banking &amp; lending</a></li><li><a href="#solutions">Pension &amp; wealth</a></li><li><a href="#products">Developers</a></li></ul></div>
+      <div><h4>Products</h4><ul><li><a href="#products">Data Aggregation</a></li><li><a href="#products">Enrichment Engine</a></li><li><a href="#products">Payments</a></li></ul></div>
+    </div>
+    <div class="foot__base"><span>© Moneyhub Financial Technology Ltd</span><span>Policies &amp; Info</span></div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav a11y (Phase 2.7 stock pattern)
+  (function(){
+    var b=document.querySelector('.ds-nav-burger'),n=document.getElementById('primary-nav');
+    if(!b||!n)return;
+    b.addEventListener('click',function(){var o=n.classList.toggle('open');b.setAttribute('aria-expanded',o?'true':'false');});
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'){n.classList.remove('open');b.setAttribute('aria-expanded','false');}});
+  })();
+  // Static de-blurred fragment scatter (decorative; honors reduced-motion = static either way)
+  (function(){
+    var host=document.getElementById('frags');if(!host)return;
+    var W=1440,H=620,N=46,svgns='http://www.w3.org/2000/svg';
+    var svg=document.createElementNS(svgns,'svg');svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.setAttribute('preserveAspectRatio','xMidYMid slice');svg.style.width='100%';svg.style.height='100%';
+    // deterministic pseudo-random
+    var seed=7;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+    for(var i=0;i<N;i++){
+      var x=rnd()*W,y=rnd()*H,s=6+rnd()*16,rot=rnd()*360;
+      var orange=rnd()<0.16;
+      var p=document.createElementNS(svgns,'path');
+      p.setAttribute('d','M0 0 L'+s+' '+(s*0.5)+' L0 '+s+' Z');
+      p.setAttribute('transform','translate('+x+' '+y+') rotate('+rot+')');
+      p.setAttribute('fill',orange?'#ef551f':'#c3cace');
+      p.setAttribute('opacity',(orange?0.85:0.35+rnd()*0.3).toFixed(2));
+      svg.appendChild(p);
+    }
+    host.appendChild(svg);
+  })();
+</script>
+</body>
+</html>

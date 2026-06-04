@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CE Credits Online — Uplift Redesign Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F3ED;--paper:#fff;--ink:#2D2D2D;--inkdk:#211C1C;--body:#4a463f;--muted:#8a857a;
+    --green:#415D43;--green-dk:#2f4531;--border:#e2ded2;
+    --sm:0 1px 2px rgba(33,28,28,.05);--md:0 10px 28px rgba(33,28,28,.10);--lg:0 26px 60px rgba(47,69,49,.20);
+  }
+  *{box-sizing:border-box;margin:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Figtree,system-ui,sans-serif;color:var(--body);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}.narrow{max-width:820px}
+  h1,h2,h3,h4{font-family:Figtree,sans-serif;color:var(--inkdk);letter-spacing:-.02em;line-height:1.12;font-weight:800}
+  h2{font-size:clamp(1.7rem,3vw,2.3rem);margin-bottom:6px}h3{font-size:1.3rem;font-weight:700}
+  p{color:var(--body)}a{color:var(--green);text-decoration:none}
+  .eyebrow{font-family:Poppins;font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green)}
+  .muted{color:var(--muted)}
+  section{padding:64px 0;border-bottom:1px solid var(--border)}
+  .sec-head{max-width:780px;margin-bottom:36px}.sec-head p{margin-top:10px;font-size:1.08rem}
+
+  .top{background:var(--green);color:#fff;position:relative;overflow:hidden}
+  .top-in{padding:54px 0 60px;position:relative}
+  .top .bar{display:flex;align-items:center;gap:14px;margin-bottom:42px}
+  .top .bar img{height:40px;background:#fff;border-radius:8px;padding:6px 10px}
+  .top .bar .tag{margin-left:auto;font-family:Poppins;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:rgba(255,255,255,.16);padding:6px 14px;border-radius:99px}
+  .top h1{color:#fff;font-size:clamp(2.2rem,4.4vw,3.3rem);font-weight:800;max-width:740px}
+  .top .lede{font-size:1.22rem;color:rgba(255,255,255,.9);max-width:680px;margin-top:18px}
+  .top .meta{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:30px;font-size:.92rem;color:rgba(255,255,255,.88)}
+  .top .meta b{color:#fff}
+
+  .toc{background:var(--paper);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:40}
+  .toc-in{display:flex;gap:8px;flex-wrap:wrap;padding:12px 0}
+  .toc a{font-family:Poppins;font-size:.82rem;font-weight:600;color:var(--ink);padding:7px 14px;border-radius:99px}
+  .toc a:hover{background:var(--bg);color:var(--green)}
+
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+  .swatches{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+  .sw{border:1px solid var(--border);border-radius:10px;overflow:hidden;width:108px;background:var(--paper)}
+  .sw .chip{height:50px}.sw .m{padding:6px 8px;font-size:.68rem}.sw .r{font-family:Poppins;font-weight:600;text-transform:capitalize;font-size:.72rem;color:var(--ink)}.sw code{color:var(--muted)}
+  .factbox{background:var(--paper);border:1px solid var(--border);border-radius:16px;padding:24px}
+  .factbox h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px;font-family:Poppins}
+  .factrow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px dashed var(--border);font-size:.92rem}.factrow:last-child{border:0}.factrow span:first-child{color:var(--muted)}.factrow b{text-align:right;color:var(--ink)}
+  .ia{counter-reset:s;list-style:none;padding:0;margin-top:18px;columns:2;column-gap:32px}
+  .ia li{padding:6px 0 6px 30px;position:relative;font-size:.92rem;break-inside:avoid}
+  .ia li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:5px;width:21px;height:21px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:.72rem;font-weight:700;font-family:Poppins}
+
+  .tensions{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .tension{border:1px solid var(--border);border-left:4px solid var(--green);border-radius:12px;padding:22px;background:var(--paper)}
+  .tension .badge{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.05em;color:var(--green);background:#e3ece1;border-radius:6px;padding:3px 9px;margin-bottom:10px;font-family:ui-monospace,monospace}
+  .tension h4{font-size:1.05rem;margin-bottom:6px}.tension p{font-size:.92rem}
+
+  .variant{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;margin-bottom:64px}
+  .variant:last-child{margin-bottom:0}.variant.flip .pv{order:2}
+  .vlabel{display:inline-flex;align-items:center;gap:10px;margin-bottom:14px}
+  .vlabel .chip{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;font-family:Figtree;font-size:1.2rem;background:var(--green)}
+  .vlabel .role{font-family:Poppins;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .variant h3{font-size:1.7rem;margin-bottom:8px}
+  .variant .pitch{font-size:1.05rem;font-weight:700;color:var(--green);margin:4px 0 14px}
+  .variant ul{list-style:none;padding:0;display:grid;gap:8px;margin:14px 0 20px}
+  .variant li{position:relative;padding-left:24px;font-size:.95rem}
+  .variant li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .kv{font-size:.85rem;color:var(--muted);margin-bottom:16px}.kv b{color:var(--ink)}
+  .pv{position:relative}
+  .pv .frame{border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--lg);background:var(--paper);aspect-ratio:4/3}
+  .pv .frame img{width:100%;display:block;transition:transform 6s linear}
+  .pv:hover .frame img{transform:translateY(calc(-100% + 360px))}
+  .pv .bartop{display:flex;gap:6px;padding:9px 12px;background:#edeae0;border-bottom:1px solid var(--border)}
+  .pv .bartop i{width:9px;height:9px;border-radius:50%;background:#cfc9ba;display:block}
+  .pv .scroll-note{position:absolute;bottom:14px;right:14px;background:rgba(33,28,28,.78);color:#fff;font-size:.72rem;padding:5px 11px;border-radius:99px;pointer-events:none;font-family:Poppins;font-weight:600}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;font-family:Poppins;font-weight:600;border-radius:8px;padding:13px 24px;border:0;cursor:pointer;font-size:.92rem;transition:.18s}
+  .btn-primary{background:var(--green);color:#fff;box-shadow:0 6px 18px rgba(65,93,67,.3)}.btn-primary:hover{transform:translateY(-2px);background:var(--green-dk)}
+  .btn-ghost{background:var(--paper);color:var(--green);border:1.5px solid var(--border)}.btn-ghost:hover{border-color:var(--green)}
+  .vbtns{display:flex;gap:12px;flex-wrap:wrap}
+
+  table.mx{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:8px;background:var(--paper);border-radius:12px;overflow:hidden}
+  table.mx th,table.mx td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  table.mx th{font-family:Poppins;font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  table.mx td:first-child{font-weight:700;color:var(--ink)}
+
+  .note{background:#eef3ec;border:1px solid #cfdccd;border-radius:14px;padding:22px 24px;font-size:.95rem}
+  .note b{color:var(--green)}
+  footer{padding:40px 0;text-align:center;color:var(--muted);font-size:.88rem}
+  footer img{height:34px;opacity:.8;margin-bottom:10px}
+  @media(max-width:860px){.grid2,.tensions,.variant,.variant.flip .pv{grid-template-columns:1fr}.variant.flip .pv{order:0}.ia{columns:1}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap top-in">
+  <div class="bar"><img src="assets/media/ce-logo-03dd.png" alt="CE Credits Online"><span class="tag">Uplift · Presales Redesign</span></div>
+  <p class="eyebrow" style="color:rgba(255,255,255,.85)">Redesign report</p>
+  <h1>Three brand-faithful directions for the CE Credits Online homepage.</h1>
+  <p class="lede">A read of the current design, the tensions worth resolving, and three differentiated redesign variants — each one previewable and openable as a full page.</p>
+  <div class="meta"><span>Source: <b>cecreditsonline.org</b></span><span>Date: <b>June 4, 2026</b></span><span>Mode: <b>Brand-faithful (palette + type pinned)</b></span><span>Scope: <b>Homepage</b></span></div>
+</div></div>
+
+<nav class="toc"><div class="wrap toc-in">
+  <a href="#current">Current design</a><a href="#tensions">Tensions</a><a href="#variants">The three variants</a><a href="#compare">How they differ</a><a href="#notes">Notes</a>
+</div></nav>
+
+<section id="current"><div class="wrap">
+  <div class="sec-head"><p class="eyebrow">01 — What's there today</p><h2>The current design</h2>
+  <p>CE Credits Online is a 25-year, university-accredited provider of online professional-development credits for K-12 teachers. The brand is warm and institutional — a cream canvas, forest-green primary, genuine classroom photography, and real proof (19,047 verified evaluations; 94% of 20,000+ educators). Built on Mundial + Figtree + Poppins.</p></div>
+  <div class="grid2">
+    <div>
+      <h4 class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;font-family:Poppins">Captured palette</h4>
+      <div class="swatches">
+        <div class="sw"><div class="chip" style="background:#415D43"></div><div class="m"><div class="r">Primary</div><code>#415D43</code></div></div>
+        <div class="sw"><div class="chip" style="background:#211C1C"></div><div class="m"><div class="r">Ink</div><code>#211C1C</code></div></div>
+        <div class="sw"><div class="chip" style="background:#2D2D2D"></div><div class="m"><div class="r">Text</div><code>#2D2D2D</code></div></div>
+        <div class="sw"><div class="chip" style="background:#F5F3ED;border-bottom:1px solid var(--border)"></div><div class="m"><div class="r">Canvas</div><code>#F5F3ED</code></div></div>
+        <div class="sw"><div class="chip" style="background:#fff;border-bottom:1px solid var(--border)"></div><div class="m"><div class="r">Paper</div><code>#FFFFFF</code></div></div>
+      </div>
+      <h4 class="muted" style="font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 6px;font-family:Poppins">Information architecture</h4>
+      <ol class="ia">
+        <li>Header / nav</li><li>Hero (scrimmed photo + CTA)</li><li>Proof stats row</li><li>"Loved by educators"</li><li>"Get the Credits You Need" chooser</li><li>What is CE Credits Online</li><li>Latest articles</li><li>University accreditation</li><li>Newsletter</li><li>Footer</li>
+      </ol>
+    </div>
+    <div class="factbox"><h4>Brand surface at a glance</h4>
+      <div class="factrow"><span>Headings</span><b>Mundial</b></div>
+      <div class="factrow"><span>Body / labels</span><b>Figtree / Poppins</b></div>
+      <div class="factrow"><span>Type scale</span><b>Ad-hoc · 40/35/30.8/25/24/20/16</b></div>
+      <div class="factrow"><span>Primary</span><b>Forest green #415D43 (single)</b></div>
+      <div class="factrow"><span>Register</span><b>Institutional / civic-formal</b></div>
+      <div class="factrow"><span>Proof</span><b>19,047 evals · 94% · since 2001</b></div>
+      <div class="factrow"><span>Hero</span><b>Stock-Shopify scrimmed photo</b></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="tensions"><div class="wrap">
+  <div class="sec-head"><p class="eyebrow">02 — What's worth resolving</p><h2>Tensions identified</h2>
+  <p>Five specific observations from the captured surface — the load-bearing input for the redesign.</p></div>
+  <div class="tensions">
+    <div class="tension"><span class="badge">dated-pattern</span><h4>Stock-Shopify hero</h4><p>A single scrimmed photo behind a centered white headline + green button — indistinguishable from a thousand theme demos. A 25-year accredited provider's hero should carry authority and route teachers to their credit path.</p></div>
+    <div class="tension"><span class="badge">ia-clutter</span><h4>The conversion fork looks like a footnote</h4><p>"Get the Credits You Need" — the chooser that routes a teacher to the currency their district accepts (NYC P/A+, LAUSD points, Chicago lane credits, Texas CPE, WA clock hours) — is a flat row of 14px icon-links buried mid-page.</p></div>
+    <div class="tension"><span class="badge">contrast-density</span><h4>Soft, undifferentiated hierarchy</h4><p>One green carries every emphasis with no tonal ladder, and the heading scale is ad-hoc (40→35→30.8→25…) across 3+ families (Mundial, Figtree, Poppins, stray Inter). Nothing leads the eye.</p></div>
+    <div class="tension"><span class="badge">cliché</span><h4>A discount popup over the proof</h4><p>A "Summer Sale — 15% off" modal overlays the hero on load, pushing an accredited, trust-led brand toward discount-store tone — and burying the value proposition behind a coupon.</p></div>
+    <div class="tension" style="grid-column:1/-1"><span class="badge">missed-opportunity</span><h4>The two strongest assets are scattered, not orchestrated</h4><p>Genuine classroom photography is cropped to thumbnail tiles, and the proof points (19,047 verified evaluations, 94% of 20,000+ educators, university accreditation logos) are sprinkled across separate sections. Together they could be the page's credibility backbone; today they read as incidental.</p></div>
+  </div>
+</div></section>
+
+<section id="variants"><div class="wrap">
+  <div class="sec-head"><p class="eyebrow">03 — Three directions</p><h2>The variants</h2>
+  <p>All three are brand-faithful: the captured cream/green palette, Mundial + Figtree + Poppins, real classroom photography, and the real proof numbers. They differ by <b>axis</b> — A fixes the shape, B bets on IA, C bets on motion + photographic scale.</p></div>
+
+  <div class="variant">
+    <div>
+      <div class="vlabel"><span class="chip">A</span><span class="role">Risk-averse green-light</span></div>
+      <h3>Tomorrow's version of the site you have today</h3>
+      <p class="pitch">"Yes, that's us — fixed."</p>
+      <p>The captured IA kept intact, with the five tensions resolved.</p>
+      <ul>
+        <li>Replace the stock-Shopify scrimmed hero with an institutionally confident one</li>
+        <li>Lift the "Get the Credits You Need" chooser into a scannable, weighted selector</li>
+        <li>Tighten the type system — one modular scale, drop stray Inter</li>
+        <li>Remove the discount modal from the load-bearing hero</li>
+        <li>Orchestrate the scattered proof into a coherent trust spine; give photography room</li>
+      </ul>
+      <div class="vbtns"><a class="btn btn-primary" href="home-A-proposed.html" target="_blank">Open full prototype ↗</a></div>
+    </div>
+    <div class="pv"><a href="home-A-proposed.html" target="_blank"><div class="frame"><div class="bartop"><i></i><i></i><i></i></div><img src="assets/thumb-A.png" alt="Variant A preview"></div><span class="scroll-note">hover to scroll · click to open</span></a></div>
+  </div>
+
+  <div class="variant flip">
+    <div class="pv"><a href="home-B-proposed.html" target="_blank"><div class="frame"><div class="bartop"><i></i><i></i><i></i></div><img src="assets/thumb-B.png" alt="Variant B preview"></div><span class="scroll-note">hover to scroll · click to open</span></a></div>
+    <div>
+      <div class="vlabel"><span class="chip">B</span><span class="role">Design-team motivator</span></div>
+      <h3>What if we foregrounded the credit-path question?</h3>
+      <p class="pitch">"Open with the one question that matters."</p>
+      <p><b>Captured trait amplified:</b> district/state credit segmentation. The buried chooser becomes the page's spine.</p>
+      <ul>
+        <li>A "find your credit path" configurator promoted near the top</li>
+        <li>Each section answers the routed teacher's next question (accepted → format → who vouches → enroll)</li>
+        <li>The forest-green ladder re-weighted so the chooser holds authority</li>
+        <li>IA changes; content set does not — static</li>
+      </ul>
+      <div class="vbtns"><a class="btn btn-primary" href="home-B-proposed.html" target="_blank">Open full prototype ↗</a></div>
+    </div>
+  </div>
+
+  <div class="variant">
+    <div>
+      <div class="vlabel"><span class="chip">C</span><span class="role">Visionary pitch</span></div>
+      <h3>What if motion was part of the identity?</h3>
+      <p class="pitch">"Photography at editorial scale; proof that counts up."</p>
+      <p class="kv">Cinematic register: <b>arrival</b> · auto-picked because the brand is institutional / civic-formal — arrival's counters honor the proof-number spine.</p>
+      <p><b>Captured trait amplified:</b> photography re-foregrounding — the classroom photos breathe, the hero photo becomes the layout.</p>
+      <ul>
+        <li>Hero parallax up; a post-hero rising plate</li>
+        <li>Proof counters on scroll: 0 → 19,047 / 0 → 94% / 0 → 20,000+</li>
+        <li>Per-section photo entrances with stagger; footer wordmark wipe-up</li>
+        <li>Identical IA to A — the bet is motion + photographic scale</li>
+        <li>Full <code>prefers-reduced-motion</code> fallback</li>
+      </ul>
+      <div class="vbtns"><a class="btn btn-primary" href="home-C-cinematic.html" target="_blank">Open cinematic prototype ↗</a><a class="btn btn-ghost" href="home-C-proposed.html" target="_blank">Static fallback</a></div>
+    </div>
+    <div class="pv"><a href="home-C-cinematic.html" target="_blank"><div class="frame"><div class="bartop"><i></i><i></i><i></i></div><img src="assets/thumb-C.png" alt="Variant C preview"></div><span class="scroll-note">hover to scroll · click to open (motion)</span></a></div>
+  </div>
+</div></section>
+
+<section id="compare"><div class="wrap narrow">
+  <div class="sec-head"><p class="eyebrow">04 — Differentiation</p><h2>How they differ</h2>
+  <p>Each variant differs from the others by at least two structural changes — and, deliberately, on a different axis.</p></div>
+  <table class="mx"><thead><tr><th>Variant</th><th>Bet</th><th>Hero</th><th>Structure</th><th>Motion</th></tr></thead>
+  <tbody>
+    <tr><td>A</td><td>Fix the current shape</td><td>Confident, de-scrimmed</td><td>Same IA + trust spine</td><td>Static</td></tr>
+    <tr><td>B</td><td>Information architecture</td><td>Credit-path configurator</td><td>Reorganized around routing</td><td>Static</td></tr>
+    <tr><td>C</td><td>Motion + photo scale</td><td>Full-bleed photo, parallax</td><td>Same IA as A</td><td>arrival cinematic</td></tr>
+  </tbody></table>
+</div></section>
+
+<section id="notes" style="border-bottom:0"><div class="wrap narrow">
+  <div class="sec-head"><p class="eyebrow">05 — Notes</p><h2>What's real vs. placeholder</h2></div>
+  <div class="note">
+    <p>The logo, the <b>genuine classroom photography</b>, the university accreditation context and the <b>real proof numbers</b> (19,047 verified evaluations; 94% of 20,000+ educators; accredited since 2001) are captured from the live site and reused verbatim. Any other figure is rendered as <b>[data-placeholder]</b> and should be confirmed before anything ships. The report chrome substitutes Figtree for the commercial Mundial display face, which isn't web-available; the prototypes use the captured font where present.</p>
+    <p style="margin-top:12px">Validation: all three render with zero console errors; Mode A pinned. Variant C additionally passes motion validation — every animation neutralizes to the static reference under reduced-motion.</p>
+  </div>
+</div></section>
+
+<footer><img src="assets/media/ce-logo-03dd.png" alt="CE Credits Online"><p>Uplift redesign report · generated from cecreditsonline.org · brand-faithful presales exploration</p></footer>
+</body>
+</html>

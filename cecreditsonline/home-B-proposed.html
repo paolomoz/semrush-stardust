@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- stardust:provenance
+  writtenBy:         stardust:uplift(prototype)
+  writtenAt:         2026-06-04T17:16:00Z
+  page:              home
+  pageUrl:           https://www.cecreditsonline.org/
+  variant:           B (audience-routing reframe — credit-path chooser as spine)
+  againstDirection:  stardust/direction.md
+  readArtifacts:
+    - stardust/current/pages/home.json
+    - DESIGN-B.json
+  unsourcedContent:  []
+  stardustVersion:   0.10.0
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online PD Credits for K-12 Teachers | Self-Paced & Flexible – CE Credits Online</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Poppins:wght@500;600;700&display=swap');
+:root{
+  --bg:#F5F3ED; --surface:#FFFFFF; --ink:#2D2D2D; --ink-deep:#211C1C;
+  --forest:#415D43; --forest-deep:#33492F; --forest-tint:#E7ECE6;
+  --on-forest:#FFFFFF; --border:#D8D3C6; --error:#B93131;
+  --heading:"Mundial","Hanken Grotesk",system-ui,sans-serif;
+  --body:"Figtree",system-ui,sans-serif; --label:"Poppins",system-ui,sans-serif;
+  --container:1200px; --radius:8px; --pad:64px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--heading);margin:0;line-height:1.12;letter-spacing:-.015em;color:var(--ink)}
+h1{font-size:clamp(2.3rem,4.2vw,3.3rem);font-weight:700}
+h2{font-size:clamp(1.9rem,3vw,2.6rem);font-weight:600}
+h3{font-size:1.4rem;font-weight:600}
+p{margin:0}a{color:var(--ink-deep);text-decoration:none}
+.container{max-width:var(--container);margin:0 auto;padding:0 28px}
+section,header,footer{padding-left:max(28px,calc((100vw - var(--container))/2));padding-right:max(28px,calc((100vw - var(--container))/2))}
+.eyebrow{font-family:var(--heading);font-size:.75rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--forest)}
+.btn{display:inline-flex;align-items:center;gap:.5em;font-family:var(--label);font-weight:700;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;border-radius:var(--radius);padding:14px 28px;border:1.5px solid transparent;cursor:pointer;transition:background .2s,color .2s}
+.btn-primary{background:var(--forest);color:var(--on-forest)}
+.btn-primary:hover{background:var(--forest-deep)}
+.btn-secondary{background:transparent;color:var(--ink-deep);border-color:var(--ink-deep)}
+.btn-secondary:hover{background:var(--ink-deep);color:var(--bg)}
+.btn-ghost{background:transparent;color:var(--forest);padding:0;text-transform:uppercase;font-family:var(--label);font-weight:700;font-size:.78rem;letter-spacing:.04em}
+
+.site-header{position:sticky;top:0;z-index:40;background:rgba(245,243,237,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding-top:14px;padding-bottom:14px}
+.nav{display:flex;align-items:center;gap:28px}
+.nav__logo img{height:38px;width:auto;display:block}
+.nav__links{display:flex;gap:24px;margin-left:18px;font-weight:500;font-size:.95rem}
+.nav__links a{color:var(--ink)}.nav__links a:hover{color:var(--forest)}
+.nav__spacer{flex:1}
+.nav__account{display:flex;gap:18px;align-items:center;font-size:.9rem;font-weight:500}
+.burger{display:none;background:none;border:0;cursor:pointer;flex-direction:column;gap:5px;padding:8px}
+.burger span{width:24px;height:2px;background:var(--ink)}
+
+/* hero = configurator-in-hero */
+.hero{padding-top:56px;padding-bottom:56px;background:linear-gradient(180deg,var(--bg),#EFEDE4)}
+.hero__grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.hero__copy .eyebrow{color:var(--forest)}
+.hero h1{margin:14px 0 0;max-width:14ch}
+.hero__sub{margin-top:18px;font-size:1.1rem;color:#544f46;max-width:46ch}
+.hero__proof{margin-top:26px;display:flex;gap:28px;flex-wrap:wrap}
+.hero__proof .p{display:flex;flex-direction:column}
+.hero__proof .n{font-family:var(--heading);font-weight:700;font-size:1.7rem;color:var(--forest);line-height:1}
+.hero__proof .l{font-size:.8rem;color:#6b675e;margin-top:4px}
+
+/* chooser panel */
+.chooser{background:var(--forest);border-radius:14px;padding:30px;box-shadow:0 20px 50px rgba(33,28,28,.18)}
+.chooser__kicker{font-family:var(--label);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#BFD3BD}
+.chooser h2{color:#fff;font-size:1.5rem;margin-top:8px}
+.chooser__hint{color:#D6E2D6;font-size:.9rem;margin-top:6px}
+.routes{margin-top:18px;display:flex;flex-direction:column;gap:8px}
+.route{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:var(--radius);padding:13px 16px;color:#fff;transition:background .18s,transform .18s}
+.route:hover{background:#fff;color:var(--forest-deep);transform:translateX(4px)}
+.route__ic{width:34px;height:34px;border-radius:6px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;flex:none}
+.route:hover .route__ic{background:var(--forest-tint)}
+.route__ic img{width:20px;height:20px;object-fit:contain;filter:brightness(0) invert(1)}
+.route:hover .route__ic img{filter:none}
+.route__t{font-family:var(--heading);font-weight:600;font-size:.98rem;flex:1}
+.route__a{font-family:var(--label);font-weight:700;font-size:1rem;opacity:.7}
+
+.s{padding-top:var(--pad);padding-bottom:var(--pad)}
+.s__head{max-width:62ch}.s__head h2{margin-top:8px}
+
+/* routed journey steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px}
+.step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.step__n{font-family:var(--heading);font-weight:700;font-size:1.1rem;color:#fff;background:var(--forest);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.step h3{margin-top:16px}
+.step p{margin-top:10px;color:#6b675e;font-size:.95rem}
+
+/* trust band */
+.trust{background:var(--ink);color:#fff}
+.trust__row{display:grid;grid-template-columns:repeat(4,1fr)}
+.trust__cell{padding:34px 24px;text-align:center;border-right:1px solid rgba(255,255,255,.14)}
+.trust__cell:last-child{border-right:0}
+.trust__num{font-family:var(--heading);font-weight:700;font-size:2.4rem;line-height:1;color:#fff}
+.trust__lab{font-size:.86rem;color:#C9C4BA;margin-top:8px}
+
+.uni{text-align:center;background:var(--forest-tint)}
+.uni__logos{margin:30px auto 0;max-width:920px}
+.uni__logos img{width:100%;height:auto}
+
+.tst__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.quote{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column}
+.quote__stars{color:var(--forest);letter-spacing:2px}
+.quote__text{margin-top:12px;font-size:.95rem;color:#3a3a3a;flex:1}
+.quote__by{margin-top:16px;font-family:var(--label);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#8a857a}
+
+.art__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:36px}
+.art{display:flex;flex-direction:column;border-radius:var(--radius);overflow:hidden;background:var(--surface);border:1px solid var(--border)}
+.art__img{aspect-ratio:16/10;overflow:hidden}
+.art__img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.art:hover .art__img img{transform:scale(1.04)}
+.art__body{padding:20px;display:flex;flex-direction:column;flex:1}
+.art__tag{font-family:var(--label);font-weight:700;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--forest)}
+.art__title{font-family:var(--heading);font-weight:600;font-size:1.12rem;margin-top:10px}
+.art__excerpt{font-size:.88rem;color:#6b675e;margin-top:10px;flex:1}
+.art__date{font-size:.78rem;color:#9a958a;margin-top:12px}
+
+.newsletter{background:var(--forest);color:#fff;border-radius:14px;padding:48px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center}
+.newsletter h2{color:#fff}
+.newsletter p{color:#D6E2D6;margin-top:8px}
+.newsletter__form{display:flex;gap:10px;flex-wrap:wrap}
+.newsletter__form input{padding:13px 14px;border:0;border-radius:var(--radius);font-family:var(--body);font-size:.95rem;min-width:240px}
+.newsletter__form input:focus{outline:none;box-shadow:0 0 0 3px rgba(255,255,255,.4)}
+.newsletter__form .btn-primary{background:#fff;color:var(--forest-deep)}
+
+.site-footer{background:var(--ink);color:#CFCBC2;padding-top:56px;padding-bottom:32px}
+.foot__top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:36px}
+.foot h4{color:#fff;font-family:var(--label);font-weight:700;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px}
+.foot a{color:#CFCBC2;font-size:.92rem;display:block;margin-bottom:9px}.foot a:hover{color:#fff}
+.foot__brand img{height:34px;filter:brightness(0) invert(1);margin-bottom:16px}
+.foot__contact{font-size:.9rem;line-height:1.8}
+.foot__bottom{border-top:1px solid rgba(255,255,255,.14);margin-top:40px;padding-top:22px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;font-size:.82rem;color:#9a958a}
+.foot__legal{display:flex;gap:20px;flex-wrap:wrap}
+
+@media(max-width:980px){
+  .hero__grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr}
+  .trust__row{grid-template-columns:repeat(2,1fr)}
+  .trust__cell:nth-child(2){border-right:0}
+  .tst__grid,.art__grid{grid-template-columns:1fr 1fr}
+  .newsletter{grid-template-columns:1fr}
+  .foot__top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  :root{--pad:40px}
+  .nav__links,.nav__account{display:none}.burger{display:flex}
+  .tst__grid,.art__grid{grid-template-columns:1fr}.foot__top{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header class="site-header" data-section="header" data-intent="brand-nav" data-layout="logo-left-nav-right">
+  <nav class="nav container">
+    <a class="nav__logo" href="/"><img src="assets/media/ce-logo-03dd.png" alt="CE Credits Online"></a>
+    <div class="nav__links">
+      <a href="/pages/courses">Courses</a>
+      <a href="/pages/university-partners">University Partners</a>
+      <a href="/blogs/news">Blog</a>
+      <a href="/pages/about-us">About Us</a>
+      <a href="/pages/faq">FAQ</a>
+    </div>
+    <div class="nav__spacer"></div>
+    <div class="nav__account">
+      <a href="/account/login">Log in</a>
+      <a class="btn btn-primary" href="/pages/courses">Enroll Now</a>
+    </div>
+    <button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" data-section="hero" data-intent="audience-routing" data-layout="configurator-in-hero">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        <span class="eyebrow">Accredited · Self-Paced · Since 2001</span>
+        <h1>Start with the one question that matters</h1>
+        <p class="hero__sub">Online professional development for K-12 teachers. Tell us where you teach, and we’ll show you the credits your district or state accepts — for salary advancement and recertification.</p>
+        <div class="hero__proof">
+          <span class="p"><span class="n">19,047</span><span class="l">Verified evaluations</span></span>
+          <span class="p"><span class="n">20,000+</span><span class="l">Educators served</span></span>
+          <span class="p"><span class="n">94%</span><span class="l">Would take another</span></span>
+        </div>
+      </div>
+      <aside class="chooser" aria-label="Find your credit path">
+        <div class="chooser__kicker">Get the Credits You Need</div>
+        <h2>Find your credit path</h2>
+        <p class="chooser__hint">Pick where you teach — courses route to the credit you can actually use.</p>
+        <div class="routes">
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_3-e217.png" alt=""></span><span class="route__t">NYC DOE — P &amp; A+ Credits</span><span class="route__a">→</span></a>
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_1-2d4b.png" alt=""></span><span class="route__t">LAUSD — Salary Points</span><span class="route__a">→</span></a>
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_4-39e6.png" alt=""></span><span class="route__t">Chicago — Lane Credits</span><span class="route__a">→</span></a>
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_6-2a8a.png" alt=""></span><span class="route__t">Texas — CPE Hours</span><span class="route__a">→</span></a>
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_5-5639.png" alt=""></span><span class="route__t">Washington — Clock Hours</span><span class="route__a">→</span></a>
+          <a class="route" href="/pages/courses"><span class="route__ic"><img src="assets/media/Group_2-8990.png" alt=""></span><span class="route__t">Anywhere — Graduate-Level Credit</span><span class="route__a">→</span></a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="s" data-section="outcome-routing" data-intent="explainer" data-layout="steps">
+    <div class="s__head">
+      <span class="eyebrow">How it works</span>
+      <h2>From “which credit?” to enrolled in three steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step__n">1</div><h3>Pick your path</h3><p>Choose your district or state above. We show only the courses that earn credit you can apply to salary advancement or recertification.</p></div>
+      <div class="step"><div class="step__n">2</div><h3>Learn on your schedule</h3><p>Self-paced, online, graduate-level coursework — research-based and built to have an immediate impact in the classroom.</p></div>
+      <div class="step"><div class="step__n">3</div><h3>Earn accepted credit</h3><p>Complete the course and receive university-accredited credit recognized by your district or state.</p></div>
+    </div>
+  </section>
+
+  <section class="trust" data-section="trust-spine" data-intent="social-proof" data-layout="stat-row">
+    <div class="trust__row container">
+      <div class="trust__cell"><div class="trust__num">19,047</div><div class="trust__lab">Verified evaluations</div></div>
+      <div class="trust__cell"><div class="trust__num">94%</div><div class="trust__lab">Would take another course</div></div>
+      <div class="trust__cell"><div class="trust__num">20,000+</div><div class="trust__lab">Educators served</div></div>
+      <div class="trust__cell"><div class="trust__num">Since&nbsp;2001</div><div class="trust__lab">University accredited</div></div>
+    </div>
+  </section>
+
+  <section class="s uni" data-section="university-partners" data-intent="accreditation-proof" data-layout="logo-strip">
+    <span class="eyebrow">University Partners</span>
+    <h2>Who vouches for your credit</h2>
+    <div class="uni__logos"><img src="assets/media/university_logoset_1070-transparent-2-744c.png" alt="Logos of Adams State University, Valley City State University and other accrediting university partners"></div>
+    <div style="margin-top:26px"><a class="btn btn-secondary" href="/pages/university-partners">See University Requirements</a></div>
+  </section>
+
+  <section class="s" data-section="testimonials" data-intent="social-proof" data-layout="quote-grid">
+    <div class="s__head"><span class="eyebrow">What Teachers Say</span><h2>Trusted by educators in every path</h2></div>
+    <div class="tst__grid">
+      <figure class="quote"><div class="quote__stars">★★★★★</div><p class="quote__text">“I will use the learned strategies every day in my practice. I have a much better understanding of HIB and how I can prevent it in my school building.”</p><figcaption class="quote__by">Verified evaluation</figcaption></figure>
+      <figure class="quote"><div class="quote__stars">★★★★★</div><p class="quote__text">“I absolutely loved this course! It was incredibly helpful, offering strategies that apply to any type of student. I’ve made copies of all the materials to share with my department.”</p><figcaption class="quote__by">Verified evaluation</figcaption></figure>
+      <figure class="quote"><div class="quote__stars">★★★★★</div><p class="quote__text">“I have so many tangible mindfulness practices to bring to my classroom that support all areas of 21st century skills and the social emotional competency wheel.”</p><figcaption class="quote__by">Verified evaluation</figcaption></figure>
+    </div>
+    <div style="margin-top:24px"><a class="btn-ghost" href="/pages/what-teachers-say-about-ce-credits-online">Read all reviews →</a></div>
+  </section>
+
+  <section class="s" data-section="articles" data-intent="content-marketing" data-layout="card-grid">
+    <div class="s__head"><span class="eyebrow">From the Blog</span><h2>Latest articles</h2></div>
+    <div class="art__grid">
+      <article class="art">
+        <a class="art__img" href="/blogs/news/end-of-year-checklist-for-k-12-teachers"><img src="assets/media/checklist-with-pink-marker-on-pink-background-2026-03-17-04-13-09-utc_ce0675d7-0d4d-4874-a9b4-11ef90e5fc8e-25b3.jpg" alt="End-of-year checklist"></a>
+        <div class="art__body"><span class="art__tag">Classroom Management</span><a href="/blogs/news/end-of-year-checklist-for-k-12-teachers"><h3 class="art__title">End-of-Year Checklist for K–12 Teachers</h3></a><p class="art__excerpt">Reflect, refresh, and prepare for a well-earned break with this simple end-of-year checklist.</p><span class="art__date">May 2026</span></div>
+      </article>
+      <article class="art">
+        <a class="art__img" href="/blogs/news/the-first-10-minutes-routines-that-make-or-break-your-day"><img src="assets/media/teacher-waving-at-high-school-students-2026-01-05-00-33-43-utc_a3b436a3-e975-4b89-b6b6-02fa93d6ca6e-de9a.jpg" alt="Teacher greeting students"></a>
+        <div class="art__body"><span class="art__tag">Classroom Management</span><a href="/blogs/news/the-first-10-minutes-routines-that-make-or-break-your-day"><h3 class="art__title">The First 10 Minutes</h3></a><p class="art__excerpt">The first ten minutes of class set the tone — routines that make or break your day.</p><span class="art__date">April 2026</span></div>
+      </article>
+      <article class="art">
+        <a class="art__img" href="/blogs/news/end-of-year-reflections-for-educators"><img src="assets/media/group-of-elementary-children-running-outside-schoo-2026-03-16-04-28-09-utc_7ca769a5-e1cc-4be2-8edd-137be40ee03e-2ae2.jpg" alt="Children running outside school"></a>
+        <div class="art__body"><span class="art__tag">Reflection</span><a href="/blogs/news/end-of-year-reflections-for-educators"><h3 class="art__title">End-of-Year Reflections for Educators</h3></a><p class="art__excerpt">A unique mix of emotions every educator knows—relief, pride, exhaustion, and reflection.</p><span class="art__date">April 2026</span></div>
+      </article>
+    </div>
+  </section>
+
+  <section class="s" data-section="newsletter" data-intent="retention" data-layout="cta-band">
+    <div class="newsletter">
+      <div><span class="chooser__kicker" style="color:#BFD3BD">Subscribe and Save</span><h2>Discounts &amp; teaching resources, in your inbox</h2><p>Subscribe to receive discounts and our newsletter.</p></div>
+      <form class="newsletter__form" onsubmit="return false">
+        <input type="email" placeholder="Your email address" aria-label="Email address">
+        <button class="btn btn-primary" type="submit">Sign Up</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer" data-section="footer" data-intent="navigation-contact" data-layout="mega">
+  <div class="foot__top container">
+    <div class="foot__brand">
+      <img src="assets/media/ce-logo-03dd.png" alt="CE Credits Online">
+      <div class="foot__contact">23224 NE 156th Pl.<br>Woodinville, WA 98077<br>Phone: 425.788.7275<br><a href="mailto:support@cecreditsonline.org">support@cecreditsonline.org</a><br>Office hours: Mon–Fri 8:00AM–5:00PM PST</div>
+    </div>
+    <div class="foot"><h4>Explore</h4><a href="/pages/courses">Courses</a><a href="/pages/university-partners">University Partners</a><a href="/blogs/news">Blog</a><a href="/pages/what-teachers-say-about-ce-credits-online">What Teachers Say</a></div>
+    <div class="foot"><h4>Company</h4><a href="/pages/about-us">About Us</a><a href="/pages/faq">FAQ’s</a><a href="/pages/contact">Support</a></div>
+    <div class="foot"><h4>Account</h4><a href="/account/login">Log in</a><a href="/account/register">Create account</a><a href="/cart">Cart</a></div>
+  </div>
+  <div class="foot__bottom container">
+    <span>© 2026 CE Credits Online — a dba of The Riesling Group, Inc.</span>
+    <span class="foot__legal"><a href="/policies/privacy-policy">Privacy Policy</a><a href="/policies/refund-policy">Refund Policy</a><a href="/policies/terms-of-service">Terms of Service</a></span>
+  </div>
+</footer>
+<script>
+(function(){var b=document.querySelector('.burger'),l=document.querySelector('.nav__links');if(!b)return;b.addEventListener('click',function(){var e=b.getAttribute('aria-expanded')==='true';b.setAttribute('aria-expanded',!e);if(l)l.style.display=e?'none':'flex';});})();
+</script>
+</body>
+</html>
