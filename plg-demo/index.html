@@ -328,7 +328,9 @@ h1.page{font-size:22px;font-weight:700;letter-spacing:-.2px}
 .kn.vivid .kn-hero .cta2{background:#fff;color:var(--kn-magenta)}
 .kn-hero .eye{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--kn-pink);margin-bottom:14px}
 .kn-hero h1{font-size:38px;font-weight:800;letter-spacing:-1px;line-height:1.08;max-width:620px;margin:0 auto 16px;outline:none}
-.kn-hero h1[contenteditable]:focus{box-shadow:0 0 0 2px #bcd4fb;border-radius:6px}
+.kn-hero h1[contenteditable]{border-radius:8px;transition:box-shadow .15s}
+.kn-hero h1[contenteditable]:hover{box-shadow:0 0 0 2px #d6e3fb}
+.kn-hero h1[contenteditable]:focus{box-shadow:0 0 0 2px var(--ad-blue),0 0 0 6px rgba(20,115,230,.15);background:rgba(255,255,255,.5);caret-color:var(--ad-blue)}
 .kn-hero .sub{font-size:16px;color:#55505a;max-width:480px;margin:0 auto 26px}
 .kn-hero .cta2{display:inline-block;background:var(--kn-magenta);color:#fff;font-weight:700;font-size:15px;padding:13px 28px;border-radius:11px}
 .kn-logos{display:flex;gap:34px;justify-content:center;padding:22px;background:#fff;border-top:1px solid #f1e8f0;border-bottom:1px solid #f1e8f0;flex-wrap:wrap}
@@ -935,7 +937,15 @@ function selBlock(el,id){
   document.querySelectorAll('#knPage .kn-block').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
 }
-function openAEM(early){ mountAEM(early); document.getElementById('aemHost').classList.add('show'); }
+function openAEM(early){
+  mountAEM(early); document.getElementById('aemHost').classList.add('show');
+  // land with the cursor in the hero headline so it's obvious content is editable
+  setTimeout(()=>{
+    const hero=document.querySelector('#knPage .kn-hero'); if(hero) selBlock(hero,'hero');
+    const h1=document.getElementById('knH1');
+    if(h1){ h1.focus(); try{ const r=document.createRange(); r.selectNodeContents(h1); r.collapse(false); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(e){} }
+  },380);
+}
 function closeAEM(){ document.getElementById('aemHost').classList.remove('show'); }
 
 /* ---- AI chat with scripted edits ---- */
