@@ -471,7 +471,9 @@ function go(id){
 }
 
 /* ---- mini website mockups (SVG) for the 3 directions ---- */
+let _mmUid=0;
 function miniMock(kind){
+  const uid='g'+(_mmUid++); // unique gradient id per render (dup ids in a display:none screen don't resolve)
   if(kind==='refined') return `<svg class="mini" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
     <rect width="200" height="150" fill="#fff"/>
     <rect y="0" width="200" height="14" fill="#fafafa"/><circle cx="12" cy="7" r="3" fill="#982A86"/><rect x="150" y="4" width="38" height="7" rx="3.5" fill="#982A86"/>
@@ -480,16 +482,16 @@ function miniMock(kind){
     <rect x="20" y="90" width="58" height="16" rx="8" fill="#982A86"/>
     <rect x="20" y="120" width="50" height="18" rx="6" fill="#f4f0f6"/><rect x="76" y="120" width="50" height="18" rx="6" fill="#f4f0f6"/><rect x="132" y="120" width="50" height="18" rx="6" fill="#f4f0f6"/></svg>`;
   if(kind==='vivid') return `<svg class="mini" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
-    <defs><linearGradient id="vg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#982A86"/><stop offset="1" stop-color="#FF349A"/></linearGradient></defs>
-    <rect width="200" height="150" fill="url(#vg)"/>
+    <defs><linearGradient id="vg-${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#982A86"/><stop offset="1" stop-color="#FF349A"/></linearGradient></defs>
+    <rect width="200" height="150" fill="url(#vg-${uid})"/>
     <circle cx="12" cy="9" r="3" fill="#fff"/><rect x="150" y="5" width="38" height="7" rx="3.5" fill="rgba(255,255,255,.5)"/>
     <rect x="20" y="40" width="108" height="11" rx="2" fill="#fff"/><rect x="20" y="56" width="88" height="11" rx="2" fill="#fff"/>
     <rect x="20" y="78" width="120" height="5" rx="2" fill="rgba(255,255,255,.65)"/><rect x="20" y="87" width="96" height="5" rx="2" fill="rgba(255,255,255,.65)"/>
     <rect x="20" y="104" width="62" height="17" rx="8.5" fill="#fff"/><rect x="90" y="104" width="48" height="17" rx="8.5" fill="rgba(255,255,255,.25)"/></svg>`;
   return `<svg class="mini" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">
-    <defs><linearGradient id="dg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#821570"/><stop offset="1" stop-color="#FA816E"/></linearGradient></defs>
+    <defs><linearGradient id="dg-${uid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#821570"/><stop offset="1" stop-color="#FA816E"/></linearGradient></defs>
     <rect width="200" height="150" fill="#1A181D"/>
-    <rect x="108" y="0" width="92" height="150" fill="url(#dg)" opacity="0.92"/>
+    <rect x="108" y="0" width="92" height="150" fill="url(#dg-${uid})" opacity="0.92"/>
     <circle cx="12" cy="9" r="3" fill="#FA816E"/>
     <rect x="16" y="42" width="80" height="10" rx="2" fill="#fff"/><rect x="16" y="57" width="64" height="10" rx="2" fill="#fff"/>
     <rect x="16" y="80" width="58" height="16" rx="8" fill="#FF349A"/>
