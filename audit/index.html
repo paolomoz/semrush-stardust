@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>stardust — uplift analysis</title>
+<style>
+  :root {
+    --ink: #0a1024; --ink-deep: #060a14; --ink-soft: #141b3a;
+    --dust: #f5f0e6;
+    --dust-72: rgba(245,240,230,0.72); --dust-55: rgba(245,240,230,0.55);
+    --dust-40: rgba(245,240,230,0.40); --dust-15: rgba(245,240,230,0.15);
+    --dust-08: rgba(245,240,230,0.08);
+    --amber: #e8b95e; --amber-light: #ffd98a; --amber-deep: #c9822d;
+    --rose: #ff6b6b; --teal: #5ad1c0;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--ink-deep); color: var(--dust);
+    font: 15px/1.55 -apple-system, "SF Pro Text", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 56px; }
+  .eyebrow { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.18em; text-transform: uppercase; color: var(--amber); display: block; margin-bottom: 16px; }
+  h1, h2, h3, h4 { font-family: "SF Pro Display", system-ui, sans-serif; font-weight: 600; letter-spacing: -0.015em; margin: 0; }
+  h2 { font-size: 38px; line-height: 1.08; margin: 0 0 14px; letter-spacing: -0.025em; }
+  h3 { font-size: 19px; line-height: 1.25; margin: 0 0 6px; }
+  p { margin: 0 0 14px; color: var(--dust-72); max-width: 62ch; }
+  p.lede { font-size: 19px; line-height: 1.5; color: rgba(245,240,230,0.85); max-width: 54ch; }
+  a { color: var(--amber); text-decoration: none; }
+  section { padding: 100px 0; border-top: 1px solid var(--dust-08); }
+  ::selection { background: var(--amber); color: var(--ink); }
+
+  /* NAV */
+  .nav { position: sticky; top: 0; z-index: 50; background: rgba(6,10,20,0.82); backdrop-filter: blur(12px); border-bottom: 1px solid var(--dust-08); }
+  .nav .container { display: flex; align-items: center; gap: 28px; padding-top: 17px; padding-bottom: 17px; }
+  .nav .brand { display: flex; align-items: center; gap: 13px; font-family: "SF Pro Display"; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+  .nav .links { margin-left: auto; display: flex; gap: 8px; }
+  .nav .links a { font: 500 15px/1 "SF Pro Text"; color: var(--dust-55); padding: 10px 16px; border-radius: 9px; }
+  .nav .links a:hover { color: var(--dust); background: var(--dust-08); }
+  .nav .links a.active { color: var(--ink); background: var(--amber); }
+
+  /* HERO */
+  .hero { position: relative; overflow: hidden; padding: 130px 0 120px; border-top: 0;
+    background: radial-gradient(ellipse at 74% 30%, #1a2450 0%, #070c1e 62%, #060a14 100%); }
+  .dust-layer { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 24%, rgba(245,240,230,0.4), transparent 60%),
+      radial-gradient(1px 1px at 88% 16%, rgba(245,240,230,0.35), transparent 60%),
+      radial-gradient(1.3px 1.3px at 22% 78%, rgba(245,240,230,0.3), transparent 60%),
+      radial-gradient(1px 1px at 72% 82%, rgba(245,240,230,0.38), transparent 60%),
+      radial-gradient(0.8px 0.8px at 50% 12%, rgba(245,240,230,0.26), transparent 60%),
+      radial-gradient(0.9px 0.9px at 6% 56%, rgba(245,240,230,0.28), transparent 60%),
+      radial-gradient(1.2px 1.2px at 94% 52%, rgba(245,240,230,0.33), transparent 60%); }
+  .hero .container { position: relative; z-index: 2; }
+  .hero h1 { font-size: 76px; line-height: 0.95; letter-spacing: -0.035em; max-width: 16ch; margin-bottom: 24px; }
+  .hero h1 .amber { color: var(--amber-light); }
+  .hero .sub { font-size: 19px; color: rgba(245,240,230,0.78); max-width: 52ch; margin-bottom: 36px; }
+  .seed { font: 500 12px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.08em; color: var(--dust-40); margin-bottom: 30px; }
+  .seed .op { color: var(--amber); padding: 0 5px; }
+
+  .btnrow { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 9px; font: 600 14px/1 "SF Pro Text"; padding: 14px 22px; border-radius: 11px; cursor: pointer; transition: transform .12s, background .12s; }
+  .btn.primary { background: var(--amber); color: var(--ink); }
+  .btn.primary:hover { background: var(--amber-light); transform: translateY(-1px); }
+  .btn.ghost { background: transparent; color: var(--dust); border: 1px solid var(--dust-15); }
+  .btn.ghost:hover { border-color: var(--amber); color: var(--amber); }
+
+  /* PIPELINE */
+  .pipe { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 40px; }
+  .pipe .step { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 16px; padding: 24px; position: relative; }
+  .pipe .step .n { font: 500 11px/1 "SF Mono", monospace; color: var(--amber); letter-spacing: 0.12em; margin-bottom: 14px; }
+  .pipe .step h4 { font-size: 16px; margin: 0 0 8px; }
+  .pipe .step p { font-size: 13px; color: var(--dust-55); margin: 0; }
+  .pipe .step .arr { position: absolute; right: -11px; top: 50%; transform: translateY(-50%); color: var(--dust-15); z-index: 2; font-size: 18px; }
+
+  /* CAPABILITY CARDS */
+  .caps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 36px; }
+  .cap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 16px; padding: 26px; transition: border-color .15s, transform .15s; }
+  .cap:hover { border-color: rgba(232,185,94,0.4); transform: translateY(-2px); }
+  .cap .tophdr { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  .cap .count { font: 600 30px/1 "SF Pro Display"; color: var(--amber); letter-spacing: -0.03em; }
+  .cap .count small { font-size: 12px; color: var(--dust-40); font-weight: 500; margin-left: 4px; }
+  .cap .ico { width: 34px; height: 34px; }
+  .cap h3 { font-size: 16px; margin-bottom: 8px; }
+  .cap p { font-size: 13px; color: var(--dust-55); margin: 0 0 12px; }
+  .cap ul { margin: 0; padding: 0; list-style: none; }
+  .cap li { font: 12px/1.5 "SF Mono", monospace; color: var(--dust-40); padding: 3px 0; }
+  .cap li::before { content: "→ "; color: var(--amber-deep); }
+
+  /* DETECT→FIX */
+  .df { display: grid; grid-template-columns: 1fr 44px 1fr; gap: 0; margin-top: 16px; align-items: stretch; }
+  .df + .df { margin-top: 12px; }
+  .df .detect, .df .fix { border: 1px solid var(--dust-08); border-radius: 14px; padding: 20px 22px; }
+  .df .detect { background: rgba(255,107,107,0.05); border-left: 3px solid var(--rose); }
+  .df .fix { background: rgba(232,185,94,0.06); border-left: 3px solid var(--amber); }
+  .df .lbl { font: 500 10px/1 "SF Mono", monospace; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 9px; display: block; }
+  .df .detect .lbl { color: var(--rose); }
+  .df .fix .lbl { color: var(--amber); }
+  .df .detect b, .df .fix b { color: var(--dust); font-weight: 600; }
+  .df .txt { font-size: 13.5px; color: var(--dust-72); line-height: 1.5; }
+  .df .mid { display: flex; align-items: center; justify-content: center; color: var(--dust-15); font-size: 20px; }
+
+  /* CTA BAND */
+  .band { background: radial-gradient(ellipse at 50% 0%, #1a2450 0%, #0a1126 70%); border-radius: 24px; padding: 64px 48px; text-align: center; margin-top: 8px; border: 1px solid var(--dust-08); }
+  .band h2 { font-size: 34px; }
+  .band p { margin: 0 auto 28px; }
+
+  footer { padding: 70px 0 90px; border-top: 1px solid var(--dust-08); color: var(--dust-40);
+    font: 500 12px/1.6 "SF Mono", ui-monospace, monospace; letter-spacing: 0.05em; }
+  footer .container { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  footer .tag { color: var(--amber); }
+
+  @media (max-width: 900px) {
+    .container { padding: 0 28px; }
+    .hero h1 { font-size: 52px; }
+    .pipe, .caps { grid-template-columns: 1fr 1fr; }
+    .df { grid-template-columns: 1fr; } .df .mid { display: none; }
+    .pipe .step .arr { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav"><div class="container">
+  <span class="brand">
+    <svg viewBox="0 0 32 32" width="36" height="36" style="border-radius:9px;"><rect width="32" height="32" fill="#0a1024"/>
+      <g fill="#e8b95e"><rect x="14" y="3" width="4" height="4"/><rect x="14" y="9" width="4" height="4" opacity="0.6"/><rect x="14" y="19" width="4" height="4" opacity="0.6"/><rect x="14" y="25" width="4" height="4"/><rect x="3" y="14" width="4" height="4"/><rect x="9" y="14" width="4" height="4" opacity="0.6"/><rect x="19" y="14" width="4" height="4" opacity="0.6"/><rect x="25" y="14" width="4" height="4"/></g>
+      <rect x="12.5" y="12.5" width="7" height="7" fill="#ffd98a"/></svg>
+    stardust
+  </span>
+  <div class="links">
+    <a href="index.html" class="active">Overview</a>
+    <a href="capabilities.html">Capabilities</a>
+    <a href="knack-analysis.html">Knack analysis</a>
+  </div>
+</div></nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="dust-layer"></div>
+  <div class="container">
+    <span class="eyebrow">Website uplift · detect → direct → fix</span>
+    <h1>See what a website is <span class="amber">hiding</span>. Then fix it.</h1>
+    <p class="sub">Stardust crawls a live site, reads its real brand surface, and surfaces every tension between what the site <em>is</em> and what it could be, then turns each finding into a concrete redesign move.</p>
+    <div class="seed">md5(brand<span class="op">·</span>today) <span class="op">→</span> deterministic, not mystical · curated, not invented</div>
+    <div class="btnrow">
+      <a class="btn primary" href="knack-analysis.html">See a real analysis →</a>
+      <a class="btn ghost" href="capabilities.html">Explore what it detects</a>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section>
+  <div class="container">
+    <span class="eyebrow">01 · How the uplift works</span>
+    <h2>One pass, four moves.</h2>
+    <p class="lede">No questionnaire, no audit spreadsheet to fill in. You give stardust a URL; it does the rest and hands back a direction.</p>
+    <div class="pipe">
+      <div class="step"><div class="n">01 EXTRACT</div><h4>Crawl &amp; capture</h4><p>A real browser renders 5–25 pages, capturing the live brand surface: color, type, spacing, motifs, copy, components.</p><span class="arr">→</span></div>
+      <div class="step"><div class="n">02 DETECT</div><h4>Surface tensions</h4><p>Mechanical detectors plus design, accessibility and SEO analysis name every place the site contradicts itself.</p><span class="arr">→</span></div>
+      <div class="step"><div class="n">03 DIRECT</div><h4>Set a direction</h4><p>Three differentiated, brand-faithful variants, each a distinct bet on what to amplify.</p><span class="arr">→</span></div>
+      <div class="step"><div class="n">04 UPLIFT</div><h4>Prototype &amp; migrate</h4><p>Render the chosen direction as production HTML and apply it across every template.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT DETECTS -->
+<section>
+  <div class="container">
+    <span class="eyebrow">02 · What stardust detects</span>
+    <h2>Seven layers of analysis.</h2>
+    <p class="lede">Stardust sees what a crawler-only audit can't: not just whether a tag is missing, but whether the design, the voice and the conversion path actually hold together.</p>
+    <div class="caps">
+      <div class="cap"><div class="tophdr"><span class="count">13<small>checks</small></span></div><h3>Brand tensions</h3><p>Deterministic detectors that find where a site contradicts itself.</p><ul><li>Ad-hoc type scale</li><li>Fragmented radius vocabulary</li><li>Tokens unused / framework defaults</li><li>Competing nav CTAs</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">20<small>checks</small></span></div><h3>Design &amp; UX</h3><p>AI-slop tells, hierarchy, cognitive load, persona walkthroughs.</p><ul><li>Dated template patterns</li><li>Weak depth &amp; hierarchy</li><li>Undifferentiated arguments</li><li>Buried best assets</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">9<small>checks</small></span></div><h3>Accessibility</h3><p>Contrast, ARIA, landmarks, focus, touch targets — rendered.</p><ul><li>Computed contrast ratios</li><li>Missing landmark roles</li><li>Generic / empty alt text</li><li>Unlabeled controls</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">18<small>checks</small></span></div><h3>On-page SEO</h3><p>Titles, meta, headings, canonicals, hreflang, semantics.</p><ul><li>Heading structure</li><li>Meta &amp; title quality</li><li>Semantic HTML usage</li><li>Internal-link quality</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">10<small>checks</small></span></div><h3>Content &amp; conversion</h3><p>Voice consistency, CTA discipline, persuasion structure.</p><ul><li>Fragmented CTA voice</li><li>Time-bound brand marks</li><li>E-E-A-T signals</li><li>Search-intent fit</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">6<small>checks</small></span></div><h3>AI-search readiness</h3><p>Whether AI assistants can read, cite and surface the site.</p><ul><li>llms.txt / OKF bundle</li><li>Answer-engine patterns</li><li>Citability signals</li></ul></div>
+      <div class="cap"><div class="tophdr"><span class="count">10<small>checks</small></span></div><h3>Cross-page consistency</h3><p>What only a multi-page crawl can reveal.</p><ul><li>Design-token drift</li><li>Component inconsistency</li><li>Voice &amp; tone drift</li><li>Internal link graph</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- DETECT THEN FIX -->
+<section>
+  <div class="container">
+    <span class="eyebrow">03 · And then fixes</span>
+    <h2>Every finding becomes a move.</h2>
+    <p class="lede">Detection that doesn't change anything is only a report. In stardust, each tension is paired with the specific redesign decision that resolves it.</p>
+
+    <div class="df">
+      <div class="detect"><span class="lbl">Detected</span><div class="txt"><b>Ad-hoc type scale.</b> Headings at 48 → 44 → 40 → 32px sit so close they all shout at the same volume. No consistent ratio: the page-builder fingerprint.</div></div>
+      <div class="mid">→</div>
+      <div class="fix"><span class="lbl">Stardust uplift</span><div class="txt"><b>Impose a modular scale.</b> A single perfect-fourth (~1.25) ramp gives the hero a dominant size and restores typographic rhythm and depth.</div></div>
+    </div>
+    <div class="df">
+      <div class="detect"><span class="lbl">Detected</span><div class="txt"><b>Fragmented CTA voice.</b> Three sign-up labels and three "see more" variants: 21 distinct CTA labels with no canonical action. The eye doesn't know where to go.</div></div>
+      <div class="mid">→</div>
+      <div class="fix"><span class="lbl">Stardust uplift</span><div class="txt"><b>One canonical primary.</b> Collapse to a single hot-pink primary action with a quiet secondary text-link; one signal, repeated.</div></div>
+    </div>
+    <div class="df">
+      <div class="detect"><span class="lbl">Detected</span><div class="txt"><b>The brand under-shows itself.</b> The signature magenta covers a fraction of the screen; the best asset, an interactive feature switcher, is buried mid-page at small scale.</div></div>
+      <div class="mid">→</div>
+      <div class="fix"><span class="lbl">Stardust uplift</span><div class="txt"><b>Amplify what's ownable.</b> Promote the live feature switcher, foreground the magenta→coral gradient, and let the product build itself on screen.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section>
+  <div class="container">
+    <div class="band">
+      <span class="eyebrow" style="margin-bottom:18px;">A worked example</span>
+      <h2>We ran it on knack.com.</h2>
+      <p>Five deterministic tensions, five design critiques, a full brand surface — and a three-variant uplift direction. See the complete analysis, every finding paired with its fix.</p>
+      <div class="btnrow" style="justify-content:center;">
+        <a class="btn primary" href="knack-analysis.html">Read the Knack analysis →</a>
+        <a class="btn ghost" href="capabilities.html">Browse all capabilities</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container">
+  <div><span class="tag">STARDUST</span> · website uplift · detect → direct → fix<br/>built from md5("stardust" · today) — yours alone, today only.</div>
+  <div style="text-align:right;">ADOBE · CLAUDE CODE SKILLS<br/>extract · distill · direct · prototype · migrate · uplift</div>
+</div></footer>
+
+</body>
+</html>

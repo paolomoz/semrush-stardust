@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Knack Site Audit</title>
+<style>
+  :root {
+    --ink: #0a1024; --ink-deep: #060a14; --ink-soft: #141b3a; --ink-soft2: #1a2342;
+    --dust: #f5f0e6;
+    --dust-72: rgba(245,240,230,0.72); --dust-55: rgba(245,240,230,0.55);
+    --dust-40: rgba(245,240,230,0.40); --dust-15: rgba(245,240,230,0.15);
+    --dust-08: rgba(245,240,230,0.08);
+    --amber: #e8b95e; --amber-light: #ffd98a; --amber-deep: #c9822d;
+    --det: #e8b95e; --render: #5ad1c0; --crosspage: #7aa2ff; --judgment: #c9a0ff; --reasoned: #7aa2ff; --live: #6fdc8c;
+    --p1: #ff6b6b; --p2: #ffb454; --p3: #6c7ab0; --good: #6fdc8c;
+    --k-magenta: #982a86; --k-pink: #ff349a; --k-coral: #fa816e; --k-ink: #1a181d;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--ink-deep); color: var(--dust);
+    font: 14px/1.5 -apple-system, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column; min-height: 100vh; }
+  h1,h2,h3,h4 { font-family: "SF Pro Display", system-ui, sans-serif; font-weight: 600; letter-spacing: -0.02em; margin: 0; }
+  a { color: var(--amber); text-decoration: none; }
+  ::selection { background: var(--amber); color: var(--ink); }
+  .mono { font-family: "SF Mono", ui-monospace, monospace; }
+  .eyebrow { font: 500 10.5px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); }
+  ::-webkit-scrollbar { width: 10px; } ::-webkit-scrollbar-thumb { background: var(--dust-15); border-radius: 5px; }
+
+  /* ===== TOP NAV ===== */
+  .nav { display: flex; align-items: center; gap: 28px; padding: 17px 30px; border-bottom: 1px solid var(--dust-08); background: rgba(6,10,20,0.92); position: sticky; top: 0; z-index: 60; }
+  .nav .brand { display: flex; align-items: center; gap: 13px; font-family: "SF Pro Display"; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+  .nav .links { margin-left: auto; display: flex; gap: 8px; }
+  .nav .links a { font: 500 15px/1 "SF Pro Text"; color: var(--dust-55); padding: 10px 16px; border-radius: 9px; }
+  .nav .links a:hover { color: var(--dust); background: var(--dust-08); }
+  .nav .links a.active { color: var(--ink); background: var(--amber); }
+  .shell { display: flex; flex: 1; min-height: 0; }
+
+  /* ===== SIDEBAR ===== */
+  .side { width: 250px; min-width: 250px; position: sticky; top: 70px; height: calc(100vh - 70px); overflow-y: auto;
+    border-right: 1px solid var(--dust-08); background: rgba(10,16,36,0.6); padding: 22px 20px; display: flex; flex-direction: column; gap: 22px; }
+  .side .brand { display: flex; align-items: center; gap: 12px; font-family: "SF Pro Display"; font-weight: 600; font-size: 20px; letter-spacing: -0.02em; }
+  .side .xlinks { display: flex; flex-direction: column; gap: 2px; }
+  .side .xlinks a { font: 500 12.5px/1 "SF Pro Text"; color: var(--dust-55); padding: 7px 10px; border-radius: 7px; }
+  .side .xlinks a:hover { color: var(--dust); background: var(--dust-08); }
+  .side .xlinks a.active { color: var(--ink); background: var(--amber); }
+
+  .gauge-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 8px 0; }
+  .gauge { width: 150px; height: 150px; border-radius: 50%; position: relative;
+    background: conic-gradient(var(--amber) 0 50%, var(--dust-08) 50% 100%); }
+  .gauge::after { content: ""; position: absolute; inset: 13px; border-radius: 50%; background: var(--ink-deep); }
+  .gauge .c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; }
+  .gauge .c .n { font: 600 42px/1 "SF Pro Display"; letter-spacing: -0.03em; color: var(--amber); }
+  .gauge .c .d { font: 500 10px/1 "SF Mono", monospace; color: var(--dust-40); letter-spacing: 0.1em; margin-top: 4px; }
+  .gauge-wrap .cap { font: 500 11px/1.3 "SF Mono", monospace; color: var(--dust-55); text-align: center; }
+  .gauge-wrap .cap b { color: var(--amber-light); }
+
+  .navlabel { font: 500 9.5px/1 "SF Mono", monospace; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dust-40); margin-bottom: 4px; }
+  .secnav { display: flex; flex-direction: column; gap: 1px; }
+  .secnav a { font-size: 12.5px; color: var(--dust-55); padding: 7px 10px; border-radius: 7px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .secnav a:hover { background: var(--dust-08); color: var(--dust); }
+  .secnav a.active { background: rgba(232,185,94,0.12); color: var(--amber-light); }
+  .secnav a .pill { font: 500 9.5px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .side .src { margin-top: auto; font: 500 10.5px/1.6 "SF Mono", monospace; color: var(--dust-40); letter-spacing: 0.02em; border-top: 1px solid var(--dust-08); padding-top: 16px; }
+  .side .src b { color: var(--amber); }
+
+  /* ===== MAIN ===== */
+  .main { flex: 1; min-width: 0; padding: 26px 34px 60px; }
+  .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; margin-bottom: 22px; }
+  .top h1 { font-size: 48px; letter-spacing: -0.035em; line-height: 1.02; }
+  .top h1 .amber { color: var(--amber-light); }
+  .top .subtitle { font-family: "SF Pro Display"; font-weight: 500; font-size: 22px; letter-spacing: -0.015em; color: rgba(245,240,230,0.82); margin-top: 12px; }
+  .top .src-tag { font: 500 11px/1.6 "SF Mono", monospace; color: var(--dust-40); text-align: right; }
+  .top .src-tag b { color: var(--amber); }
+  .live-badge { display: inline-flex; align-items: center; gap: 6px; font: 500 10px/1 "SF Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--good); border: 1px solid rgba(111,220,140,0.35); background: rgba(111,220,140,0.08); padding: 4px 9px; border-radius: 20px; }
+  .live-badge .blip { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+
+  /* KPI strip */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 16px 18px; }
+  .kpi .big { font: 600 30px/1 "SF Pro Display"; letter-spacing: -0.03em; color: var(--amber); }
+  .kpi .big.alarm { color: var(--p1); }
+  .kpi .lbl { color: var(--dust-55); font-size: 11.5px; margin-top: 6px; }
+
+  /* panel + grid */
+  .grid { display: grid; gap: 14px; }
+  .row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .row.r-2-1 { grid-template-columns: 2fr 1fr; }
+  .row.r-1-1 { grid-template-columns: 1fr 1fr; }
+  .panel { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 16px; padding: 22px 24px; }
+  .panel.pad-lg { padding: 24px 26px; }
+  .panel .ptitle { font: 500 10.5px/1 "SF Mono", monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin-bottom: 4px; display: flex; align-items: center; justify-content: space-between; }
+  .panel .pdesc { font-size: 12px; color: var(--dust-40); margin-bottom: 18px; line-height: 1.45; }
+  .block { scroll-margin-top: 88px; }
+  .block-head { display: flex; align-items: baseline; gap: 12px; margin: 26px 0 14px; }
+  .block-head h2 { font-size: 20px; }
+  .block-head .eyebrow { margin-right: 4px; }
+  .block-head .meta { margin-left: auto; font: 500 11px/1 "SF Mono", monospace; color: var(--dust-40); }
+
+  /* scorecard */
+  .scorecard { display: grid; gap: 10px; }
+  .scorerow { display: grid; grid-template-columns: 150px 1fr 36px; align-items: center; gap: 14px; }
+  .scorerow .name { font-size: 12.5px; color: var(--dust); }
+  .scorerow .track { height: 8px; background: var(--ink-deep); border-radius: 5px; overflow: hidden; }
+  .scorerow .fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--amber-deep), var(--amber)); }
+  .scorerow .val { font: 600 13px/1 "SF Mono", monospace; color: var(--amber); text-align: right; }
+  .scorerow .note { grid-column: 2 / 3; font-size: 11px; color: var(--dust-40); margin-top: -3px; }
+
+  /* severity donut */
+  .donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .donut { width: 150px; height: 150px; border-radius: 50%; position: relative; }
+  .donut::after { content: ""; position: absolute; inset: 26px; border-radius: 50%; background: var(--ink-soft); }
+  .donut .c { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1; }
+  .donut .c .n { font: 600 34px/1 "SF Pro Display"; letter-spacing: -0.03em; }
+  .donut .c .d { font: 500 9px/1 "SF Mono", monospace; color: var(--dust-40); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 3px; }
+  .sev-legend { display: flex; gap: 16px; }
+  .sev-legend span { font: 500 11px/1 "SF Mono", monospace; color: var(--dust-55); display: inline-flex; align-items: center; gap: 6px; }
+  .sev-legend i { width: 9px; height: 9px; border-radius: 2px; }
+
+  /* swatches / weighting / type / radius / cta  (specimens) */
+  .swatches { display: flex; gap: 9px; flex-wrap: wrap; }
+  .sw { width: 84px; border-radius: 10px; overflow: hidden; border: 1px solid var(--dust-08); }
+  .sw .chip { height: 48px; } .sw .meta { padding: 7px 8px; background: var(--ink-deep); }
+  .sw .role { font: 500 8.5px/1.2 "SF Mono", monospace; letter-spacing: 0.05em; text-transform: uppercase; color: var(--dust-40); }
+  .sw .hex { font: 500 10.5px/1.3 "SF Mono", monospace; color: var(--dust); margin-top: 2px; }
+  .weight-bar { height: 40px; border-radius: 9px; overflow: hidden; display: flex; border: 1px solid var(--dust-08); }
+  .weight-bar > div { height: 100%; }
+  .weight-callout { margin-top: 14px; display: flex; align-items: baseline; gap: 12px; }
+  .weight-callout .pct { font: 600 34px/1 "SF Pro Display"; letter-spacing: -0.03em; color: var(--k-pink); }
+  .weight-callout .txt { font-size: 12.5px; color: var(--dust-55); max-width: 46ch; }
+  .legend-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 12px; }
+  .legend-row span { font: 500 10.5px/1 "SF Mono", monospace; color: var(--dust-55); display: inline-flex; align-items: center; gap: 6px; }
+  .legend-row i { width: 10px; height: 10px; border-radius: 2px; }
+  .grad-strip { height: 46px; border-radius: 9px; background: linear-gradient(90deg, #982a86 0%, #fa816e 100%); }
+  .scale-chart { display: flex; align-items: flex-end; gap: 14px; height: 130px; }
+  .scale-col { display: flex; flex-direction: column; align-items: center; gap: 7px; flex: 1; }
+  .scale-col .bar { width: 100%; max-width: 42px; border-radius: 4px 4px 0 0; }
+  .scale-col .px { font: 500 10px/1 "SF Mono", monospace; color: var(--dust-55); }
+  .scale-legend2 { display: flex; gap: 18px; margin-top: 16px; font: 500 10.5px/1 "SF Mono", monospace; color: var(--dust-55); flex-wrap: wrap; }
+  .scale-legend2 i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+  .ratio-row { display: flex; gap: 14px; margin-bottom: 6px; }
+  .ratio-row .r { flex: 1; text-align: center; font: 500 10px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .ratio-row .r.flat { color: var(--p1); }
+  .radius-chips { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+  .rchip { text-align: center; }
+  .rchip .box { background: var(--ink-soft2); border: 1.5px solid var(--amber); width: 56px; height: 56px; margin: 0 auto 7px; }
+  .rchip .lbl { font: 500 10.5px/1.3 "SF Mono", monospace; color: var(--dust-55); }
+  .rchip .ct { font: 500 9.5px/1.3 "SF Mono", monospace; color: var(--dust-40); }
+  .cta-buckets { display: grid; gap: 10px; }
+  .cta-bucket { background: var(--ink-soft2); border-radius: 11px; padding: 13px 15px; }
+  .cta-bucket .bk { font: 500 9.5px/1 "SF Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--p1); margin-bottom: 9px; }
+  .cta-bucket .labels { display: flex; gap: 7px; flex-wrap: wrap; }
+  .cta-bucket .labels span { font-size: 11.5px; background: var(--ink-deep); border: 1px solid var(--dust-15); border-radius: 6px; padding: 5px 9px; color: var(--dust-72); }
+
+  /* SEO status + positives */
+  .seo-status { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .ss { background: var(--ink-soft2); border: 1px solid var(--dust-08); border-radius: 11px; padding: 13px 15px; font-size: 12.5px; font-weight: 600; display: flex; flex-direction: column; gap: 6px; }
+  .ss .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .ss small { font: 500 10px/1.4 "SF Mono", monospace; color: var(--dust-40); }
+  .ss.pass .dot { background: var(--good); } .ss.warn .dot { background: var(--p2); } .ss.fail .dot { background: var(--p1); }
+  .pos-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+  .pos-grid span { font-size: 12px; color: var(--dust-72); background: rgba(111,220,140,0.07); border: 1px solid rgba(111,220,140,0.25); border-radius: 7px; padding: 6px 10px; }
+
+  /* findings (denser, 2-col) */
+  .findings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .finding { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 14px; padding: 18px 20px; }
+  .finding .fhead { display: flex; align-items: center; gap: 9px; margin-bottom: 10px; flex-wrap: wrap; }
+  .finding .sev { font: 600 9.5px/1 "SF Mono", monospace; letter-spacing: 0.06em; padding: 3px 7px; border-radius: 4px; color: var(--ink); }
+  .finding .sev.P1 { background: var(--p1); } .finding .sev.P2 { background: var(--p2); } .finding .sev.P3 { background: var(--p3); color: var(--dust); }
+  .finding .ftitle { font-family: "SF Pro Display"; font-weight: 600; font-size: 15px; letter-spacing: -0.01em; flex: 1; min-width: 60%; }
+  .finding .method { font: 500 9px/1 "SF Mono", monospace; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; background: var(--ink-deep); border: 1px solid var(--dust-15); }
+  .finding .rule { font: 500 9.5px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .finding .evidence { font-size: 13px; color: var(--dust-72); line-height: 1.5; }
+  .finding .evidence code { font-family: "SF Mono", monospace; font-size: 11.5px; color: var(--amber-light); background: rgba(232,185,94,0.08); padding: 1px 5px; border-radius: 4px; }
+  .finding .uplift { margin-top: 13px; padding-top: 13px; border-top: 1px solid var(--dust-08); }
+  .finding .uplift .lbl { font: 600 9.5px/1 "SF Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .finding .uplift .txt { font-size: 13px; color: var(--dust); line-height: 1.5; }
+
+  /* variants */
+  .variants { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .variant { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 16px; padding: 22px; position: relative; }
+  .variant.chosen { border-color: var(--amber); background: rgba(232,185,94,0.06); }
+  .variant .vtag { font: 500 9.5px/1 "SF Mono", monospace; letter-spacing: 0.1em; color: var(--dust-40); margin-bottom: 11px; }
+  .variant.chosen .vtag { color: var(--amber); }
+  .variant h3 { font-size: 17px; margin-bottom: 4px; }
+  .variant .role { font-size: 11.5px; color: var(--dust-40); margin-bottom: 12px; }
+  .variant p { font-size: 12.5px; color: var(--dust-55); margin: 0 0 14px; line-height: 1.5; }
+  .variant .chosen-badge { position: absolute; top: 16px; right: 16px; font: 600 8.5px/1 "SF Mono", monospace; letter-spacing: 0.08em; background: var(--amber); color: var(--ink); padding: 4px 8px; border-radius: 5px; }
+  .variant a { font: 600 12px/1 "SF Pro Text"; }
+
+  footer { margin-top: 34px; border-top: 1px solid var(--dust-08); padding-top: 22px; color: var(--dust-40); font: 500 11px/1.7 "SF Mono", ui-monospace, monospace; letter-spacing: 0.03em; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  footer .tag { color: var(--amber); }
+
+  @media (max-width: 1080px) { .kpis { grid-template-columns: repeat(3, 1fr); } .findings { grid-template-columns: 1fr; } .seo-status { grid-template-columns: 1fr 1fr; } .row.r-2-1, .row.r-1-1 { grid-template-columns: 1fr; } }
+  @media (max-width: 820px) { body { flex-direction: column; } .side { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; align-items: center; } .side .src, .gauge-wrap, .secnav, .navlabel { display: none; } .variants { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- ===== TOP NAV ===== -->
+<nav class="nav">
+  <span class="brand">
+    <svg viewBox="0 0 32 32" width="36" height="36" style="border-radius:9px;"><rect width="32" height="32" fill="#0a1024"/>
+      <g fill="#e8b95e"><rect x="14" y="3" width="4" height="4"/><rect x="14" y="9" width="4" height="4" opacity="0.6"/><rect x="14" y="19" width="4" height="4" opacity="0.6"/><rect x="14" y="25" width="4" height="4"/><rect x="3" y="14" width="4" height="4"/><rect x="9" y="14" width="4" height="4" opacity="0.6"/><rect x="19" y="14" width="4" height="4" opacity="0.6"/><rect x="25" y="14" width="4" height="4"/></g>
+      <rect x="12.5" y="12.5" width="7" height="7" fill="#ffd98a"/></svg>
+    stardust
+  </span>
+  <div class="links">
+    <a href="index.html">Overview</a>
+    <a href="capabilities.html">Capabilities</a>
+    <a href="knack-analysis.html" class="active">Knack audit</a>
+  </div>
+</nav>
+
+<div class="shell">
+<!-- ===== SIDEBAR ===== -->
+<aside class="side">
+
+  <div class="gauge-wrap">
+    <div class="gauge"><div class="c"><div class="n">50</div><div class="d">/ 100</div></div></div>
+    <div class="cap">Site health<br/><b>Uplift headroom: high</b></div>
+  </div>
+
+  <div>
+    <div class="navlabel">On this page</div>
+    <nav class="secnav" id="secnav">
+      <a href="#scorecard"><span>Scorecard</span><span class="pill">7</span></a>
+      <a href="#surface"><span>Brand surface</span></a>
+      <a href="#tensions"><span>Tensions</span><span class="pill">5</span></a>
+      <a href="#design"><span>Design &amp; UX</span><span class="pill">5</span></a>
+      <a href="#access"><span>Accessibility</span><span class="pill">3</span></a>
+      <a href="#seo"><span>Technical SEO</span><span class="pill">6</span></a>
+      <a href="#direction"><span>Direction</span><span class="pill">3</span></a>
+    </nav>
+  </div>
+
+  <div class="src">
+    SOURCE<br/>
+    <b>knack.com</b><br/>
+    7 pages · captured 2026-06-04<br/>
+    live SEO · 2026-06-16
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+
+  <div class="top">
+    <div>
+      <span class="eyebrow">Uplift analysis</span> &nbsp;<span class="live-badge"><span class="blip"></span>live audit</span>
+      <h1>Knack <span class="amber">Site Audit</span></h1>
+      <div class="subtitle">A solid product, <span class="amber">under-showing</span> itself.</div>
+    </div>
+    <div class="src-tag">19 findings · 7 layers<br/>chosen: <b>Variant C · live-systems</b></div>
+  </div>
+
+  <!-- KPI strip -->
+  <div class="kpis">
+    <div class="kpi"><div class="big">50</div><div class="lbl">site health / 100</div></div>
+    <div class="kpi"><div class="big">19</div><div class="lbl">total findings</div></div>
+    <div class="kpi"><div class="big alarm">7</div><div class="lbl">P1 · high severity</div></div>
+    <div class="kpi"><div class="big">5</div><div class="lbl">deterministic tensions</div></div>
+    <div class="kpi"><div class="big">0.9%</div><div class="lbl">pixels carry brand magenta</div></div>
+  </div>
+
+  <!-- Scorecard + severity -->
+  <div class="block" id="scorecard">
+    <div class="block-head"><span class="eyebrow">01</span><h2>Health scorecard</h2><span class="meta">7 dimensions · 0–100</span></div>
+    <div class="row r-2-1">
+      <div class="panel pad-lg">
+        <div class="ptitle">Dimension scores</div>
+        <div class="pdesc">Healthy fundamentals; the losses cluster in expression, hierarchy and conversion focus.</div>
+        <div class="scorecard" id="scorecardBars"></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Severity mix</div>
+        <div class="pdesc">19 findings by priority.</div>
+        <div class="donut-wrap">
+          <div class="donut" style="background:conic-gradient(var(--p1) 0 36.8%, var(--p2) 36.8% 84.2%, var(--p3) 84.2% 100%)">
+            <div class="c"><div class="n">19</div><div class="d">findings</div></div>
+          </div>
+          <div class="sev-legend">
+            <span><i style="background:var(--p1)"></i>P1 · 7</span>
+            <span><i style="background:var(--p2)"></i>P2 · 9</span>
+            <span><i style="background:var(--p3)"></i>P3 · 3</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Brand surface -->
+  <div class="block" id="surface">
+    <div class="block-head"><span class="eyebrow">02</span><h2>Captured brand surface</h2><span class="meta">measured from a live render</span></div>
+
+    <div class="panel pad-lg" style="margin-bottom:14px;">
+      <div class="ptitle">Color weighting · painted pixels</div>
+      <div class="pdesc">How much of the rendered page each color actually covers. The signature magenta is almost absent.</div>
+      <div class="weight-bar">
+        <div style="width:70.9%;background:#1a181d" title="Ink #1A181D — 70.9%"></div>
+        <div style="width:17.1%;background:#ffffff" title="White — 17.1%"></div>
+        <div style="width:8.7%;background:#f1f1f1" title="#F1F1F1 — 8.7%"></div>
+        <div style="width:1.7%;background:#cfcfcf" title="#FAFAFA — 1.7%"></div>
+        <div style="width:0.6%;background:#75787b" title="Grey text — 0.6%"></div>
+        <div style="width:0.52%;background:#982a86" title="Magenta — 0.52%"></div>
+        <div style="width:0.21%;background:#ff349a" title="Hot-pink — 0.21%"></div>
+        <div style="width:0.18%;background:#fa816e" title="Coral — 0.18%"></div>
+      </div>
+      <div class="weight-callout">
+        <div class="pct">0.9%</div>
+        <div class="txt">of painted pixels carry any Knack brand color (magenta + hot-pink + coral). The page is 97% neutral ink-on-white: a framework canvas, not a brand surface.</div>
+      </div>
+      <div class="legend-row">
+        <span><i style="background:#1a181d;border:1px solid #333"></i>Ink #1A181D</span>
+        <span><i style="background:#ffffff"></i>White</span>
+        <span><i style="background:#f1f1f1"></i>#F1F1F1</span>
+        <span><i style="background:#982a86"></i>Magenta</span>
+        <span><i style="background:#ff349a"></i>Hot-pink</span>
+        <span><i style="background:#fa816e"></i>Coral</span>
+      </div>
+    </div>
+
+    <div class="row r-1-1" style="margin-bottom:14px;">
+      <div class="panel">
+        <div class="ptitle">Palette · captured roles</div>
+        <div class="pdesc">Brand colors live outside the framework defaults.</div>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:#982a86"></div><div class="meta"><div class="role">primary</div><div class="hex">#982A86</div></div></div>
+          <div class="sw"><div class="chip" style="background:#ff349a"></div><div class="meta"><div class="role">CTA pink</div><div class="hex">#FF349A</div></div></div>
+          <div class="sw"><div class="chip" style="background:#fa816e"></div><div class="meta"><div class="role">coral</div><div class="hex">#FA816E</div></div></div>
+          <div class="sw"><div class="chip" style="background:#821570"></div><div class="meta"><div class="role">dk-purple</div><div class="hex">#821570</div></div></div>
+          <div class="sw"><div class="chip" style="background:#1a181d"></div><div class="meta"><div class="role">body</div><div class="hex">#1A181D</div></div></div>
+        </div>
+        <div style="margin-top:18px;">
+          <div class="ptitle" style="margin-bottom:10px;">Signature gradient · under-used</div>
+          <div class="grad-strip"></div>
+          <p class="mono" style="font-size:10.5px;color:var(--dust-40);margin:10px 0 0;">linear-gradient(90deg, #982a86, #fa816e)</p>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">CTA voice · fragmented</div>
+        <div class="pdesc">21 distinct CTA labels. Two intent buckets carry three phrasings each.</div>
+        <div class="cta-buckets">
+          <div class="cta-bucket"><div class="bk">Sign-up · 3 phrasings</div><div class="labels"><span>Start Building For Free</span><span>Get Started Free</span><span>Start Free Trial</span></div></div>
+          <div class="cta-bucket"><div class="bk">See-more · 3 phrasings</div><div class="labels"><span>Explore this solution</span><span>See More Solutions</span><span>See All Integrations</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row r-2-1">
+      <div class="panel pad-lg">
+        <div class="ptitle">Type scale · captured vs proposed</div>
+        <div class="pdesc">Captured heading sizes cluster at the top (ratios 1.09–1.10) so everything shouts at one volume. A modular ramp restores hierarchy.</div>
+        <div class="ratio-row" id="ratioRow"></div>
+        <div class="scale-chart" id="scaleChart"></div>
+        <div class="scale-legend2">
+          <span><i style="background:#5b6478"></i>Captured: 48·44·40·32·22·20</span>
+          <span><i style="background:var(--amber)"></i>Proposed ×1.25: 64·51·41·33·26·21</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">Radius vocabulary · fragmented</div>
+        <div class="pdesc">Five small radii in active use; 11px dominates.</div>
+        <div class="radius-chips">
+          <div class="rchip"><div class="box" style="border-radius:11px"></div><div class="lbl">11px</div><div class="ct">×18</div></div>
+          <div class="rchip"><div class="box" style="border-radius:12px"></div><div class="lbl">12px</div><div class="ct">×7</div></div>
+          <div class="rchip"><div class="box" style="border-radius:15px"></div><div class="lbl">15px</div><div class="ct">×7</div></div>
+          <div class="rchip"><div class="box" style="border-radius:16px"></div><div class="lbl">16px</div><div class="ct">×6</div></div>
+          <div class="rchip"><div class="box" style="border-radius:9999px"></div><div class="lbl">pill</div><div class="ct">×6</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tensions -->
+  <div class="block" id="tensions">
+    <div class="block-head"><span class="eyebrow">03</span><h2>Deterministic tensions</h2><span class="meta">mechanical · ships in brand-review</span></div>
+    <div class="findings" id="findings-tensions"></div>
+  </div>
+
+  <!-- Design -->
+  <div class="block" id="design">
+    <div class="block-head"><span class="eyebrow">04</span><h2>Design &amp; experience</h2><span class="meta">design-director judgment</span></div>
+    <div class="findings" id="findings-design"></div>
+  </div>
+
+  <!-- Accessibility -->
+  <div class="block" id="access">
+    <div class="block-head"><span class="eyebrow">05</span><h2>Accessibility</h2><span class="meta">rendered page</span></div>
+    <div class="findings" id="findings-access"></div>
+  </div>
+
+  <!-- SEO -->
+  <div class="block" id="seo">
+    <div class="block-head"><span class="eyebrow">06</span><h2>Technical &amp; on-page SEO</h2><span class="meta">seo-audit · live fetch 2026-06-16</span></div>
+    <div class="panel pad-lg" style="margin-bottom:14px;">
+      <div class="ptitle">Status<span class="mono" style="color:var(--dust-40);text-transform:none;letter-spacing:0;">robots · sitemap · canonical · OG · schema</span></div>
+      <div class="pdesc">Run with the marketing-skills seo-audit framework against a live fetch of knack.com.</div>
+      <div class="seo-status">
+        <div class="ss pass"><span class="dot"></span>Crawlability<small>robots clean · sitemap declared</small></div>
+        <div class="ss pass"><span class="dot"></span>Indexation<small>self-canonical · 18-section map</small></div>
+        <div class="ss pass"><span class="dot"></span>HTTPS &amp; delivery<small>HTTPS · HSTS · CloudFront</small></div>
+        <div class="ss pass"><span class="dot"></span>Structured data<small>rich Yoast JSON-LD</small></div>
+        <div class="ss warn"><span class="dot"></span>Semantics<small>no main / nav / footer</small></div>
+        <div class="ss fail"><span class="dot"></span>Open Graph<small>broken description &amp; title</small></div>
+        <div class="ss warn"><span class="dot"></span>On-page polish<small>title space · keyword echo</small></div>
+        <div class="ss fail"><span class="dot"></span>AI-search<small>llms.txt 404 · no OKF</small></div>
+      </div>
+    </div>
+    <div class="findings" id="findings-seo" style="margin-bottom:14px;"></div>
+    <div class="panel">
+      <div class="ptitle" style="color:var(--good);">✓ Already strong</div>
+      <div class="pdesc">An honest audit names what works. Knack's technical fundamentals are in good shape.</div>
+      <div class="pos-grid">
+        <span>Single H1 per page</span>
+        <span>lang="en-US"</span>
+        <span>Self-referencing canonical</span>
+        <span>Rich Yoast structured data</span>
+        <span>Clean robots + 18-section sitemap</span>
+        <span>HTTPS + HSTS + CloudFront</span>
+        <span>185 images, 0 missing alt</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Direction -->
+  <div class="block" id="direction">
+    <div class="block-head"><span class="eyebrow">07</span><h2>Uplift direction</h2><span class="meta">3 bets · 1 shipped</span></div>
+    <div class="variants">
+      <div class="variant">
+        <div class="vtag">VARIANT A</div><h3>Faithful + fixes</h3><div class="role">Risk-averse green-light</div>
+        <p>Same IA, the obvious fixes: one canonical CTA, a modular scale, a shadow ladder, the comparison given real weight.</p>
+        <a href="../knack-uplift/home-A-proposed.html">View prototype →</a>
+      </div>
+      <div class="variant">
+        <div class="vtag">VARIANT B</div><h3>Amplify the magenta</h3><div class="role">Design-team motivator</div>
+        <p>A full-bleed magenta→coral gradient hero, dark capability bands. The signature color finally owns the page.</p>
+        <a href="../knack-uplift/home-B-proposed.html">View prototype →</a>
+      </div>
+      <div class="variant chosen">
+        <div class="chosen-badge">SHIPPED</div><div class="vtag">VARIANT C · live-systems</div><h3>Motion as identity</h3><div class="role">The product, alive</div>
+        <p>The homepage <em>is</em> a working Knack app: records cascading in, ROI counting up. Same IA as A. Gated behind <span class="mono" style="font-size:10.5px;">prefers-reduced-motion</span>.</p>
+        <a href="../knack-uplift/home-C-cinematic.html">View prototype →</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div><span class="tag">STARDUST</span> · knack.com site audit · extract → detect → direct → migrate</div>
+    <div style="text-align:right;">5 tensions · 5 critiques · live SEO audit · Variant C shipped</div>
+  </footer>
+
+</main>
+</div>
+
+<script>
+/* ---- Scorecard ---- */
+const SCORES = [
+  ['Brand expression', 38, 'Magenta paints <1% of the page; best asset buried'],
+  ['Conversion clarity', 40, '21 CTA labels, two competing hero primaries'],
+  ['Visual hierarchy', 45, 'Flat type scale + uniform soft shadows'],
+  ['Brand consistency', 52, 'Fragmented radii, dual token systems, Lato residue'],
+  ['AI-search readiness', 48, 'llms.txt 404, no OKF; generic structure'],
+  ['Accessibility', 60, 'Good alt coverage; missing landmarks + zoom disabled'],
+  ['SEO & semantics', 68, 'Strong crawl, sitemap & schema; broken Open Graph'],
+];
+document.getElementById('scorecardBars').innerHTML = SCORES.map(([n,v,note]) => `
+  <div class="scorerow"><div class="name">${n}</div><div class="track"><div class="fill" style="width:${v}%"></div></div><div class="val">${v}</div><div class="note">${note}</div></div>`).join('');
+
+/* ---- Type scale chart ---- */
+const captured = [48,44,40,32,22,20], proposed = [64,51,41,33,26,21], maxv = 64;
+document.getElementById('scaleChart').innerHTML = captured.map((c,i) => `
+  <div class="scale-col">
+    <div style="display:flex;gap:4px;align-items:flex-end;width:100%;justify-content:center;height:104px;">
+      <div class="bar" style="height:${c/maxv*100}%;background:#5b6478"></div>
+      <div class="bar" style="height:${proposed[i]/maxv*100}%;background:var(--amber)"></div>
+    </div><div class="px">${c}/${proposed[i]}</div>
+  </div>`).join('');
+const ratios = [];
+for (let i=0;i<captured.length-1;i++) ratios.push((captured[i]/captured[i+1]).toFixed(2));
+document.getElementById('ratioRow').innerHTML = ratios.map(r => `<div class="r ${parseFloat(r)<1.15?'flat':''}">×${r}${parseFloat(r)<1.15?' ⚠':''}</div>`).join('') + '<div class="r"></div>';
+
+/* ---- Findings ---- */
+const METHOD = { det:['Deterministic','var(--det)'], judgment:['Judgment','var(--judgment)'], rendered:['Rendered','var(--render)'], reasoned:['Reasoned','var(--reasoned)'], live:['Live audit','var(--live)'] };
+function card(f) {
+  const [ml,mc] = METHOD[f.method];
+  return `<div class="finding">
+    <div class="fhead"><span class="sev ${f.sev}">${f.sev}</span><span class="ftitle">${f.title}</span>${f.rule?`<span class="rule">${f.rule}</span>`:''}<span class="method" style="color:${mc}">${ml}</span></div>
+    <div class="evidence">${f.evidence}</div>
+    <div class="uplift"><div class="lbl">◆ Stardust uplift</div><div class="txt">${f.fix}</div></div>
+  </div>`;
+}
+const TENSIONS = [
+  {sev:'P1',method:'det',rule:'T-scale',title:'Type scale is ad-hoc',
+   evidence:'Headings at <code>48 → 44 → 40 → 32 → 22 → 20px</code>, ratios <code>1.09 / 1.10 / 1.25 / 1.45 / 1.10</code> — no consistent ratio. The page-builder fingerprint.',
+   fix:'Impose a single modular scale (perfect-fourth ~1.25) so the hero clearly out-sizes section heads, and tighten hero tracking.'},
+  {sev:'P1',method:'det',rule:'T-cta-vocab',title:'CTA voice is fragmented',
+   evidence:'<code>21</code> distinct CTA labels: three sign-up phrasings and three see-more variants. No canonical action.',
+   fix:'Collapse to one canonical primary action (hot-pink) repeated site-wide, with a single quiet secondary text-link.'},
+  {sev:'P2',method:'det',rule:'T-radius-vocab',title:'Radius vocabulary is mixed',
+   evidence:'Five small radii in use: <code>11px ×18</code>, <code>12px ×7</code>, <code>15px ×7</code>, <code>16px ×6</code>, plus a <code>9999px</code> pill.',
+   fix:'Pick one small radius (11px) as the token; reserve the pill for the interactive feature tabs only.'},
+  {sev:'P1',method:'det',rule:'T-tokens-unused',title:'The token layer exists in name only',
+   evidence:'A full Bootstrap + WordPress token layer (<code>--bs-primary</code> blue, <code>--wp--preset--*</code>) whose defaults don’t match the magenta brand; real colors live in separate <code>--pink</code> / <code>--dark-purple</code> tokens.',
+   fix:'Collapse to one coherent brand-token system and wire components to consume it.'},
+  {sev:'P3',method:'det',rule:'T-logo-variants',title:'Only one logo variant exists',
+   evidence:'A single inline-SVG wordmark (magenta) was captured. No monochrome or inverted variant for dark sections or the footer.',
+   fix:'Generate a mono / inverted / SVG variant set; use the inverted mark on the new dark-magenta bands.'},
+];
+const DESIGN = [
+  {sev:'P1',method:'judgment',title:'The hero is a 2021 no-code template',
+   evidence:'Centered/split layout, a superlative one-liner, two stacked CTAs against a small product visual. It <em>tells</em> rather than shows.',
+   fix:'Rebuild the hero to show the product building itself — the live-systems register renders records cascading in and a workflow firing.'},
+  {sev:'P1',method:'judgment',title:'Two primary actions fight in the hero',
+   evidence:'A hot-pink “Start Building For Free” and a magenta “Get Started Free” sit side by side, with a third sign-up phrasing elsewhere. No single canonical action.',
+   fix:'One canonical hot-pink primary, one quiet “Talk to sales” secondary text-link.'},
+  {sev:'P1',method:'judgment',title:'Weak hierarchy, weak depth',
+   evidence:'The flat type scale combines with uniformly soft shadows (<code>rgba(26,24,29,0.1) 0 4px 4px</code>) so the hero and section heads read at one volume.',
+   fix:'A two-step shadow ladder plus the modular scale’s dominant hero size restore depth and rhythm.'},
+  {sev:'P2',method:'judgment',title:'The sharpest argument looks generic',
+   evidence:'The one ownable idea — the head-to-head “How Knack Stands Apart” vs Lovable, Bolt, Airtable, Bubble — is rendered in the same flat cards as everything else.',
+   fix:'Give the comparison real visual differentiation (a high-contrast dark panel) so the strongest argument is the most distinct moment.'},
+  {sev:'P1',method:'judgment',title:'The brand under-shows itself',
+   evidence:'The best asset — an interactive feature switcher — is buried mid-page at small scale, and the signature gradient appears only on thin accents.',
+   fix:'Promote and enlarge the live feature switcher; foreground the gradient as a confident brand surface.'},
+];
+const ACCESS = [
+  {sev:'P2',method:'live',title:'Landmark structure is incomplete',
+   evidence:'The rendered page ships one <code>&lt;header&gt;</code> plus <code>&lt;section&gt;×7</code> / <code>&lt;article&gt;×3</code>, but no <code>&lt;main&gt;</code>, <code>&lt;nav&gt;</code> or <code>&lt;footer&gt;</code> and no ARIA role landmarks.',
+   fix:'Emit semantic <code>&lt;nav&gt;</code> / <code>&lt;main&gt;</code> / <code>&lt;footer&gt;</code> landmarks per template, baked into the migrate render.'},
+  {sev:'P2',method:'rendered',title:'The animated hero has no text equivalent',
+   evidence:'The hero is a <code>&lt;canvas&gt;</code> / inline-SVG animation with no alt or aria text. A single H1 exists, but the hero’s own message stays invisible to assistive tech.',
+   fix:'Give the hero an aria-label and a visible text headline, with motion gated behind <code>prefers-reduced-motion</code>.'},
+  {sev:'P2',method:'live',title:'The viewport disables pinch-zoom',
+   evidence:'<code>maximum-scale=1</code> blocks visitors from zooming — a WCAG 1.4.4 failure that hits low-vision users hardest.',
+   fix:'Drop <code>maximum-scale</code> and any <code>user-scalable=no</code>. Zero design cost, real accessibility gain.'},
+];
+const SEO = [
+  {sev:'P2',method:'live',title:'Open Graph is broken for sharing',
+   evidence:'<code>og:description</code> renders as a literal <code>"%"</code>, <code>og:title</code> is the generic <code>"Home"</code>, and <code>og:image</code> is an <code>.svg</code> most social platforms refuse to render. Shared links look broken.',
+   fix:'Repair the OG mapping: a real description, the real title, a 1200×630 PNG/JPG image. One fix lifts every shared link.'},
+  {sev:'P2',method:'det',title:'Heading sizes are near-identical',
+   evidence:'A single H1 is present, but H1 (<code>48px</code>) and H2 (<code>44px</code>) sit 4px apart — the heading levels read as flat.',
+   fix:'The modular scale gives each level a distinct size with the H1 clearly dominant.'},
+  {sev:'P2',method:'reasoned',title:'The H1 leads with a claim, not intent',
+   evidence:'The H1 is a superlative assertion (“The most secure app and database builder…”) rather than an intent-matched, benefit-led headline.',
+   fix:'Lead with the job-to-be-done; move the superlative into proof (comparison + ROI), where it is earned.'},
+  {sev:'P3',method:'live',title:'Title and meta need a polish',
+   evidence:'The <code>&lt;title&gt;</code> has a leading space (48 chars) and the meta description echoes its keyword: “No-Code AI <b>App Builder</b> … premier <b>app builder</b> platform”.',
+   fix:'Trim the whitespace and de-duplicate the keyword, using the ~155-char budget for a differentiated benefit.'},
+  {sev:'P3',method:'live',title:'A dated promo is baked into the chrome',
+   evidence:'A time-bound strip sits above the nav: “Get 65% off Starter Plans for a limited time.” A dated campaign hard-wired into the global header.',
+   fix:'Move time-bound offers into a dismissible, swappable slot so the evergreen chrome stays evergreen.'},
+  {sev:'P2',method:'live',title:'Not built to be cited by AI search',
+   evidence:'<code>/llms.txt</code> returns <code>404</code> and there is no Open Knowledge Format bundle; the persuasion structure is weakly citable by answer engines.',
+   fix:'Add an llms.txt / OKF bundle and restructure the comparison and ROI proof as clean, citable blocks.'},
+];
+document.getElementById('findings-tensions').innerHTML = TENSIONS.map(card).join('');
+document.getElementById('findings-design').innerHTML = DESIGN.map(card).join('');
+document.getElementById('findings-access').innerHTML = ACCESS.map(card).join('');
+document.getElementById('findings-seo').innerHTML = SEO.map(card).join('');
+
+/* ---- Scrollspy ---- */
+const links = [...document.querySelectorAll('#secnav a')];
+const map = {};
+links.forEach(a => map[a.getAttribute('href').slice(1)] = a);
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { links.forEach(l=>l.classList.remove('active')); map[e.target.id]?.classList.add('active'); } });
+}, { rootMargin: '-10% 0px -75% 0px', threshold: 0 });
+['scorecard','surface','tensions','design','access','seo','direction'].forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+</script>
+</body>
+</html>
