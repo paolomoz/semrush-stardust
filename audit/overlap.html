@@ -221,10 +221,10 @@ const DATA = {
     ['Missing H1','full','yes'],['Multiple H1 tags','full','yes'],['Low semantic HTML usage','full','yes'],
   ]},
   'Images': { det:'both', items:[
-    ['Missing ALT attributes','full','yes'],['Resources formatted as page links','full','yes'],
+    ['Missing ALT attributes','full','partial'],['Resources formatted as page links','full','yes'],
   ]},
   'Links': { det:'both', items:[
-    ['Too many on-page links','full','yes'],['Links with no anchor text','full','yes'],['Non-descriptive anchor text','full','yes'],
+    ['Too many on-page links','full','yes'],['Links with no anchor text','full','yes'],['Non-descriptive anchor text','full','partial'],
     ['Nofollow on internal links','full','yes'],['Nofollow on external links','full','yes'],['Malformed links','full','yes'],
     ['Too-long link URLs (>2000)','full','partial'],['Broken internal / external links','onepage','partial'],['Broken internal images','onepage','partial'],
   ]},
@@ -235,7 +235,7 @@ const DATA = {
     ['Multiple canonical URLs','full','yes'],['Broken canonical link','onepage','yes'],
   ]},
   'International / hreflang': { det:'both', items:[
-    ['Issues with hreflang values','full','yes'],['Hreflang conflicts in source','full','yes'],['Missing hreflang & lang attributes','full','yes'],
+    ['Issues with hreflang values','full','partial'],['Hreflang conflicts in source','full','partial'],['Missing hreflang & lang attributes','full','partial'],
     ['Incorrect hreflang links','onepage','partial'],['Hreflang language mismatch','reason','partial'],
   ]},
   'Content quality': { det:'both', items:[
@@ -297,8 +297,8 @@ const DATA = {
     ['5-persona walkthrough','reason','partial'],['Emotional journey (peak-end)','reason','partial'],
   ]},
   'Copy & content judgment': { det:'stardust', items:[
-    ['AI-writing tells (em-dash, buzzwords…)','full','yes'],['Search-intent fit & topical depth','reason','partial'],
-    ['E-E-A-T signals','reason','partial'],['Keyword cannibalization','reason','partial'],['Internal-linking quality','reason','yes'],
+    ['AI-writing tells (em-dash, buzzwords…)','full','partial'],['Search-intent fit & topical depth','reason','partial'],
+    ['E-E-A-T signals','reason','partial'],['Keyword cannibalization','reason','partial'],['Internal-linking quality','reason','partial'],
   ]},
   'AI-search readiness': { det:'stardust', items:[
     ['Citability by ChatGPT/Perplexity/Claude','reason','partial'],['Open Knowledge Format (OKF) bundle','full','yes'],['Answer-engine content patterns','reason','partial'],
@@ -311,8 +311,8 @@ const DATA = {
     ['Fragmented CTA voice across siblings (T-cta-vocab)','sampled','yes'],['Content-free link labels (T-link-content-free)','sampled','yes','both'],
     ['No logo variant set (T-logo-variants)','sampled','yes'],['Palette color used in one context only (T-color-imbalance)','sampled','yes'],
     ['No design-token layer (T-no-tokens)','sampled','yes'],['Tokens are framework defaults / unused (T-tokens-unused)','sampled','yes'],
-    ['Generic present alt text (T-img-alt-generic)','sampled','yes','both'],['Primary content in cross-origin embed (T-embed-dominance)','sampled','partial','both'],
-    ['Empty alt widespread ≥30% (T-img-alt-empty)','sampled','yes','both'],['Competing top-nav CTAs (T-nav-conflict)','sampled','yes'],
+    ['Generic present alt text (T-img-alt-generic)','sampled','partial','both'],['Primary content in cross-origin embed (T-embed-dominance)','sampled','partial','both'],
+    ['Empty alt widespread ≥30% (T-img-alt-empty)','sampled','partial','both'],['Competing top-nav CTAs (T-nav-conflict)','sampled','yes'],
     ['Stale time-bound brand mark (T-temporal-mark)','sampled','yes'],
   ]},
   'Brand surface inventory (stardust)': { det:'stardust', items:[
@@ -328,7 +328,7 @@ const DATA = {
     ['Blocked by X-Robots-Tag header','na','no'],
   ]},
   'SSL & security (Semrush only)': { det:'semrush', items:[
-    ['Certificate expiration','na','no'],['Certificate registered to wrong name','na','no'],['Old security protocol (TLS)','na','partial'],
+    ['Certificate expiration','na','partial'],['Certificate registered to wrong name','na','partial'],['Old security protocol (TLS)','na','partial'],
     ['No SNI support','na','partial'],['No HSTS support','na','partial'],['HTTP→HTTPS not enforced','na','partial'],
     ['www resolve issues','na','no'],['DNS resolution issues','na','no'],
   ]},
