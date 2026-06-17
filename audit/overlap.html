@@ -98,7 +98,7 @@
   .leg.fixleg { border-top: 1px dashed var(--dust-08); margin-top: 12px; padding-top: 11px; }
   .leg.fixleg b { color: var(--dust-72); font-weight: 600; }
 
-  .tablewrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; overflow: hidden; }
+  .tablewrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; }
   table { width: 100%; border-collapse: collapse; }
   thead th { text-align: left; font: 500 10px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dust-40); padding: 10px 16px; border-bottom: 1px solid var(--dust-08); position: sticky; top: 0; background: var(--ink-soft2); z-index: 1; }
   thead th.c-chk { width: 34px; } thead th.c-det { width: 92px; } thead th.c-rel { width: 122px; } thead th.c-fix { width: 96px; }
@@ -120,8 +120,12 @@
   .tag.fix { color: var(--ink); }
   .tag.fix.no { color: var(--dust-72); background: var(--ink-deep); border: 1px solid var(--dust-15); }
   .relna { font: 500 12px/1 "SF Mono", monospace; color: var(--dust-40); }
-  .fixbtn { font: 600 9.5px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 6px 3px 8px; border-radius: 5px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; border: none; color: var(--ink); }
+  .fixbtn { position: relative; font: 600 9.5px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 6px 3px 8px; border-radius: 5px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; border: none; color: var(--ink); }
   .fixbtn:hover { filter: brightness(1.08); }
+  .fixbtn::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); right: 0; white-space: nowrap; background: var(--ink-deep); color: var(--dust); border: 1px solid var(--dust-15); border-radius: 7px; padding: 6px 10px; font: 500 11px/1.2 -apple-system, "SF Pro Text", system-ui, sans-serif; text-transform: none; letter-spacing: normal; opacity: 0; pointer-events: none; transform: translateY(3px); transition: opacity .12s ease, transform .12s ease; z-index: 30; box-shadow: 0 8px 22px rgba(0,0,0,0.45); }
+  .fixbtn::before { content: ""; position: absolute; bottom: calc(100% + 3px); right: 13px; border: 5px solid transparent; border-top-color: var(--dust-15); opacity: 0; pointer-events: none; transition: opacity .12s ease; z-index: 30; }
+  .fixbtn:hover::after { opacity: 1; transform: translateY(0); }
+  .fixbtn:hover::before { opacity: 1; }
   .fixbtn .q { width: 13px; height: 13px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; background: rgba(10,16,36,0.32); }
   .fixbtn.open { box-shadow: 0 0 0 2px var(--dust-15); }
   .fixbtn.no { color: var(--dust-72); background: var(--ink-deep); box-shadow: inset 0 0 0 1px var(--dust-15); }
@@ -609,10 +613,10 @@ function renderTable() {
       const [fixLbl, fixColor] = FIX[c.fix];
       const relCell = c.r==='na' ? `<span class="relna">—</span>` : `<span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span>`;
       const open = state.expanded.has(c.id);
-      const tip = c.fix==='no' ? 'Click to see why this is out of scope' : 'Click to see how the uplift fixes this';
+      const tip = open ? 'Click to hide' : (c.fix==='no' ? 'Click to see why this is out of scope' : 'Click to see how the uplift fixes this');
       const fixBtn = c.fix==='no'
-        ? `<button class="fixbtn no${open?' open':''}" title="${tip}">No<span class="q" title="${tip}">?</span></button>`
-        : `<button class="fixbtn${open?' open':''}" style="background:${fixColor}" title="${tip}">${fixLbl}<span class="q" title="${tip}">?</span></button>`;
+        ? `<button class="fixbtn no${open?' open':''}" data-tip="${tip}">No<span class="q">?</span></button>`
+        : `<button class="fixbtn${open?' open':''}" style="background:${fixColor}" data-tip="${tip}">${fixLbl}<span class="q">?</span></button>`;
       const rdot = c.r==='na' ? 'var(--dust-15)' : REL[c.r].color;
       const tr = document.createElement('tr'); tr.className = 'item ' + (sel?'sel':'unsel');
       tr.innerHTML = `
