@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>stardust × Semrush — overlap</title>
+<title>stardust × Semrush — coverage & uplift</title>
 <style>
   :root {
     --ink: #0a1024; --ink-deep: #060a14; --ink-soft: #141b3a; --ink-soft2: #1a2342;
@@ -14,8 +14,10 @@
     --amber: #e8b95e; --amber-light: #ffd98a; --amber-deep: #c9822d;
     /* reliability tiers */
     --full: #e8b95e; --onepage: #ff9e6b; --browser: #5ad1c0; --reason: #c9a0ff; --sampled: #7aa2ff;
-    /* overlap vs beyond */
-    --overlap: #6e8fd6; --ontop: #db61a2;
+    /* coverage */
+    --both: #6e8fd6; --stardust: #e8b95e; --semrush: #db61a2;
+    /* uplift fix */
+    --fix-yes: #6fdc8c; --fix-partial: #f0a35e; --fix-no: #6b7280;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; height: 100%; }
@@ -25,7 +27,6 @@
   ::selection { background: var(--amber); color: var(--ink); }
   .eyebrow { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); }
 
-  /* NAV */
   .nav { display: flex; align-items: center; gap: 28px; padding: 17px 30px; border-bottom: 1px solid var(--dust-08); background: rgba(6,10,20,0.92); }
   .nav .brand { display: flex; align-items: center; gap: 13px; font-family: "SF Pro Display"; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
   .nav .links { margin-left: auto; display: flex; gap: 8px; }
@@ -47,7 +48,7 @@
   .preset-btn .pc { color: var(--dust-40); font-family: "SF Mono", monospace; font-size: 11px; }
 
   .seg { display: flex; background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 9px; padding: 3px; gap: 3px; }
-  .seg button { flex: 1; background: transparent; border: none; color: var(--dust-55); cursor: pointer; padding: 7px 4px; border-radius: 6px; font-size: 11.5px; font-family: "SF Pro Text"; }
+  .seg button { flex: 1; background: transparent; border: none; color: var(--dust-55); cursor: pointer; padding: 7px 4px; border-radius: 6px; font-size: 11px; font-family: "SF Pro Text"; }
   .seg button.active { background: var(--ink-soft2); color: var(--dust); box-shadow: inset 0 0 0 1px var(--dust-15); }
 
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -66,9 +67,10 @@
   .cat-row { display: flex; align-items: center; gap: 9px; padding: 5px 7px; border-radius: 7px; cursor: pointer; font-size: 12.5px; color: var(--dust-55); }
   .cat-row:hover { background: var(--ink-soft); color: var(--dust); }
   .cat-row .box { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--dust-15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink); }
-  .cat-row.all .box { background: var(--overlap); border-color: var(--overlap); }
-  .cat-row.partial .box { background: var(--overlap); border-color: var(--overlap); opacity: 0.5; }
-  .cat-row.ontop.all .box, .cat-row.ontop.partial .box { background: var(--ontop); border-color: var(--ontop); }
+  .cat-row.det-both.all .box, .cat-row.det-both.partial .box { background: var(--both); border-color: var(--both); }
+  .cat-row.det-stardust.all .box, .cat-row.det-stardust.partial .box { background: var(--stardust); border-color: var(--stardust); }
+  .cat-row.det-semrush.all .box, .cat-row.det-semrush.partial .box { background: var(--semrush); border-color: var(--semrush); }
+  .cat-row.partial .box { opacity: 0.5; }
   .cat-row .nm { flex: 1; }
   .cat-row .ct { font-family: "SF Mono", monospace; font-size: 11px; color: var(--dust-40); }
 
@@ -76,26 +78,30 @@
   .phead { margin-bottom: 18px; }
   .phead h1 { font-family: "SF Pro Display"; font-weight: 600; font-size: 26px; letter-spacing: -0.025em; margin: 8px 0 6px; }
   .phead h1 .amber { color: var(--amber-light); }
-  .phead p { color: var(--dust-55); font-size: 13.5px; margin: 0; max-width: 72ch; }
+  .phead p { color: var(--dust-55); font-size: 13.5px; margin: 0; max-width: 76ch; }
 
   .stats { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-  .stat-card { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; min-width: 130px; flex: 1; }
-  .stat-card .big { font: 600 28px/1 "SF Pro Display"; letter-spacing: -0.02em; color: var(--amber); }
-  .stat-card .big.overlap { color: var(--overlap); }
-  .stat-card .big.ontop { color: var(--ontop); }
+  .stat-card { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; min-width: 120px; flex: 1; }
+  .stat-card .big { font: 600 27px/1 "SF Pro Display"; letter-spacing: -0.02em; color: var(--amber); }
+  .stat-card .big.both { color: var(--both); }
+  .stat-card .big.stardust { color: var(--stardust); }
+  .stat-card .big.semrush { color: var(--semrush); }
+  .stat-card .big.fix { color: var(--fix-yes); }
   .stat-card .lbl { color: var(--dust-55); font-size: 11.5px; margin-top: 3px; }
 
-  .relbar-wrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; margin-bottom: 16px; }
-  .relbar-wrap .t { font-size: 11.5px; color: var(--dust-55); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .legend-wrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; margin-bottom: 16px; }
+  .legend-wrap .t { font-size: 11.5px; color: var(--dust-55); margin-bottom: 8px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
   .relbar { height: 12px; border-radius: 6px; overflow: hidden; display: flex; background: var(--ink-deep); }
-  .rel-legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
-  .rel-legend span { font-size: 11px; color: var(--dust-55); display: inline-flex; align-items: center; gap: 6px; }
-  .rel-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .leg { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .leg span { font-size: 11px; color: var(--dust-55); display: inline-flex; align-items: center; gap: 6px; }
+  .leg i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+  .leg.fixleg { border-top: 1px dashed var(--dust-08); margin-top: 12px; padding-top: 11px; }
+  .leg.fixleg b { color: var(--dust-72); font-weight: 600; }
 
   .tablewrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; overflow: hidden; }
   table { width: 100%; border-collapse: collapse; }
   thead th { text-align: left; font: 500 10px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dust-40); padding: 10px 16px; border-bottom: 1px solid var(--dust-08); position: sticky; top: 0; background: var(--ink-soft2); z-index: 1; }
-  thead th.c-chk { width: 34px; } thead th.c-src { width: 88px; } thead th.c-rel { width: 130px; } thead th.c-skill { width: 110px; }
+  thead th.c-chk { width: 34px; } thead th.c-det { width: 92px; } thead th.c-rel { width: 122px; } thead th.c-fix { width: 96px; }
   tr.grouprow td { background: rgba(232,185,94,0.05); padding: 8px 16px; font: 600 11px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dust-55); border-bottom: 1px solid var(--dust-08); border-top: 1px solid var(--dust-08); }
   tr.grouprow .src-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 8px; vertical-align: middle; }
   tbody tr.item { cursor: pointer; border-bottom: 1px solid var(--dust-08); }
@@ -109,12 +115,14 @@
   .nm { font-weight: 500; display: flex; align-items: baseline; gap: 9px; }
   .nm .rdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; position: relative; top: 1px; }
   .tag { font: 600 9.5px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 5px; display: inline-block; }
-  .tag.src { color: var(--ink); }
+  .tag.det { color: var(--ink); }
   .tag.rel { background: var(--ink-deep); border: 1px solid var(--dust-15); }
-  .skill { font: 500 11px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .tag.fix { color: var(--ink); }
+  .tag.fix.no { color: var(--dust-72); background: var(--ink-deep); border: 1px solid var(--dust-15); }
+  .relna { font: 500 12px/1 "SF Mono", monospace; color: var(--dust-40); }
   .empty { color: var(--dust-40); font-size: 13px; padding: 40px; text-align: center; }
 
-  @media (max-width: 860px) { .sidebar { display: none; } }
+  @media (max-width: 900px) { .sidebar { display: none; } }
 </style>
 </head>
 <body>
@@ -139,11 +147,12 @@
     <div class="section-label">Presets</div>
     <div class="presets" id="presets"></div>
 
-    <div class="section-label">Scope</div>
+    <div class="section-label">Coverage</div>
     <div class="seg" id="scopeSeg">
-      <button data-scope="both" class="active">Both</button>
-      <button data-scope="overlap">Semrush overlap</button>
-      <button data-scope="ontop">Beyond</button>
+      <button data-scope="all" class="active">All</button>
+      <button data-scope="both">Both</button>
+      <button data-scope="stardust">Stardust</button>
+      <button data-scope="semrush">Semrush</button>
     </div>
 
     <div class="section-label">Detection reliability (filter)</div>
@@ -155,27 +164,34 @@
 
   <section class="preview">
     <div class="phead">
-      <span class="eyebrow">Stardust × Semrush</span>
-      <h1>What <span class="amber">overlaps</span>, what goes beyond.</h1>
-      <p>Every capability is tagged by whether a Semrush site-audit crawl also covers it (Overlap: Yes) or whether it's something only stardust's design, brand and AI-readiness analysis reaches (No). Filter by detection reliability to see how much is deterministic vs sampled vs judgment.</p>
+      <span class="eyebrow">Stardust × Semrush · coverage & uplift</span>
+      <h1>Who detects it, and can the <span class="amber">uplift</span> fix it?</h1>
+      <p>Every audit check, tagged by who detects it (Both · Stardust-only · Semrush-only) and whether stardust's uplift can fix it. <b style="color:var(--fix-yes)">Yes</b> = the redesign fixes it directly · <b style="color:var(--fix-partial)">Partial</b> = resolved by the EDS migration / regeneration, not the design pass · <b style="color:var(--dust-72)">No</b> = outside stardust's scope (infrastructure, TLS, external resources).</p>
     </div>
 
     <div class="stats" id="stats"></div>
-    <div class="relbar-wrap">
-      <div class="t"><span>Reliability mix of selected capabilities</span><span id="relCount"></span></div>
+
+    <div class="legend-wrap">
+      <div class="t"><span>Reliability mix of selected stardust-detected capabilities</span><span id="relCount"></span></div>
       <div class="relbar" id="relBar"></div>
-      <div class="rel-legend">
-        <span><i style="background:var(--full)"></i> Reliable (page/source)</span>
-        <span><i style="background:var(--onepage)"></i> Single-page only</span>
-        <span><i style="background:var(--browser)"></i> Needs browser</span>
+      <div class="leg">
+        <span><i style="background:var(--full)"></i> Reliable</span>
+        <span><i style="background:var(--onepage)"></i> Single-page</span>
+        <span><i style="background:var(--browser)"></i> Browser</span>
         <span><i style="background:var(--reason)"></i> Judgment</span>
         <span><i style="background:var(--sampled)"></i> Sampled crawl</span>
+      </div>
+      <div class="leg fixleg">
+        <span><b>Uplift fix:</b></span>
+        <span><i style="background:var(--fix-yes)"></i> Yes: redesign fixes it</span>
+        <span><i style="background:var(--fix-partial)"></i> Partial: via EDS migration</span>
+        <span><i style="background:var(--fix-no)"></i> No: outside scope</span>
       </div>
     </div>
 
     <div class="tablewrap">
       <table>
-        <thead><tr><th class="c-chk"></th><th>Capability</th><th class="c-src">Overlap</th><th class="c-rel">Reliability</th><th class="c-skill">Engine</th></tr></thead>
+        <thead><tr><th class="c-chk"></th><th>Capability</th><th class="c-det">Detected by</th><th class="c-rel">Reliability</th><th class="c-fix">Uplift fix</th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
@@ -190,202 +206,165 @@ const REL = {
   reason:  { label: 'Judgment',     color: 'var(--reason)' },
   sampled: { label: 'Sampled crawl',color: 'var(--sampled)' },
 };
+const DET = { both: ['Both','var(--both)'], stardust: ['Stardust','var(--stardust)'], semrush: ['Semrush','var(--semrush)'] };
+const FIX = { yes: ['Yes','var(--fix-yes)'], partial: ['Partial','var(--fix-partial)'], no: ['No','var(--fix-no)'] };
 
+// category: { det, items: [name, reliability, fix, detOverride?] }
 const DATA = {
-  'On-page tags & metadata': { src:'overlap', items:[
-    ['Missing title tag','full','seo-audit'],
-    ['Short / long title element','full','seo-audit'],
-    ['Missing meta description','full','seo-audit'],
-    ['Duplicate title tags','onepage','seo-audit'],
-    ['Duplicate meta descriptions','onepage','seo-audit'],
-    ['Duplicate H1 / title content','full','seo-audit'],
-    ['Encoding not declared','full','seo-audit'],
-    ['Doctype not declared','full','seo-audit'],
-    ['Meta refresh tag present','full','seo-audit'],
+  // ===== DETECTED BY BOTH (Stardust + Semrush) =====
+  'On-page tags & metadata': { det:'both', items:[
+    ['Missing title tag','full','yes'],['Short / long title element','full','yes'],['Missing meta description','full','yes'],
+    ['Duplicate title tags','onepage','yes'],['Duplicate meta descriptions','onepage','yes'],['Duplicate H1 / title content','full','yes'],
+    ['Encoding not declared','full','yes'],['Doctype not declared','full','yes'],['Meta refresh tag present','full','yes'],
   ]},
-  'Headings & structure': { src:'overlap', items:[
-    ['Missing H1','full','seo-audit'],
-    ['Multiple H1 tags','full','seo-audit'],
-    ['Low semantic HTML usage','full','audit'],
+  'Headings & structure': { det:'both', items:[
+    ['Missing H1','full','yes'],['Multiple H1 tags','full','yes'],['Low semantic HTML usage','full','yes'],
   ]},
-  'Images': { src:'overlap', items:[
-    ['Missing ALT attributes','full','seo-audit'],
-    ['Resources formatted as page links','full','seo-audit'],
+  'Images': { det:'both', items:[
+    ['Missing ALT attributes','full','yes'],['Resources formatted as page links','full','yes'],
   ]},
-  'Links': { src:'overlap', items:[
-    ['Too many on-page links','full','seo-audit'],
-    ['Links with no anchor text','full','seo-audit'],
-    ['Non-descriptive anchor text','full','seo-audit'],
-    ['Nofollow on internal links','full','seo-audit'],
-    ['Nofollow on external links','full','seo-audit'],
-    ['Malformed links','full','seo-audit'],
-    ['Too-long link URLs (>2000)','full','seo-audit'],
-    ['Broken internal / external links','onepage','seo-audit'],
-    ['Broken internal images','onepage','detector'],
+  'Links': { det:'both', items:[
+    ['Too many on-page links','full','yes'],['Links with no anchor text','full','yes'],['Non-descriptive anchor text','full','yes'],
+    ['Nofollow on internal links','full','yes'],['Nofollow on external links','full','yes'],['Malformed links','full','yes'],
+    ['Too-long link URLs (>2000)','full','partial'],['Broken internal / external links','onepage','partial'],['Broken internal images','onepage','partial'],
   ]},
-  'URLs': { src:'overlap', items:[
-    ['Underscores in URL','full','seo-audit'],
-    ['URLs longer than 200 chars','full','seo-audit'],
-    ['Too many URL parameters','onepage','seo-audit'],
+  'URLs': { det:'both', items:[
+    ['Underscores in URL','full','partial'],['URLs longer than 200 chars','full','partial'],['Too many URL parameters','onepage','partial'],
   ]},
-  'Canonicalization': { src:'overlap', items:[
-    ['Multiple canonical URLs','full','seo-audit'],
-    ['Broken canonical link','onepage','seo-audit'],
+  'Canonicalization': { det:'both', items:[
+    ['Multiple canonical URLs','full','yes'],['Broken canonical link','onepage','yes'],
   ]},
-  'International / hreflang': { src:'overlap', items:[
-    ['Issues with hreflang values','full','seo-audit'],
-    ['Hreflang conflicts in source','full','seo-audit'],
-    ['Missing hreflang & lang attributes','full','seo-audit'],
-    ['Incorrect hreflang links','onepage','seo-audit'],
-    ['Hreflang language mismatch','reason','seo-audit'],
+  'International / hreflang': { det:'both', items:[
+    ['Issues with hreflang values','full','yes'],['Hreflang conflicts in source','full','yes'],['Missing hreflang & lang attributes','full','yes'],
+    ['Incorrect hreflang links','onepage','partial'],['Hreflang language mismatch','reason','partial'],
   ]},
-  'Content quality': { src:'overlap', items:[
-    ['Low word count','full','seo-audit'],
-    ['Too much content','full','seo-audit'],
-    ['Content not optimized (intent/depth)','full','seo-audit'],
-    ['Thin / duplicate content on a page','onepage','seo-audit'],
-    ['Outdated content','reason','seo-audit'],
+  'Content quality': { det:'both', items:[
+    ['Low word count','full','partial'],['Too much content','full','partial'],['Content not optimized (intent/depth)','full','partial'],
+    ['Thin / duplicate content on a page','onepage','partial'],['Outdated content','reason','partial'],
   ]},
-  'Crawlability files': { src:'overlap', items:[
-    ['robots.txt not found / invalid','onepage','seo-audit'],
-    ['Sitemap.xml not found / invalid','onepage','seo-audit'],
-    ['Sitemap not specified in robots.txt','onepage','seo-audit'],
-    ['Blocked internal resources in robots','onepage','seo-audit'],
-    ['Blocked from crawling (meta-robots)','onepage','seo-audit'],
+  'Crawlability files': { det:'both', items:[
+    ['robots.txt not found / invalid','onepage','partial'],['Sitemap.xml not found / invalid','onepage','partial'],
+    ['Sitemap not specified in robots.txt','onepage','partial'],['Blocked internal resources in robots','onepage','partial'],
+    ['Blocked from crawling (meta-robots)','onepage','partial'],
   ]},
-  'Security & protocol': { src:'overlap', items:[
-    ['Mixed content (http on https)','full','seo-audit'],
-    ['Links to HTTP on an HTTPS site','full','seo-audit'],
-    ['Non-secure / HTTPS not used','onepage','seo-audit'],
+  'Security & protocol': { det:'both', items:[
+    ['Mixed content (http on https)','full','yes'],['Links to HTTP on an HTTPS site','full','yes'],['Non-secure / HTTPS not used','onepage','partial'],
   ]},
-  'Performance & assets': { src:'overlap', items:[
-    ['Large HTML page size','full','audit'],
-    ['Low text-to-HTML ratio','full','seo-audit'],
-    ['Too many JS/CSS files','full','audit'],
-    ['JS/CSS total size too large','onepage','audit'],
-    ['Unminified JS/CSS','onepage','audit'],
-    ['Slow load speed (likely causes)','reason','audit'],
+  'Performance & assets': { det:'both', items:[
+    ['Large HTML page size','full','yes'],['Low text-to-HTML ratio','full','yes'],['Too many JS/CSS files','full','partial'],
+    ['JS/CSS total size too large','onepage','partial'],['Unminified JS/CSS','onepage','partial'],['Slow load speed (likely causes)','reason','partial'],
   ]},
-  'Mobile': { src:'overlap', items:[
-    ['Viewport not configured','full','seo-audit'],
-    ['Missing viewport width value','full','audit'],
+  'Mobile': { det:'both', items:[
+    ['Viewport not configured','full','yes'],['Missing viewport width value','full','yes'],
   ]},
-  'Legacy tech': { src:'overlap', items:[
-    ['Frames used','full','seo-audit'],
-    ['Incompatible plugins (Flash/Java)','full','seo-audit'],
+  'Legacy tech': { det:'both', items:[
+    ['Frames used','full','yes'],['Incompatible plugins (Flash/Java)','full','yes'],
   ]},
-  'Structured data': { src:'overlap', items:[
-    ['Invalid structured-data items','browser','schema'],
+  'Structured data': { det:'both', items:[
+    ['Invalid structured-data items','browser','yes'],
   ]},
-  'AI-search files': { src:'overlap', items:[
-    ['llms.txt not found','full','ai-seo'],
-    ['llms.txt formatting issues','full','ai-seo'],
+  'AI-search files': { det:'both', items:[
+    ['llms.txt not found','full','yes'],['llms.txt formatting issues','full','yes'],
   ]},
-  'Cross-page crawl (stardust)': { src:'overlap', items:[
-    ['Duplicate title tags across pages','sampled','stardust'],
-    ['Duplicate meta descriptions across pages','sampled','stardust'],
-    ['Duplicate / near-duplicate content across pages','sampled','stardust'],
-    ['Orphaned pages (within crawl)','sampled','stardust'],
-    ['Pages with only one internal link','sampled','stardust'],
-    ['Crawl depth (BFS, capped at 3)','sampled','stardust'],
-    ['Broken internal links (within crawl)','sampled','stardust'],
-    ['4xx / 5xx on crawled pages','sampled','stardust'],
-    ['Sitemap discovery & robots Sitemap directive','sampled','stardust'],
-    ['Internal link graph / inventory','sampled','stardust'],
+  'Cross-page crawl (stardust)': { det:'both', items:[
+    ['Duplicate title tags across pages','sampled','yes'],['Duplicate meta descriptions across pages','sampled','yes'],
+    ['Duplicate / near-duplicate content across pages','sampled','partial'],['Orphaned pages (within crawl)','sampled','partial'],
+    ['Pages with only one internal link','sampled','partial'],['Crawl depth (BFS, capped at 3)','sampled','partial'],
+    ['Broken internal links (within crawl)','sampled','partial'],['4xx / 5xx on crawled pages','sampled','partial'],
+    ['Sitemap discovery & robots Sitemap directive','sampled','partial'],['Internal link graph / inventory','sampled','partial'],
   ]},
 
-  // ----- BEYOND SEMRUSH -----
-  'AI-slop verdict': { src:'ontop', items:[
-    ['AI visual tells (gradient text, AI palette…)','full','detector'],
-    ['Generic-layout tells (nested cards…)','full','detector'],
-    ['“Does this look AI-made?” pass/fail','reason','critique'],
+  // ===== STARDUST ONLY (beyond Semrush) =====
+  'AI-slop verdict': { det:'stardust', items:[
+    ['AI visual tells (gradient text, AI palette…)','full','yes'],['Generic-layout tells (nested cards…)','full','yes'],['“Does this look AI-made?” pass/fail','reason','yes'],
   ]},
-  'Accessibility depth': { src:'ontop', items:[
-    ['Computed contrast ratios vs WCAG','full','detector'],
-    ['Missing ARIA roles / labels / states','full','audit'],
-    ['Keyboard nav, focus, traps','browser','audit'],
-    ['Touch targets < 44×44px','full','audit'],
-    ['Meaning conveyed by color alone','reason','audit'],
-    ['Unlabeled form fields','full','audit'],
+  'Accessibility depth': { det:'stardust', items:[
+    ['Computed contrast ratios vs WCAG','full','yes'],['Missing ARIA roles / labels / states','full','yes'],['Keyboard nav, focus, traps','browser','yes'],
+    ['Touch targets < 44×44px','full','yes'],['Meaning conveyed by color alone','reason','yes'],['Unlabeled form fields','full','yes'],
   ]},
-  'Typography & readability': { src:'ontop', items:[
-    ['Overused/single font, flat hierarchy','full','detector'],
-    ['Line length, leading, padding, spacing','full','detector'],
-    ['Tiny text, all-caps body, justified text','full','detector'],
-    ['Letter-tracking misuse','full','detector'],
+  'Typography & readability': { det:'stardust', items:[
+    ['Overused/single font, flat hierarchy','full','yes'],['Line length, leading, padding, spacing','full','yes'],
+    ['Tiny text, all-caps body, justified text','full','yes'],['Letter-tracking misuse','full','yes'],
   ]},
-  'Layout integrity': { src:'ontop', items:[
-    ['Text overflow / clipped containers','full','detector'],
-    ['Responsive breakdowns, fixed widths','browser','audit'],
+  'Layout integrity': { det:'stardust', items:[
+    ['Text overflow / clipped containers','full','yes'],['Responsive breakdowns, fixed widths','browser','yes'],
   ]},
-  'Motion & interaction': { src:'ontop', items:[
-    ['Bounce easing, layout transitions, hover jank','full','detector'],
-    ['Expensive / unbounded animation','reason','audit'],
+  'Motion & interaction': { det:'stardust', items:[
+    ['Bounce easing, layout transitions, hover jank','full','yes'],['Expensive / unbounded animation','reason','yes'],
   ]},
-  'UX & cognitive science': { src:'ontop', items:[
-    ['Nielsen 10 heuristics, scored /40','reason','critique'],
-    ['Cognitive-load checklist','reason','critique'],
-    ['5-persona walkthrough','reason','critique'],
-    ['Emotional journey (peak-end)','reason','critique'],
+  'UX & cognitive science': { det:'stardust', items:[
+    ['Nielsen 10 heuristics, scored /40','reason','yes'],['Cognitive-load checklist','reason','yes'],
+    ['5-persona walkthrough','reason','partial'],['Emotional journey (peak-end)','reason','partial'],
   ]},
-  'Copy & content judgment': { src:'ontop', items:[
-    ['AI-writing tells (em-dash, buzzwords…)','full','detector'],
-    ['Search-intent fit & topical depth','reason','seo-audit'],
-    ['E-E-A-T signals','reason','seo-audit'],
-    ['Keyword cannibalization','reason','seo-audit'],
-    ['Internal-linking quality','reason','seo-audit'],
+  'Copy & content judgment': { det:'stardust', items:[
+    ['AI-writing tells (em-dash, buzzwords…)','full','yes'],['Search-intent fit & topical depth','reason','partial'],
+    ['E-E-A-T signals','reason','partial'],['Keyword cannibalization','reason','partial'],['Internal-linking quality','reason','yes'],
   ]},
-  'AI-search readiness': { src:'ontop', items:[
-    ['Citability by ChatGPT/Perplexity/Claude','reason','ai-seo'],
-    ['Open Knowledge Format (OKF) bundle','full','ai-seo'],
-    ['Answer-engine content patterns','reason','ai-seo'],
+  'AI-search readiness': { det:'stardust', items:[
+    ['Citability by ChatGPT/Perplexity/Claude','reason','partial'],['Open Knowledge Format (OKF) bundle','full','yes'],['Answer-engine content patterns','reason','partial'],
   ]},
-  'Structured-data strategy': { src:'ontop', items:[
-    ['Schema-type recommendations per page','reason','schema'],
+  'Structured-data strategy': { det:'stardust', items:[
+    ['Schema-type recommendations per page','reason','yes'],
   ]},
-  'Brand tensions (stardust)': { src:'ontop', items:[
-    ['Ad-hoc type scale, site-wide (T-scale)','sampled','stardust'],
-    ['Fragmented radius vocabulary (T-radius-vocab)','sampled','stardust'],
-    ['Fragmented CTA voice across siblings (T-cta-vocab)','sampled','stardust'],
-    ['Content-free link labels (T-link-content-free)','sampled','stardust','overlap'],
-    ['No logo variant set (T-logo-variants)','sampled','stardust'],
-    ['Palette color used in one context only (T-color-imbalance)','sampled','stardust'],
-    ['No design-token layer (T-no-tokens)','sampled','stardust'],
-    ['Tokens are framework defaults / unused (T-tokens-unused)','sampled','stardust'],
-    ['Generic present alt text (T-img-alt-generic)','sampled','stardust','overlap'],
-    ['Primary content in cross-origin embed (T-embed-dominance)','sampled','stardust','overlap'],
-    ['Empty alt widespread ≥30% (T-img-alt-empty)','sampled','stardust','overlap'],
-    ['Competing top-nav CTAs (T-nav-conflict)','sampled','stardust'],
-    ['Stale time-bound brand mark (T-temporal-mark)','sampled','stardust'],
+  'Brand tensions (stardust)': { det:'stardust', items:[
+    ['Ad-hoc type scale, site-wide (T-scale)','sampled','yes'],['Fragmented radius vocabulary (T-radius-vocab)','sampled','yes'],
+    ['Fragmented CTA voice across siblings (T-cta-vocab)','sampled','yes'],['Content-free link labels (T-link-content-free)','sampled','yes','both'],
+    ['No logo variant set (T-logo-variants)','sampled','yes'],['Palette color used in one context only (T-color-imbalance)','sampled','yes'],
+    ['No design-token layer (T-no-tokens)','sampled','yes'],['Tokens are framework defaults / unused (T-tokens-unused)','sampled','yes'],
+    ['Generic present alt text (T-img-alt-generic)','sampled','yes','both'],['Primary content in cross-origin embed (T-embed-dominance)','sampled','partial','both'],
+    ['Empty alt widespread ≥30% (T-img-alt-empty)','sampled','yes','both'],['Competing top-nav CTAs (T-nav-conflict)','sampled','yes'],
+    ['Stale time-bound brand mark (T-temporal-mark)','sampled','yes'],
   ]},
-  'Brand surface inventory (stardust)': { src:'ontop', items:[
-    ['Font files + licensing flags','sampled','stardust'],
-    ['Design-token / CSS-variable inventory','sampled','stardust'],
-    ['IA / page-type map','sampled','stardust'],
-    ['Cross-page voice & component baseline','sampled','stardust'],
+  'Brand surface inventory (stardust)': { det:'stardust', items:[
+    ['Font files + licensing flags','sampled','partial'],['Design-token / CSS-variable inventory','sampled','yes'],
+    ['IA / page-type map','sampled','yes'],['Cross-page voice & component baseline','sampled','yes'],
+  ]},
+
+  // ===== SEMRUSH ONLY (not audited by Stardust) =====
+  'Server & response (Semrush only)': { det:'semrush', items:[
+    ['5xx server errors','na','partial'],['Pages unreachable / not crawled','na','no'],['Slow load speed (measured / CWV)','na','partial'],
+    ['Uncompressed pages (gzip/brotli)','na','partial'],['Uncached JS/CSS (cache headers)','na','partial'],
+    ['Permanent redirects (301) at scale','na','partial'],['Temporary redirects (302)','na','partial'],['Redirect chains & loops','na','partial'],
+    ['Blocked by X-Robots-Tag header','na','no'],
+  ]},
+  'SSL & security (Semrush only)': { det:'semrush', items:[
+    ['Certificate expiration','na','no'],['Certificate registered to wrong name','na','no'],['Old security protocol (TLS)','na','partial'],
+    ['No SNI support','na','partial'],['No HSTS support','na','partial'],['HTTP→HTTPS not enforced','na','partial'],
+    ['www resolve issues','na','no'],['DNS resolution issues','na','no'],
+  ]},
+  'External resources (Semrush only)': { det:'semrush', items:[
+    ['Broken external links','na','no'],['Broken external images','na','no'],['Broken external JS/CSS','na','no'],
+    ['External pages with 403','na','no'],['Blocked external resources in robots','na','no'],
+  ]},
+  'AMP (Semrush only)': { det:'semrush', items:[
+    ['AMP page without canonical','na','partial'],['AMP HTML issues','na','partial'],['AMP style & layout issues','na','partial'],['AMP templating issues','na','partial'],
+  ]},
+  'Sitemap & index at scale (Semrush only)': { det:'semrush', items:[
+    ['Sitemap.xml too large (>50MB / 50k URLs)','na','partial'],['Incorrect pages in sitemap (noindex / redirected)','na','partial'],
+    ['HTTP URLs in sitemap (HTTPS site)','na','partial'],['Orphaned pages (via Analytics)','na','partial'],
   ]},
 };
 
 const CAPS = [];
 let _id = 0;
 for (const [cat, def] of Object.entries(DATA)) {
-  for (const [n, r, skill, srcOverride] of def.items) {
-    CAPS.push({ id: 'c'+(_id++), name: n, cat, src: srcOverride || def.src, r });
+  for (const [n, r, fix, detOverride] of def.items) {
+    CAPS.push({ id: 'c'+(_id++), name: n, cat, det: detOverride || def.det, r, fix });
   }
 }
 const CATS = Object.keys(DATA);
 
 const PRESETS = {
-  'On-page SEO pass': c => c.src==='overlap' && ['On-page tags & metadata','Headings & structure','Images','Links','URLs','Canonicalization','Content quality','International / hreflang'].includes(c.cat),
-  'Design & AI-slop check': c => ['AI-slop verdict','Typography & readability','Layout integrity','Motion & interaction'].includes(c.cat),
-  'Accessibility deep-dive': c => c.cat==='Accessibility depth' || c.name.includes('semantic') || c.name.includes('ALT'),
-  'AI-search readiness': c => c.cat==='AI-search files' || c.cat==='AI-search readiness' || c.cat==='Structured data' || c.cat==='Structured-data strategy',
-  'Stardust crawl & tensions': c => c.cat.includes('(stardust)'),
-  'Everything detectable': c => true,
-  'Beyond Semrush only': c => c.src==='ontop',
+  'Everything': c => true,
+  'Detected by stardust': c => c.det !== 'semrush',
+  'Shared with Semrush': c => c.det === 'both',
+  'Stardust only': c => c.det === 'stardust',
+  'Semrush only': c => c.det === 'semrush',
+  'Fixable by the uplift': c => c.fix !== 'no',
+  'Design & AI-slop check': c => ['AI-slop verdict','Typography & readability','Layout integrity','Motion & interaction','Brand tensions (stardust)'].includes(c.cat),
 };
 
-const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'both', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true } };
+const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'all', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true } };
 
 const presetsEl = document.getElementById('presets');
 Object.keys(PRESETS).forEach(name => {
@@ -410,8 +389,8 @@ document.querySelectorAll('#scopeSeg button').forEach(b => {
   b.onclick = () => { state.scope = b.dataset.scope; document.querySelectorAll('#scopeSeg button').forEach(x=>x.classList.toggle('active', x===b)); updateAll(); };
 });
 
-function visibleCats() { return CATS.filter(cat => state.scope==='both' || DATA[cat].src===state.scope); }
-function relOn(c) { return state.rel[c.r]; }
+function visibleCats() { return CATS.filter(cat => state.scope==='all' || DATA[cat].det===state.scope); }
+function relOn(c) { return c.det==='semrush' ? true : !!state.rel[c.r]; }
 function applyPreset(name) { state.selected = new Set(CAPS.filter(PRESETS[name]).map(c=>c.id)); updateAll(); }
 function syncPresetHighlight() {
   let match = null;
@@ -424,21 +403,22 @@ function syncPresetHighlight() {
 
 function renderCats() {
   const el = document.getElementById('catList'); el.innerHTML = '';
-  let lastSrc = null;
+  let lastDet = null;
   visibleCats().forEach(cat => {
     const def = DATA[cat];
-    if (def.src !== lastSrc) {
-      lastSrc = def.src;
+    if (def.det !== lastDet) {
+      lastDet = def.det;
       const h = document.createElement('div'); h.className = 'cat-head';
-      const color = def.src==='overlap' ? 'var(--overlap)' : 'var(--ontop)';
-      h.innerHTML = `<span class="src-dot" style="background:${color}"></span>${def.src==='overlap'?'Overlaps with Semrush':'Beyond Semrush'}`;
+      const [lbl,color] = DET[def.det];
+      const name = def.det==='both' ? 'Detected by both' : (def.det==='stardust' ? 'Stardust only' : 'Semrush only');
+      h.innerHTML = `<span class="src-dot" style="background:${color}"></span>${name}`;
       el.appendChild(h);
     }
     const caps = CAPS.filter(c => c.cat===cat && relOn(c));
     if (!caps.length) return;
     const selCount = caps.filter(c=>state.selected.has(c.id)).length;
     const row = document.createElement('div');
-    row.className = 'cat-row' + (def.src==='ontop'?' ontop':'') + (selCount===caps.length?' all':(selCount>0?' partial':''));
+    row.className = 'cat-row det-'+def.det + (selCount===caps.length?' all':(selCount>0?' partial':''));
     const mark = selCount===caps.length ? '✓' : (selCount>0 ? '–' : '');
     row.innerHTML = `<span class="box">${mark}</span><span class="nm">${cat}</span><span class="ct">${selCount}/${caps.length}</span>`;
     row.onclick = () => { const all = caps.every(c=>state.selected.has(c.id)); caps.forEach(c => all ? state.selected.delete(c.id) : state.selected.add(c.id)); updateAll(); };
@@ -449,27 +429,30 @@ function renderCats() {
 function renderTable() {
   const tb = document.getElementById('tbody'); tb.innerHTML = '';
   const cats = visibleCats().filter(cat => CAPS.some(c=>c.cat===cat && relOn(c)));
-  if (!cats.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty">No capabilities match the current reliability filter.</div></td></tr>'; return; }
+  if (!cats.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty">No capabilities match the current filters.</div></td></tr>'; return; }
   cats.forEach(cat => {
     const def = DATA[cat];
     const caps = CAPS.filter(c=>c.cat===cat && relOn(c));
     if (!caps.length) return;
-    const color = def.src==='overlap' ? 'var(--overlap)' : 'var(--ontop)';
-    const srcName = def.src==='overlap' ? 'Semrush overlap' : 'Beyond Semrush';
+    const [,color] = DET[def.det];
+    const srcName = def.det==='both' ? 'Detected by both' : (def.det==='stardust' ? 'Stardust only' : 'Semrush only');
     const gr = document.createElement('tr'); gr.className = 'grouprow';
     gr.innerHTML = `<td colspan="5"><span class="src-dot" style="background:${color}"></span>${cat} &nbsp;·&nbsp; ${srcName}</td>`;
     tb.appendChild(gr);
     caps.forEach(c => {
       const sel = state.selected.has(c.id);
-      const srcColor = c.src==='overlap'?'var(--overlap)':'var(--ontop)';
-      const srcLbl = c.src==='overlap'?'Yes':'No';
+      const [detLbl, detColor] = DET[c.det];
+      const [fixLbl, fixColor] = FIX[c.fix];
+      const relCell = c.r==='na' ? `<span class="relna">—</span>` : `<span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span>`;
+      const fixCell = c.fix==='no' ? `<span class="tag fix no">No</span>` : `<span class="tag fix" style="background:${fixColor}">${fixLbl}</span>`;
+      const rdot = c.r==='na' ? 'var(--dust-15)' : REL[c.r].color;
       const tr = document.createElement('tr'); tr.className = 'item ' + (sel?'sel':'unsel');
       tr.innerHTML = `
         <td class="c-chk"><span class="chk">${sel?'✓':''}</span></td>
-        <td><div class="nm"><span class="rdot" style="background:${REL[c.r].color}"></span>${c.name}</div></td>
-        <td><span class="tag src" style="background:${srcColor}">${srcLbl}</span></td>
-        <td><span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span></td>
-        <td><span class="skill">stardust</span></td>`;
+        <td><div class="nm"><span class="rdot" style="background:${rdot}"></span>${c.name}</div></td>
+        <td><span class="tag det" style="background:${detColor}">${detLbl}</span></td>
+        <td>${relCell}</td>
+        <td>${fixCell}</td>`;
       tr.onclick = () => { sel ? state.selected.delete(c.id) : state.selected.add(c.id); updateAll(); };
       tb.appendChild(tr);
     });
@@ -478,18 +461,20 @@ function renderTable() {
 
 function renderStats() {
   const sel = CAPS.filter(c=>state.selected.has(c.id));
-  const overlapSel = sel.filter(c=>c.src==='overlap');
-  const ontopSel = sel.filter(c=>c.src==='ontop');
-  const semReliable = overlapSel.filter(c=>c.r==='full').length;
+  const both = sel.filter(c=>c.det==='both').length;
+  const sOnly = sel.filter(c=>c.det==='stardust').length;
+  const semOnly = sel.filter(c=>c.det==='semrush').length;
+  const fixable = sel.filter(c=>c.fix!=='no').length;
   document.getElementById('stats').innerHTML = `
-    <div class="stat-card"><div class="big">${sel.length}</div><div class="lbl">capabilities in scope</div></div>
-    <div class="stat-card"><div class="big overlap">${overlapSel.length}</div><div class="lbl">overlap with Semrush</div></div>
-    <div class="stat-card"><div class="big ontop">${ontopSel.length}</div><div class="lbl">beyond Semrush</div></div>
-    <div class="stat-card"><div class="big">${semReliable}</div><div class="lbl">Semrush checks covered <em style="color:var(--dust-40);font-style:normal">reliably</em></div></div>`;
+    <div class="stat-card"><div class="big">${sel.length}</div><div class="lbl">in scope</div></div>
+    <div class="stat-card"><div class="big both">${both}</div><div class="lbl">detected by both</div></div>
+    <div class="stat-card"><div class="big stardust">${sOnly}</div><div class="lbl">Stardust only</div></div>
+    <div class="stat-card"><div class="big semrush">${semOnly}</div><div class="lbl">Semrush only</div></div>
+    <div class="stat-card"><div class="big fix">${fixable}</div><div class="lbl">fixable by the uplift</div></div>`;
 
   const counts = {}; Object.keys(REL).forEach(k=>counts[k]=0);
-  sel.forEach(c=>counts[c.r]++);
-  const total = sel.length || 1;
+  sel.filter(c=>c.det!=='semrush').forEach(c=>counts[c.r]++);
+  const total = sel.filter(c=>c.det!=='semrush').length || 1;
   const bar = document.getElementById('relBar'); bar.innerHTML = '';
   Object.keys(REL).forEach(k => { if (!counts[k]) return; const d = document.createElement('div'); d.style.width = (counts[k]/total*100)+'%'; d.style.background = REL[k].color; d.title = `${REL[k].label}: ${counts[k]}`; bar.appendChild(d); });
   document.getElementById('relCount').textContent = Object.keys(REL).filter(k=>counts[k]).map(k=>`${counts[k]} ${REL[k].label.toLowerCase()}`).join(' · ');
