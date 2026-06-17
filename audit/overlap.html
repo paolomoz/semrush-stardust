@@ -120,6 +120,19 @@
   .tag.fix { color: var(--ink); }
   .tag.fix.no { color: var(--dust-72); background: var(--ink-deep); border: 1px solid var(--dust-15); }
   .relna { font: 500 12px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .fixbtn { font: 600 9.5px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 6px 3px 8px; border-radius: 5px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; border: none; color: var(--ink); }
+  .fixbtn:hover { filter: brightness(1.08); }
+  .fixbtn .q { width: 13px; height: 13px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 9px; background: rgba(10,16,36,0.32); }
+  .fixbtn.open { box-shadow: 0 0 0 2px var(--dust-15); }
+  .fixbtn.no { color: var(--dust-72); background: var(--ink-deep); box-shadow: inset 0 0 0 1px var(--dust-15); }
+  .fixbtn.no.open { box-shadow: inset 0 0 0 1px var(--dust-15), 0 0 0 2px var(--dust-15); }
+  .fixbtn.no .q { background: var(--dust-08); color: var(--dust-55); }
+  tr.howrow td { padding: 0 16px 12px; background: rgba(20,27,58,0.5); }
+  .howbox { display: flex; gap: 11px; align-items: baseline; padding: 11px 14px; background: rgba(232,185,94,0.07); border-radius: 8px; }
+  .howbox.no { background: rgba(245,240,230,0.035); }
+  .howbox .howlbl { font: 600 9px/1.4 "SF Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); white-space: nowrap; }
+  .howbox.no .howlbl { color: var(--dust-55); }
+  .howbox .howtxt { font-size: 12.5px; color: var(--dust-72); line-height: 1.45; }
   .empty { color: var(--dust-40); font-size: 13px; padding: 40px; text-align: center; }
 
   @media (max-width: 900px) { .sidebar { display: none; } }
@@ -186,6 +199,7 @@
         <span><i style="background:var(--fix-yes)"></i> Yes: redesign fixes it</span>
         <span><i style="background:var(--fix-partial)"></i> Partial: via EDS migration</span>
         <span><i style="background:var(--fix-no)"></i> No: outside scope</span>
+        <span style="color:var(--dust-40)">tip: click a fix chip (?) to see how</span>
       </div>
     </div>
 
@@ -208,6 +222,156 @@ const REL = {
 };
 const DET = { both: ['Both','var(--both)'], stardust: ['Stardust','var(--stardust)'], semrush: ['Semrush','var(--semrush)'] };
 const FIX = { yes: ['Yes','var(--fix-yes)'], partial: ['Partial','var(--fix-partial)'], no: ['No','var(--fix-no)'] };
+
+// How the uplift would fix each capability (≤20 words). For 'no' rows: why it's out of scope.
+const HOW = {
+  'Missing title tag': "Template derives a unique title from each page's H1 and content.",
+  'Short / long title element': "Title template targets the 50–60 character SERP window.",
+  'Missing meta description': "Template generates a description from the page's lead content.",
+  'Duplicate title tags': "Per-page titles derived from content, so archives and variants differ.",
+  'Duplicate meta descriptions': "Each page gets a description from its own content, not a shared field.",
+  'Duplicate H1 / title content': "Separate fields: H1 states the page job, title adds brand context.",
+  'Encoding not declared': "The clean document head always declares UTF-8.",
+  'Doctype not declared': "Rebuilt pages ship a standards-mode HTML5 doctype.",
+  'Meta refresh tag present': "Rebuild drops meta-refresh; redirects handled at the platform, not in markup.",
+  'Missing H1': "Every template renders exactly one content-derived H1.",
+  'Multiple H1 tags': "Logos and widgets use spans; only the page title is H1.",
+  'Low semantic HTML usage': "Rebuilt with semantic landmarks, headings and lists, not nested divs.",
+  'Missing ALT attributes': "Rebuild enforces an alt slot; meaningful text still needs an author or vision pass.",
+  'Resources formatted as page links': "Images render as <img>, not as attachment page links.",
+  'Too many on-page links': "Mega-menus become focused navigation, cutting links per page.",
+  'Links with no anchor text': "Icon and image links get descriptive text or aria-labels.",
+  'Non-descriptive anchor text': "Nav and CTA labels rewritten; in-body anchor wording still needs editing.",
+  'Nofollow on internal links': "Internal links ship without nofollow in the rebuilt templates.",
+  'Nofollow on external links': "Outbound link policy set deliberately, not left to plugin defaults.",
+  'Malformed links': "Links rebuilt from clean data, so href syntax is always valid.",
+  'Too-long link URLs (>2000)': "Migration shortens slugs; some parameterised URLs depend on app routing.",
+  'Broken internal / external links': "Internal links remapped during migration; external targets aren't controlled.",
+  'Broken internal images': "Media re-referenced from the migrated asset set; missing sources can't be revived.",
+  'Underscores in URL': "Migration generates hyphenated slugs where routing allows.",
+  'URLs longer than 200 chars': "Slugs regenerated shorter; deep parameterised paths depend on the app.",
+  'Too many URL parameters': "Faceted navigation is restructured, but some parameters are app-driven.",
+  'Multiple canonical URLs': "One self-referencing canonical emitted per page, no conflicts.",
+  'Broken canonical link': "Each page emits a correct self-referencing canonical.",
+  'Issues with hreflang values': "Codes corrected for captured locales; the full set needs a locale map.",
+  'Hreflang conflicts in source': "One canonical hreflang block per page; multi-locale needs mapping.",
+  'Missing hreflang & lang attributes': "lang attribute added everywhere; hreflang needs the locale inventory.",
+  'Incorrect hreflang links': "Hreflang targets re-pointed to live canonical locale URLs where mapped.",
+  'Hreflang language mismatch': "Declared language matched to content for the captured locales.",
+  'Low word count': "Layout adds room and prompts for depth; the words are the author's.",
+  'Too much content': "Progressive disclosure and sectioning tame the page; trimming is editorial.",
+  'Content not optimized (intent/depth)': "Structure and headings align to intent; substance still needs writing.",
+  'Thin / duplicate content on a page': "Templates de-duplicate boilerplate; unique value remains an author task.",
+  'Outdated content': "Redesign restructures and flags it; updating facts is editorial.",
+  'robots.txt not found / invalid': "The EDS deploy ships a valid robots.txt with a sitemap directive.",
+  'Sitemap.xml not found / invalid': "EDS auto-generates a valid XML sitemap on publish.",
+  'Sitemap not specified in robots.txt': "Regenerated robots.txt references the sitemap automatically.",
+  'Blocked internal resources in robots': "Clean robots policy stops blocking CSS/JS the renderer needs.",
+  'Blocked from crawling (meta-robots)': "Index directives set intentionally per template at migration.",
+  'Mixed content (http on https)': "Rebuilt pages reference every asset over HTTPS.",
+  'Links to HTTP on an HTTPS site': "All internal links emitted as HTTPS in the new templates.",
+  'Non-secure / HTTPS not used': "EDS serves the site over HTTPS by default.",
+  'Large HTML page size': "Page-builder bloat removed; lean semantic markup ships instead.",
+  'Low text-to-HTML ratio': "Wrapper-div soup replaced with minimal markup, lifting the ratio.",
+  'Too many JS/CSS files': "EDS bundles delivery; remaining count depends on third-party scripts.",
+  'JS/CSS total size too large': "Lean EDS assets shrink payload; third-party weight still applies.",
+  'Unminified JS/CSS': "EDS minifies first-party assets at build.",
+  'Slow load speed (likely causes)': "EDS delivery is fast by default; third-party scripts can still slow it.",
+  'Viewport not configured': "Correct responsive viewport meta set on every template.",
+  'Missing viewport width value': "Viewport ships width=device-width and allows user zoom.",
+  'Frames used': "Frames replaced with a modern responsive layout.",
+  'Incompatible plugins (Flash/Java)': "Legacy plugin embeds removed; replaced with native web components.",
+  'Invalid structured-data items': "Clean JSON-LD emitted per template for the right schema types.",
+  'llms.txt not found': "An llms.txt knowledge bundle is generated for the site.",
+  'llms.txt formatting issues': "llms.txt generated to the Open Knowledge Format spec.",
+  'Duplicate title tags across pages': "Content-derived titles make every page's title unique.",
+  'Duplicate meta descriptions across pages': "Per-page descriptions generated from each page's own content.",
+  'Duplicate / near-duplicate content across pages': "Templates cut shared boilerplate; unique copy is editorial.",
+  'Orphaned pages (within crawl)': "Rebuilt IA and navigation link orphaned pages back in.",
+  'Pages with only one internal link': "Related-content and nav modules add internal links.",
+  'Crawl depth (BFS, capped at 3)': "Flatter IA brings key pages within fewer clicks.",
+  'Broken internal links (within crawl)': "Internal links remapped to the migrated URLs.",
+  '4xx / 5xx on crawled pages': "Missing pages rebuilt or redirected; server 5xx is hosting.",
+  'Sitemap discovery & robots Sitemap directive': "EDS regenerates the sitemap and references it in robots.",
+  'Internal link graph / inventory': "Deliberate internal-linking modules strengthen the graph.",
+  'AI visual tells (gradient text, AI palette…)': "Redesign replaces gradient text and AI palettes with a sourced brand system.",
+  'Generic-layout tells (nested cards…)': "Bespoke layout patterns replace nested cards and icon-tile stacks.",
+  '“Does this look AI-made?” pass/fail': "Direction sourced from a real reference, so output reads intentional.",
+  'Computed contrast ratios vs WCAG': "Palette tuned so text meets WCAG AA contrast.",
+  'Missing ARIA roles / labels / states': "Components ship correct roles, labels and states.",
+  'Keyboard nav, focus, traps': "Rebuilt components are keyboard-operable with visible focus.",
+  'Touch targets < 44×44px': "Interactive targets sized to at least 44×44px.",
+  'Meaning conveyed by color alone': "Status uses icons and text, not color alone.",
+  'Unlabeled form fields': "Every input gets an associated, visible label.",
+  'Overused/single font, flat hierarchy': "Distinct display and text faces with a real modular scale.",
+  'Line length, leading, padding, spacing': "Measure, leading and spacing set to readable defaults.",
+  'Tiny text, all-caps body, justified text': "Body type sized up, left-aligned, sentence case.",
+  'Letter-tracking misuse': "Tracking tuned per size, not stretched or crushed.",
+  'Text overflow / clipped containers': "Fluid containers and wrapping prevent overflow and clipping.",
+  'Responsive breakdowns, fixed widths': "A fluid grid replaces fixed widths across breakpoints.",
+  'Bounce easing, layout transitions, hover jank': "Transform/opacity transitions with calm easing replace janky motion.",
+  'Expensive / unbounded animation': "Animation budgeted and gated behind reduced-motion.",
+  'Nielsen 10 heuristics, scored /40': "Redesign addresses the heuristics that scored low.",
+  'Cognitive-load checklist': "Chunking and progressive disclosure cut options per decision.",
+  '5-persona walkthrough': "Flows reshaped for the failing personas; some fixes need product changes.",
+  'Emotional journey (peak-end)': "Reassurance added at key moments; the full journey spans beyond one page.",
+  'AI-writing tells (em-dash, buzzwords…)': "Surfaced for an edit pass; rewriting copy is a separate step.",
+  'Search-intent fit & topical depth': "Structure aligns to intent; depth needs writing.",
+  'E-E-A-T signals': "Author, sourcing and trust slots added; you supply the proof.",
+  'Keyword cannibalization': "Surfaced with a mapping; consolidation is an editorial call.",
+  'Internal-linking quality': "Linking modules added; per-link relevance is still curated.",
+  'Citability by ChatGPT/Perplexity/Claude': "Content blocked for citability; authority is earned over time.",
+  'Open Knowledge Format (OKF) bundle': "An OKF knowledge bundle is generated for the site.",
+  'Answer-engine content patterns': "Q&A and summary patterns added where the content allows.",
+  'Schema-type recommendations per page': "The right schema type is chosen and emitted per template.",
+  'Ad-hoc type scale, site-wide (T-scale)': "A single modular scale gives the hero a dominant, distinct size.",
+  'Fragmented radius vocabulary (T-radius-vocab)': "One canonical radius token replaces the mixed set.",
+  'Fragmented CTA voice across siblings (T-cta-vocab)': "Collapsed to one canonical primary action site-wide.",
+  'Content-free link labels (T-link-content-free)': "Vague labels rewritten to say where they lead.",
+  'No logo variant set (T-logo-variants)': "Mono and inverted logo variants generated for dark surfaces.",
+  'Palette color used in one context only (T-color-imbalance)': "Palette roles balanced across text, fill and accent.",
+  'No design-token layer (T-no-tokens)': "A coherent design-token layer is introduced.",
+  'Tokens are framework defaults / unused (T-tokens-unused)': "Token values rewired to the real brand; components consume them.",
+  'Generic present alt text (T-img-alt-generic)': "Alt slots flagged; descriptive text needs an author or vision pass.",
+  'Primary content in cross-origin embed (T-embed-dominance)': "Flagged for a decision; embedded content can't be restyled directly.",
+  'Empty alt widespread ≥30% (T-img-alt-empty)': "Decorative alt emptied intentionally; meaningful images need real alt.",
+  'Competing top-nav CTAs (T-nav-conflict)': "Nav resolved to one primary path, removing the conflict.",
+  'Stale time-bound brand mark (T-temporal-mark)': "An evergreen brand replaces the dated campaign mark.",
+  'Font files + licensing flags': "Fonts swapped to licensed or open faces where needed.",
+  'Design-token / CSS-variable inventory': "Captured values become the new token system.",
+  'IA / page-type map': "The page-type map drives consistent per-template redesign.",
+  'Cross-page voice & component baseline': "Shared components and voice applied across all pages.",
+  '5xx server errors': "Migrating to EDS managed hosting removes origin-server errors.",
+  'Pages unreachable / not crawled': "Out of scope: availability is a hosting and crawl-budget concern.",
+  'Slow load speed (measured / CWV)': "EDS delivery and lean assets improve Core Web Vitals.",
+  'Uncompressed pages (gzip/brotli)': "EDS serves compressed responses by default.",
+  'Uncached JS/CSS (cache headers)': "The EDS CDN sets caching headers automatically.",
+  'Permanent redirects (301) at scale': "Migration maps old URLs to clean 301 redirects.",
+  'Temporary redirects (302)': "Migration replaces stray 302s with correct 301s.",
+  'Redirect chains & loops': "Migration flattens redirects to a single hop.",
+  'Blocked by X-Robots-Tag header': "Out of scope: set by server headers, not page markup.",
+  'Certificate expiration': "EDS provides managed, auto-renewing TLS certificates.",
+  'Certificate registered to wrong name': "Managed TLS issues a certificate matching your domain.",
+  'Old security protocol (TLS)': "EDS/CDN serves modern TLS versions.",
+  'No SNI support': "The EDS/CDN edge supports SNI.",
+  'No HSTS support': "EDS can enforce HSTS at the edge.",
+  'HTTP→HTTPS not enforced': "EDS serves and redirects to HTTPS by default.",
+  'www resolve issues': "Out of scope: resolved in your DNS, not by stardust.",
+  'DNS resolution issues': "Out of scope: a DNS-provider configuration matter.",
+  'Broken external links': "Out of scope: links to third-party sites stardust doesn't control.",
+  'Broken external images': "Out of scope: assets hosted on external domains.",
+  'Broken external JS/CSS': "Out of scope: third-party scripts and styles.",
+  'External pages with 403': "Out of scope: access controlled by the external host.",
+  'Blocked external resources in robots': "Out of scope: governed by other domains' robots files.",
+  'AMP page without canonical': "Redesign drops AMP entirely, so the issue disappears.",
+  'AMP HTML issues': "Modern responsive pages replace AMP, retiring its errors.",
+  'AMP style & layout issues': "No AMP in the rebuild; one responsive page serves all.",
+  'AMP templating issues': "AMP templates removed in favour of standard EDS blocks.",
+  'Sitemap.xml too large (>50MB / 50k URLs)': "EDS generates segmented sitemaps within the size limits.",
+  'Incorrect pages in sitemap (noindex / redirected)': "Regenerated sitemap lists only canonical, indexable URLs.",
+  'HTTP URLs in sitemap (HTTPS site)': "The regenerated sitemap uses HTTPS URLs.",
+  'Orphaned pages (via Analytics)': "Rebuilt IA links stray pages; analytics confirms the rest.",
+};
 
 // category: { det, items: [name, reliability, fix, detOverride?] }
 const DATA = {
@@ -364,7 +528,7 @@ const PRESETS = {
   'Design & AI-slop check': c => ['AI-slop verdict','Typography & readability','Layout integrity','Motion & interaction','Brand tensions (stardust)'].includes(c.cat),
 };
 
-const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'all', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true } };
+const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'all', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true }, expanded: new Set() };
 
 const presetsEl = document.getElementById('presets');
 Object.keys(PRESETS).forEach(name => {
@@ -444,7 +608,10 @@ function renderTable() {
       const [detLbl, detColor] = DET[c.det];
       const [fixLbl, fixColor] = FIX[c.fix];
       const relCell = c.r==='na' ? `<span class="relna">—</span>` : `<span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span>`;
-      const fixCell = c.fix==='no' ? `<span class="tag fix no">No</span>` : `<span class="tag fix" style="background:${fixColor}">${fixLbl}</span>`;
+      const open = state.expanded.has(c.id);
+      const fixBtn = c.fix==='no'
+        ? `<button class="fixbtn no${open?' open':''}">No<span class="q">?</span></button>`
+        : `<button class="fixbtn${open?' open':''}" style="background:${fixColor}">${fixLbl}<span class="q">?</span></button>`;
       const rdot = c.r==='na' ? 'var(--dust-15)' : REL[c.r].color;
       const tr = document.createElement('tr'); tr.className = 'item ' + (sel?'sel':'unsel');
       tr.innerHTML = `
@@ -452,9 +619,20 @@ function renderTable() {
         <td><div class="nm"><span class="rdot" style="background:${rdot}"></span>${c.name}</div></td>
         <td><span class="tag det" style="background:${detColor}">${detLbl}</span></td>
         <td>${relCell}</td>
-        <td>${fixCell}</td>`;
+        <td>${fixBtn}</td>`;
       tr.onclick = () => { sel ? state.selected.delete(c.id) : state.selected.add(c.id); updateAll(); };
       tb.appendChild(tr);
+      tr.querySelector('.fixbtn').addEventListener('click', e => {
+        e.stopPropagation();
+        state.expanded.has(c.id) ? state.expanded.delete(c.id) : state.expanded.add(c.id);
+        updateAll();
+      });
+      if (open) {
+        const isNo = c.fix==='no';
+        const hr = document.createElement('tr'); hr.className = 'howrow';
+        hr.innerHTML = `<td></td><td colspan="4"><div class="howbox ${isNo?'no':''}"><span class="howlbl">◆ ${isNo?'Why it’s out of scope':'How the uplift fixes it'}</span><span class="howtxt">${HOW[c.name]||''}</span></div></td>`;
+        tb.appendChild(hr);
+      }
     });
   });
 }
