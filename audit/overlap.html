@@ -609,9 +609,10 @@ function renderTable() {
       const [fixLbl, fixColor] = FIX[c.fix];
       const relCell = c.r==='na' ? `<span class="relna">—</span>` : `<span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span>`;
       const open = state.expanded.has(c.id);
+      const tip = c.fix==='no' ? 'Click to see why this is out of scope' : 'Click to see how the uplift fixes this';
       const fixBtn = c.fix==='no'
-        ? `<button class="fixbtn no${open?' open':''}">No<span class="q">?</span></button>`
-        : `<button class="fixbtn${open?' open':''}" style="background:${fixColor}">${fixLbl}<span class="q">?</span></button>`;
+        ? `<button class="fixbtn no${open?' open':''}" title="${tip}">No<span class="q" title="${tip}">?</span></button>`
+        : `<button class="fixbtn${open?' open':''}" style="background:${fixColor}" title="${tip}">${fixLbl}<span class="q" title="${tip}">?</span></button>`;
       const rdot = c.r==='na' ? 'var(--dust-15)' : REL[c.r].color;
       const tr = document.createElement('tr'); tr.className = 'item ' + (sel?'sel':'unsel');
       tr.innerHTML = `
