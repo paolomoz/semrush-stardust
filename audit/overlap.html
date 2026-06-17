@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>stardust × Semrush — overlap</title>
+<style>
+  :root {
+    --ink: #0a1024; --ink-deep: #060a14; --ink-soft: #141b3a; --ink-soft2: #1a2342;
+    --dust: #f5f0e6;
+    --dust-72: rgba(245,240,230,0.72); --dust-55: rgba(245,240,230,0.55);
+    --dust-40: rgba(245,240,230,0.40); --dust-15: rgba(245,240,230,0.15);
+    --dust-08: rgba(245,240,230,0.08);
+    --amber: #e8b95e; --amber-light: #ffd98a; --amber-deep: #c9822d;
+    /* reliability tiers */
+    --full: #e8b95e; --onepage: #ff9e6b; --browser: #5ad1c0; --reason: #c9a0ff; --sampled: #7aa2ff;
+    /* overlap vs beyond */
+    --overlap: #6e8fd6; --ontop: #db61a2;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--ink-deep); color: var(--dust);
+    font: 14px/1.5 -apple-system, "SF Pro Text", system-ui, sans-serif;
+    display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--amber); color: var(--ink); }
+  .eyebrow { font: 500 11px/1 "SF Mono", ui-monospace, monospace; letter-spacing: 0.16em; text-transform: uppercase; color: var(--amber); }
+
+  /* NAV */
+  .nav { display: flex; align-items: center; gap: 28px; padding: 17px 30px; border-bottom: 1px solid var(--dust-08); background: rgba(6,10,20,0.92); }
+  .nav .brand { display: flex; align-items: center; gap: 13px; font-family: "SF Pro Display"; font-weight: 600; font-size: 22px; letter-spacing: -0.02em; }
+  .nav .links { margin-left: auto; display: flex; gap: 8px; }
+  .nav .links a { font: 500 15px/1 "SF Pro Text"; color: var(--dust-55); padding: 10px 16px; border-radius: 9px; text-decoration: none; }
+  .nav .links a:hover { color: var(--dust); background: var(--dust-08); }
+  .nav .links a.active { color: var(--ink); background: var(--amber); }
+
+  .main { flex: 1; display: flex; min-height: 0; }
+  .sidebar { width: 320px; min-width: 320px; border-right: 1px solid var(--dust-08); overflow-y: auto; padding: 18px; background: rgba(20,27,58,0.4); }
+  .sidebar::-webkit-scrollbar, .preview::-webkit-scrollbar { width: 9px; }
+  .sidebar::-webkit-scrollbar-thumb, .preview::-webkit-scrollbar-thumb { background: var(--dust-15); border-radius: 5px; }
+  .section-label { font: 500 10px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.14em; color: var(--dust-40); margin: 20px 0 9px; }
+  .section-label:first-child { margin-top: 0; }
+
+  .presets { display: flex; flex-direction: column; gap: 6px; }
+  .preset-btn { text-align: left; background: var(--ink-soft); border: 1px solid var(--dust-08); color: var(--dust); border-radius: 9px; padding: 9px 12px; cursor: pointer; font-size: 12.5px; transition: all .12s; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .preset-btn:hover { border-color: var(--dust-15); background: var(--ink-soft2); }
+  .preset-btn.active { border-color: var(--amber); background: rgba(232,185,94,0.1); color: var(--amber-light); }
+  .preset-btn .pc { color: var(--dust-40); font-family: "SF Mono", monospace; font-size: 11px; }
+
+  .seg { display: flex; background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 9px; padding: 3px; gap: 3px; }
+  .seg button { flex: 1; background: transparent; border: none; color: var(--dust-55); cursor: pointer; padding: 7px 4px; border-radius: 6px; font-size: 11.5px; font-family: "SF Pro Text"; }
+  .seg button.active { background: var(--ink-soft2); color: var(--dust); box-shadow: inset 0 0 0 1px var(--dust-15); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 20px; padding: 5px 11px 5px 9px; font-size: 11.5px; color: var(--dust-55); transition: all .12s; }
+  .chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .chip.off { opacity: 0.35; }
+  .chip.on { color: var(--dust); }
+  .chip.on.r-full { border-color: var(--full); }
+  .chip.on.r-onepage { border-color: var(--onepage); }
+  .chip.on.r-browser { border-color: var(--browser); }
+  .chip.on.r-reason { border-color: var(--reason); }
+  .chip.on.r-sampled { border-color: var(--sampled); }
+
+  .cat-head { font: 500 10px/1 "SF Mono", monospace; letter-spacing: 0.12em; text-transform: uppercase; margin: 16px 0 7px; display: flex; align-items: center; gap: 8px; color: var(--dust-55); }
+  .cat-head .src-dot { width: 9px; height: 9px; border-radius: 2px; }
+  .cat-row { display: flex; align-items: center; gap: 9px; padding: 5px 7px; border-radius: 7px; cursor: pointer; font-size: 12.5px; color: var(--dust-55); }
+  .cat-row:hover { background: var(--ink-soft); color: var(--dust); }
+  .cat-row .box { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--dust-15); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink); }
+  .cat-row.all .box { background: var(--overlap); border-color: var(--overlap); }
+  .cat-row.partial .box { background: var(--overlap); border-color: var(--overlap); opacity: 0.5; }
+  .cat-row.ontop.all .box, .cat-row.ontop.partial .box { background: var(--ontop); border-color: var(--ontop); }
+  .cat-row .nm { flex: 1; }
+  .cat-row .ct { font-family: "SF Mono", monospace; font-size: 11px; color: var(--dust-40); }
+
+  .preview { flex: 1; overflow-y: auto; padding: 24px 28px; min-width: 0; }
+  .phead { margin-bottom: 18px; }
+  .phead h1 { font-family: "SF Pro Display"; font-weight: 600; font-size: 26px; letter-spacing: -0.025em; margin: 8px 0 6px; }
+  .phead h1 .amber { color: var(--amber-light); }
+  .phead p { color: var(--dust-55); font-size: 13.5px; margin: 0; max-width: 72ch; }
+
+  .stats { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+  .stat-card { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; min-width: 130px; flex: 1; }
+  .stat-card .big { font: 600 28px/1 "SF Pro Display"; letter-spacing: -0.02em; color: var(--amber); }
+  .stat-card .big.overlap { color: var(--overlap); }
+  .stat-card .big.ontop { color: var(--ontop); }
+  .stat-card .lbl { color: var(--dust-55); font-size: 11.5px; margin-top: 3px; }
+
+  .relbar-wrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; margin-bottom: 16px; }
+  .relbar-wrap .t { font-size: 11.5px; color: var(--dust-55); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .relbar { height: 12px; border-radius: 6px; overflow: hidden; display: flex; background: var(--ink-deep); }
+  .rel-legend { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; }
+  .rel-legend span { font-size: 11px; color: var(--dust-55); display: inline-flex; align-items: center; gap: 6px; }
+  .rel-legend i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  .tablewrap { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { text-align: left; font: 500 10px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.08em; color: var(--dust-40); padding: 10px 16px; border-bottom: 1px solid var(--dust-08); position: sticky; top: 0; background: var(--ink-soft2); z-index: 1; }
+  thead th.c-chk { width: 34px; } thead th.c-src { width: 88px; } thead th.c-rel { width: 130px; } thead th.c-skill { width: 110px; }
+  tr.grouprow td { background: rgba(232,185,94,0.05); padding: 8px 16px; font: 600 11px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; color: var(--dust-55); border-bottom: 1px solid var(--dust-08); border-top: 1px solid var(--dust-08); }
+  tr.grouprow .src-dot { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 8px; vertical-align: middle; }
+  tbody tr.item { cursor: pointer; border-bottom: 1px solid var(--dust-08); }
+  tbody tr.item:last-child { border-bottom: none; }
+  tbody tr.item:hover { background: var(--ink-soft2); }
+  tbody tr.item.unsel { opacity: 0.4; }
+  tbody tr.item td { padding: 9px 16px; font-size: 12.5px; vertical-align: middle; }
+  td.c-chk { text-align: center; }
+  .chk { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--dust-15); display: inline-flex; align-items: center; justify-content: center; font-size: 10px; color: var(--ink); }
+  tr.item.sel .chk { background: var(--full); border-color: var(--full); }
+  .nm { font-weight: 500; display: flex; align-items: baseline; gap: 9px; }
+  .nm .rdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; position: relative; top: 1px; }
+  .tag { font: 600 9.5px/1 "SF Mono", monospace; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 5px; display: inline-block; }
+  .tag.src { color: var(--ink); }
+  .tag.rel { background: var(--ink-deep); border: 1px solid var(--dust-15); }
+  .skill { font: 500 11px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .empty { color: var(--dust-40); font-size: 13px; padding: 40px; text-align: center; }
+
+  @media (max-width: 860px) { .sidebar { display: none; } }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="brand">
+    <svg viewBox="0 0 32 32" width="36" height="36" style="border-radius:9px;"><rect width="32" height="32" fill="#0a1024"/>
+      <g fill="#e8b95e"><rect x="14" y="3" width="4" height="4"/><rect x="14" y="9" width="4" height="4" opacity="0.6"/><rect x="14" y="19" width="4" height="4" opacity="0.6"/><rect x="14" y="25" width="4" height="4"/><rect x="3" y="14" width="4" height="4"/><rect x="9" y="14" width="4" height="4" opacity="0.6"/><rect x="19" y="14" width="4" height="4" opacity="0.6"/><rect x="25" y="14" width="4" height="4"/></g>
+      <rect x="12.5" y="12.5" width="7" height="7" fill="#ffd98a"/></svg>
+    stardust
+  </span>
+  <div class="links">
+    <a href="index.html">Overview</a>
+    <a href="capabilities.html">Capabilities</a>
+    <a href="overlap.html" class="active">vs Semrush</a>
+    <a href="knack-analysis.html">Knack audit</a>
+  </div>
+</nav>
+
+<div class="main">
+  <aside class="sidebar">
+    <div class="section-label">Presets</div>
+    <div class="presets" id="presets"></div>
+
+    <div class="section-label">Scope</div>
+    <div class="seg" id="scopeSeg">
+      <button data-scope="both" class="active">Both</button>
+      <button data-scope="overlap">Semrush overlap</button>
+      <button data-scope="ontop">Beyond</button>
+    </div>
+
+    <div class="section-label">Detection reliability (filter)</div>
+    <div class="chips" id="relChips"></div>
+
+    <div class="section-label">Capability areas</div>
+    <div id="catList"></div>
+  </aside>
+
+  <section class="preview">
+    <div class="phead">
+      <span class="eyebrow">Stardust × Semrush</span>
+      <h1>What <span class="amber">overlaps</span>, what goes beyond.</h1>
+      <p>Every capability is tagged by whether a Semrush site-audit crawl also covers it (Overlap: Yes) or whether it's something only stardust's design, brand and AI-readiness analysis reaches (No). Filter by detection reliability to see how much is deterministic vs sampled vs judgment.</p>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <div class="relbar-wrap">
+      <div class="t"><span>Reliability mix of selected capabilities</span><span id="relCount"></span></div>
+      <div class="relbar" id="relBar"></div>
+      <div class="rel-legend">
+        <span><i style="background:var(--full)"></i> Reliable (page/source)</span>
+        <span><i style="background:var(--onepage)"></i> Single-page only</span>
+        <span><i style="background:var(--browser)"></i> Needs browser</span>
+        <span><i style="background:var(--reason)"></i> Judgment</span>
+        <span><i style="background:var(--sampled)"></i> Sampled crawl</span>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th class="c-chk"></th><th>Capability</th><th class="c-src">Overlap</th><th class="c-rel">Reliability</th><th class="c-skill">Engine</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+const REL = {
+  full:    { label: 'Reliable',     color: 'var(--full)' },
+  onepage: { label: 'Single-page',  color: 'var(--onepage)' },
+  browser: { label: 'Browser tool', color: 'var(--browser)' },
+  reason:  { label: 'Judgment',     color: 'var(--reason)' },
+  sampled: { label: 'Sampled crawl',color: 'var(--sampled)' },
+};
+
+const DATA = {
+  'On-page tags & metadata': { src:'overlap', items:[
+    ['Missing title tag','full','seo-audit'],
+    ['Short / long title element','full','seo-audit'],
+    ['Missing meta description','full','seo-audit'],
+    ['Duplicate title tags','onepage','seo-audit'],
+    ['Duplicate meta descriptions','onepage','seo-audit'],
+    ['Duplicate H1 / title content','full','seo-audit'],
+    ['Encoding not declared','full','seo-audit'],
+    ['Doctype not declared','full','seo-audit'],
+    ['Meta refresh tag present','full','seo-audit'],
+  ]},
+  'Headings & structure': { src:'overlap', items:[
+    ['Missing H1','full','seo-audit'],
+    ['Multiple H1 tags','full','seo-audit'],
+    ['Low semantic HTML usage','full','audit'],
+  ]},
+  'Images': { src:'overlap', items:[
+    ['Missing ALT attributes','full','seo-audit'],
+    ['Resources formatted as page links','full','seo-audit'],
+  ]},
+  'Links': { src:'overlap', items:[
+    ['Too many on-page links','full','seo-audit'],
+    ['Links with no anchor text','full','seo-audit'],
+    ['Non-descriptive anchor text','full','seo-audit'],
+    ['Nofollow on internal links','full','seo-audit'],
+    ['Nofollow on external links','full','seo-audit'],
+    ['Malformed links','full','seo-audit'],
+    ['Too-long link URLs (>2000)','full','seo-audit'],
+    ['Broken internal / external links','onepage','seo-audit'],
+    ['Broken internal images','onepage','detector'],
+  ]},
+  'URLs': { src:'overlap', items:[
+    ['Underscores in URL','full','seo-audit'],
+    ['URLs longer than 200 chars','full','seo-audit'],
+    ['Too many URL parameters','onepage','seo-audit'],
+  ]},
+  'Canonicalization': { src:'overlap', items:[
+    ['Multiple canonical URLs','full','seo-audit'],
+    ['Broken canonical link','onepage','seo-audit'],
+  ]},
+  'International / hreflang': { src:'overlap', items:[
+    ['Issues with hreflang values','full','seo-audit'],
+    ['Hreflang conflicts in source','full','seo-audit'],
+    ['Missing hreflang & lang attributes','full','seo-audit'],
+    ['Incorrect hreflang links','onepage','seo-audit'],
+    ['Hreflang language mismatch','reason','seo-audit'],
+  ]},
+  'Content quality': { src:'overlap', items:[
+    ['Low word count','full','seo-audit'],
+    ['Too much content','full','seo-audit'],
+    ['Content not optimized (intent/depth)','full','seo-audit'],
+    ['Thin / duplicate content on a page','onepage','seo-audit'],
+    ['Outdated content','reason','seo-audit'],
+  ]},
+  'Crawlability files': { src:'overlap', items:[
+    ['robots.txt not found / invalid','onepage','seo-audit'],
+    ['Sitemap.xml not found / invalid','onepage','seo-audit'],
+    ['Sitemap not specified in robots.txt','onepage','seo-audit'],
+    ['Blocked internal resources in robots','onepage','seo-audit'],
+    ['Blocked from crawling (meta-robots)','onepage','seo-audit'],
+  ]},
+  'Security & protocol': { src:'overlap', items:[
+    ['Mixed content (http on https)','full','seo-audit'],
+    ['Links to HTTP on an HTTPS site','full','seo-audit'],
+    ['Non-secure / HTTPS not used','onepage','seo-audit'],
+  ]},
+  'Performance & assets': { src:'overlap', items:[
+    ['Large HTML page size','full','audit'],
+    ['Low text-to-HTML ratio','full','seo-audit'],
+    ['Too many JS/CSS files','full','audit'],
+    ['JS/CSS total size too large','onepage','audit'],
+    ['Unminified JS/CSS','onepage','audit'],
+    ['Slow load speed (likely causes)','reason','audit'],
+  ]},
+  'Mobile': { src:'overlap', items:[
+    ['Viewport not configured','full','seo-audit'],
+    ['Missing viewport width value','full','audit'],
+  ]},
+  'Legacy tech': { src:'overlap', items:[
+    ['Frames used','full','seo-audit'],
+    ['Incompatible plugins (Flash/Java)','full','seo-audit'],
+  ]},
+  'Structured data': { src:'overlap', items:[
+    ['Invalid structured-data items','browser','schema'],
+  ]},
+  'AI-search files': { src:'overlap', items:[
+    ['llms.txt not found','full','ai-seo'],
+    ['llms.txt formatting issues','full','ai-seo'],
+  ]},
+  'Cross-page crawl (stardust)': { src:'overlap', items:[
+    ['Duplicate title tags across pages','sampled','stardust'],
+    ['Duplicate meta descriptions across pages','sampled','stardust'],
+    ['Duplicate / near-duplicate content across pages','sampled','stardust'],
+    ['Orphaned pages (within crawl)','sampled','stardust'],
+    ['Pages with only one internal link','sampled','stardust'],
+    ['Crawl depth (BFS, capped at 3)','sampled','stardust'],
+    ['Broken internal links (within crawl)','sampled','stardust'],
+    ['4xx / 5xx on crawled pages','sampled','stardust'],
+    ['Sitemap discovery & robots Sitemap directive','sampled','stardust'],
+    ['Internal link graph / inventory','sampled','stardust'],
+  ]},
+
+  // ----- BEYOND SEMRUSH -----
+  'AI-slop verdict': { src:'ontop', items:[
+    ['AI visual tells (gradient text, AI palette…)','full','detector'],
+    ['Generic-layout tells (nested cards…)','full','detector'],
+    ['“Does this look AI-made?” pass/fail','reason','critique'],
+  ]},
+  'Accessibility depth': { src:'ontop', items:[
+    ['Computed contrast ratios vs WCAG','full','detector'],
+    ['Missing ARIA roles / labels / states','full','audit'],
+    ['Keyboard nav, focus, traps','browser','audit'],
+    ['Touch targets < 44×44px','full','audit'],
+    ['Meaning conveyed by color alone','reason','audit'],
+    ['Unlabeled form fields','full','audit'],
+  ]},
+  'Typography & readability': { src:'ontop', items:[
+    ['Overused/single font, flat hierarchy','full','detector'],
+    ['Line length, leading, padding, spacing','full','detector'],
+    ['Tiny text, all-caps body, justified text','full','detector'],
+    ['Letter-tracking misuse','full','detector'],
+  ]},
+  'Layout integrity': { src:'ontop', items:[
+    ['Text overflow / clipped containers','full','detector'],
+    ['Responsive breakdowns, fixed widths','browser','audit'],
+  ]},
+  'Motion & interaction': { src:'ontop', items:[
+    ['Bounce easing, layout transitions, hover jank','full','detector'],
+    ['Expensive / unbounded animation','reason','audit'],
+  ]},
+  'UX & cognitive science': { src:'ontop', items:[
+    ['Nielsen 10 heuristics, scored /40','reason','critique'],
+    ['Cognitive-load checklist','reason','critique'],
+    ['5-persona walkthrough','reason','critique'],
+    ['Emotional journey (peak-end)','reason','critique'],
+  ]},
+  'Copy & content judgment': { src:'ontop', items:[
+    ['AI-writing tells (em-dash, buzzwords…)','full','detector'],
+    ['Search-intent fit & topical depth','reason','seo-audit'],
+    ['E-E-A-T signals','reason','seo-audit'],
+    ['Keyword cannibalization','reason','seo-audit'],
+    ['Internal-linking quality','reason','seo-audit'],
+  ]},
+  'AI-search readiness': { src:'ontop', items:[
+    ['Citability by ChatGPT/Perplexity/Claude','reason','ai-seo'],
+    ['Open Knowledge Format (OKF) bundle','full','ai-seo'],
+    ['Answer-engine content patterns','reason','ai-seo'],
+  ]},
+  'Structured-data strategy': { src:'ontop', items:[
+    ['Schema-type recommendations per page','reason','schema'],
+  ]},
+  'Brand tensions (stardust)': { src:'ontop', items:[
+    ['Ad-hoc type scale, site-wide (T-scale)','sampled','stardust'],
+    ['Fragmented radius vocabulary (T-radius-vocab)','sampled','stardust'],
+    ['Fragmented CTA voice across siblings (T-cta-vocab)','sampled','stardust'],
+    ['Content-free link labels (T-link-content-free)','sampled','stardust','overlap'],
+    ['No logo variant set (T-logo-variants)','sampled','stardust'],
+    ['Palette color used in one context only (T-color-imbalance)','sampled','stardust'],
+    ['No design-token layer (T-no-tokens)','sampled','stardust'],
+    ['Tokens are framework defaults / unused (T-tokens-unused)','sampled','stardust'],
+    ['Generic present alt text (T-img-alt-generic)','sampled','stardust','overlap'],
+    ['Primary content in cross-origin embed (T-embed-dominance)','sampled','stardust','overlap'],
+    ['Empty alt widespread ≥30% (T-img-alt-empty)','sampled','stardust','overlap'],
+    ['Competing top-nav CTAs (T-nav-conflict)','sampled','stardust'],
+    ['Stale time-bound brand mark (T-temporal-mark)','sampled','stardust'],
+  ]},
+  'Brand surface inventory (stardust)': { src:'ontop', items:[
+    ['Font files + licensing flags','sampled','stardust'],
+    ['Design-token / CSS-variable inventory','sampled','stardust'],
+    ['IA / page-type map','sampled','stardust'],
+    ['Cross-page voice & component baseline','sampled','stardust'],
+  ]},
+};
+
+const CAPS = [];
+let _id = 0;
+for (const [cat, def] of Object.entries(DATA)) {
+  for (const [n, r, skill, srcOverride] of def.items) {
+    CAPS.push({ id: 'c'+(_id++), name: n, cat, src: srcOverride || def.src, r });
+  }
+}
+const CATS = Object.keys(DATA);
+
+const PRESETS = {
+  'On-page SEO pass': c => c.src==='overlap' && ['On-page tags & metadata','Headings & structure','Images','Links','URLs','Canonicalization','Content quality','International / hreflang'].includes(c.cat),
+  'Design & AI-slop check': c => ['AI-slop verdict','Typography & readability','Layout integrity','Motion & interaction'].includes(c.cat),
+  'Accessibility deep-dive': c => c.cat==='Accessibility depth' || c.name.includes('semantic') || c.name.includes('ALT'),
+  'AI-search readiness': c => c.cat==='AI-search files' || c.cat==='AI-search readiness' || c.cat==='Structured data' || c.cat==='Structured-data strategy',
+  'Stardust crawl & tensions': c => c.cat.includes('(stardust)'),
+  'Everything detectable': c => true,
+  'Beyond Semrush only': c => c.src==='ontop',
+};
+
+const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'both', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true } };
+
+const presetsEl = document.getElementById('presets');
+Object.keys(PRESETS).forEach(name => {
+  const count = CAPS.filter(PRESETS[name]).length;
+  const b = document.createElement('button');
+  b.className = 'preset-btn'; b.dataset.preset = name;
+  b.innerHTML = `<span>${name}</span><span class="pc">${count}</span>`;
+  b.onclick = () => applyPreset(name);
+  presetsEl.appendChild(b);
+});
+
+const relChipsEl = document.getElementById('relChips');
+Object.entries(REL).forEach(([k,v]) => {
+  const c = document.createElement('div');
+  c.className = `chip on r-${k}`; c.dataset.rel = k;
+  c.innerHTML = `<span class="dot" style="background:${v.color}"></span>${v.label}`;
+  c.onclick = () => { state.rel[k] = !state.rel[k]; c.classList.toggle('on'); c.classList.toggle('off'); updateAll(); };
+  relChipsEl.appendChild(c);
+});
+
+document.querySelectorAll('#scopeSeg button').forEach(b => {
+  b.onclick = () => { state.scope = b.dataset.scope; document.querySelectorAll('#scopeSeg button').forEach(x=>x.classList.toggle('active', x===b)); updateAll(); };
+});
+
+function visibleCats() { return CATS.filter(cat => state.scope==='both' || DATA[cat].src===state.scope); }
+function relOn(c) { return state.rel[c.r]; }
+function applyPreset(name) { state.selected = new Set(CAPS.filter(PRESETS[name]).map(c=>c.id)); updateAll(); }
+function syncPresetHighlight() {
+  let match = null;
+  for (const [name, fn] of Object.entries(PRESETS)) {
+    const set = new Set(CAPS.filter(fn).map(c=>c.id));
+    if (set.size === state.selected.size && [...set].every(id=>state.selected.has(id))) { match = name; break; }
+  }
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset===match));
+}
+
+function renderCats() {
+  const el = document.getElementById('catList'); el.innerHTML = '';
+  let lastSrc = null;
+  visibleCats().forEach(cat => {
+    const def = DATA[cat];
+    if (def.src !== lastSrc) {
+      lastSrc = def.src;
+      const h = document.createElement('div'); h.className = 'cat-head';
+      const color = def.src==='overlap' ? 'var(--overlap)' : 'var(--ontop)';
+      h.innerHTML = `<span class="src-dot" style="background:${color}"></span>${def.src==='overlap'?'Overlaps with Semrush':'Beyond Semrush'}`;
+      el.appendChild(h);
+    }
+    const caps = CAPS.filter(c => c.cat===cat && relOn(c));
+    if (!caps.length) return;
+    const selCount = caps.filter(c=>state.selected.has(c.id)).length;
+    const row = document.createElement('div');
+    row.className = 'cat-row' + (def.src==='ontop'?' ontop':'') + (selCount===caps.length?' all':(selCount>0?' partial':''));
+    const mark = selCount===caps.length ? '✓' : (selCount>0 ? '–' : '');
+    row.innerHTML = `<span class="box">${mark}</span><span class="nm">${cat}</span><span class="ct">${selCount}/${caps.length}</span>`;
+    row.onclick = () => { const all = caps.every(c=>state.selected.has(c.id)); caps.forEach(c => all ? state.selected.delete(c.id) : state.selected.add(c.id)); updateAll(); };
+    el.appendChild(row);
+  });
+}
+
+function renderTable() {
+  const tb = document.getElementById('tbody'); tb.innerHTML = '';
+  const cats = visibleCats().filter(cat => CAPS.some(c=>c.cat===cat && relOn(c)));
+  if (!cats.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty">No capabilities match the current reliability filter.</div></td></tr>'; return; }
+  cats.forEach(cat => {
+    const def = DATA[cat];
+    const caps = CAPS.filter(c=>c.cat===cat && relOn(c));
+    if (!caps.length) return;
+    const color = def.src==='overlap' ? 'var(--overlap)' : 'var(--ontop)';
+    const srcName = def.src==='overlap' ? 'Semrush overlap' : 'Beyond Semrush';
+    const gr = document.createElement('tr'); gr.className = 'grouprow';
+    gr.innerHTML = `<td colspan="5"><span class="src-dot" style="background:${color}"></span>${cat} &nbsp;·&nbsp; ${srcName}</td>`;
+    tb.appendChild(gr);
+    caps.forEach(c => {
+      const sel = state.selected.has(c.id);
+      const srcColor = c.src==='overlap'?'var(--overlap)':'var(--ontop)';
+      const srcLbl = c.src==='overlap'?'Yes':'No';
+      const tr = document.createElement('tr'); tr.className = 'item ' + (sel?'sel':'unsel');
+      tr.innerHTML = `
+        <td class="c-chk"><span class="chk">${sel?'✓':''}</span></td>
+        <td><div class="nm"><span class="rdot" style="background:${REL[c.r].color}"></span>${c.name}</div></td>
+        <td><span class="tag src" style="background:${srcColor}">${srcLbl}</span></td>
+        <td><span class="tag rel" style="color:${REL[c.r].color}">${REL[c.r].label}</span></td>
+        <td><span class="skill">stardust</span></td>`;
+      tr.onclick = () => { sel ? state.selected.delete(c.id) : state.selected.add(c.id); updateAll(); };
+      tb.appendChild(tr);
+    });
+  });
+}
+
+function renderStats() {
+  const sel = CAPS.filter(c=>state.selected.has(c.id));
+  const overlapSel = sel.filter(c=>c.src==='overlap');
+  const ontopSel = sel.filter(c=>c.src==='ontop');
+  const semReliable = overlapSel.filter(c=>c.r==='full').length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-card"><div class="big">${sel.length}</div><div class="lbl">capabilities in scope</div></div>
+    <div class="stat-card"><div class="big overlap">${overlapSel.length}</div><div class="lbl">overlap with Semrush</div></div>
+    <div class="stat-card"><div class="big ontop">${ontopSel.length}</div><div class="lbl">beyond Semrush</div></div>
+    <div class="stat-card"><div class="big">${semReliable}</div><div class="lbl">Semrush checks covered <em style="color:var(--dust-40);font-style:normal">reliably</em></div></div>`;
+
+  const counts = {}; Object.keys(REL).forEach(k=>counts[k]=0);
+  sel.forEach(c=>counts[c.r]++);
+  const total = sel.length || 1;
+  const bar = document.getElementById('relBar'); bar.innerHTML = '';
+  Object.keys(REL).forEach(k => { if (!counts[k]) return; const d = document.createElement('div'); d.style.width = (counts[k]/total*100)+'%'; d.style.background = REL[k].color; d.title = `${REL[k].label}: ${counts[k]}`; bar.appendChild(d); });
+  document.getElementById('relCount').textContent = Object.keys(REL).filter(k=>counts[k]).map(k=>`${counts[k]} ${REL[k].label.toLowerCase()}`).join(' · ');
+}
+
+function updateAll() { renderCats(); renderTable(); renderStats(); syncPresetHighlight(); }
+updateAll();
+</script>
+</body>
+</html>
