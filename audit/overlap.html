@@ -81,7 +81,12 @@
   .phead p { color: var(--dust-55); font-size: 13.5px; margin: 0; max-width: 76ch; }
 
   .stats { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
-  .stat-card { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; min-width: 120px; flex: 1; }
+  .stat-card { background: var(--ink-soft); border: 1px solid var(--dust-08); border-radius: 12px; padding: 13px 16px; min-width: 120px; flex: 1; cursor: pointer; user-select: none; position: relative; transition: border-color .12s, transform .12s, background .12s; }
+  .stat-card:hover { border-color: rgba(232,185,94,0.5); transform: translateY(-2px); }
+  .stat-card.active { border-color: var(--amber); background: rgba(232,185,94,0.08); }
+  .stat-card .filt { font: 500 9px/1 "SF Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dust-40); margin-top: 9px; display: inline-flex; align-items: center; gap: 5px; }
+  .stat-card:hover .filt { color: var(--dust-55); }
+  .stat-card.active .filt { color: var(--amber); }
   .stat-card .big { font: 600 27px/1 "SF Pro Display"; letter-spacing: -0.02em; color: var(--amber); }
   .stat-card .big.both { color: var(--both); }
   .stat-card .big.stardust { color: var(--stardust); }
@@ -532,7 +537,7 @@ const PRESETS = {
   'Design & AI-slop check': c => ['AI-slop verdict','Typography & readability','Layout integrity','Motion & interaction','Brand tensions (stardust)'].includes(c.cat),
 };
 
-const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'all', rel: { full:true, onepage:true, browser:true, reason:true, sampled:true }, expanded: new Set() };
+const state = { selected: new Set(CAPS.map(c=>c.id)), scope: 'all', fixOnly: false, rel: { full:true, onepage:true, browser:true, reason:true, sampled:true }, expanded: new Set() };
 
 const presetsEl = document.getElementById('presets');
 Object.keys(PRESETS).forEach(name => {
@@ -559,6 +564,8 @@ document.querySelectorAll('#scopeSeg button').forEach(b => {
 
 function visibleCats() { return CATS.filter(cat => state.scope==='all' || DATA[cat].det===state.scope); }
 function relOn(c) { return c.det==='semrush' ? true : !!state.rel[c.r]; }
+function rowVisible(c) { return relOn(c) && (!state.fixOnly || c.fix!=='no'); }
+function syncScopeButtons() { document.querySelectorAll('#scopeSeg button').forEach(b => b.classList.toggle('active', b.dataset.scope===state.scope)); }
 function applyPreset(name) { state.selected = new Set(CAPS.filter(PRESETS[name]).map(c=>c.id)); updateAll(); }
 function syncPresetHighlight() {
   let match = null;
@@ -582,7 +589,7 @@ function renderCats() {
       h.innerHTML = `<span class="src-dot" style="background:${color}"></span>${name}`;
       el.appendChild(h);
     }
-    const caps = CAPS.filter(c => c.cat===cat && relOn(c));
+    const caps = CAPS.filter(c => c.cat===cat && rowVisible(c));
     if (!caps.length) return;
     const selCount = caps.filter(c=>state.selected.has(c.id)).length;
     const row = document.createElement('div');
@@ -596,11 +603,11 @@ function renderCats() {
 
 function renderTable() {
   const tb = document.getElementById('tbody'); tb.innerHTML = '';
-  const cats = visibleCats().filter(cat => CAPS.some(c=>c.cat===cat && relOn(c)));
+  const cats = visibleCats().filter(cat => CAPS.some(c=>c.cat===cat && rowVisible(c)));
   if (!cats.length) { tb.innerHTML = '<tr><td colspan="5"><div class="empty">No capabilities match the current filters.</div></td></tr>'; return; }
   cats.forEach(cat => {
     const def = DATA[cat];
-    const caps = CAPS.filter(c=>c.cat===cat && relOn(c));
+    const caps = CAPS.filter(c=>c.cat===cat && rowVisible(c));
     if (!caps.length) return;
     const [,color] = DET[def.det];
     const srcName = def.det==='both' ? 'Detected by both' : (def.det==='stardust' ? 'Stardust only' : 'Semrush only');
@@ -648,12 +655,27 @@ function renderStats() {
   const sOnly = sel.filter(c=>c.det==='stardust').length;
   const semOnly = sel.filter(c=>c.det==='semrush').length;
   const fixable = sel.filter(c=>c.fix!=='no').length;
-  document.getElementById('stats').innerHTML = `
-    <div class="stat-card"><div class="big">${sel.length}</div><div class="lbl">in scope</div></div>
-    <div class="stat-card"><div class="big both">${both}</div><div class="lbl">detected by both</div></div>
-    <div class="stat-card"><div class="big stardust">${sOnly}</div><div class="lbl">Stardust only</div></div>
-    <div class="stat-card"><div class="big semrush">${semOnly}</div><div class="lbl">Semrush only</div></div>
-    <div class="stat-card"><div class="big fix">${fixable}</div><div class="lbl">fixable by the uplift</div></div>`;
+  const cards = [
+    {key:'all', cls:'', n:sel.length, lbl:'in scope', active: state.scope==='all' && !state.fixOnly, hint:'reset filters'},
+    {key:'both', cls:'both', n:both, lbl:'detected by both', active: state.scope==='both', hint:'click to filter'},
+    {key:'stardust', cls:'stardust', n:sOnly, lbl:'Stardust only', active: state.scope==='stardust', hint:'click to filter'},
+    {key:'semrush', cls:'semrush', n:semOnly, lbl:'Semrush only', active: state.scope==='semrush', hint:'click to filter'},
+    {key:'fix', cls:'fix', n:fixable, lbl:'fixable by the uplift', active: state.fixOnly, hint:'click to filter'},
+  ];
+  document.getElementById('stats').innerHTML = cards.map(c=>`
+    <div class="stat-card${c.active?' active':''}" data-key="${c.key}" title="Click to filter the table">
+      <div class="big ${c.cls}">${c.n}</div><div class="lbl">${c.lbl}</div>
+      <div class="filt">${c.active ? '✓ filtering' : c.hint}</div>
+    </div>`).join('');
+  document.querySelectorAll('#stats .stat-card').forEach(el => {
+    el.onclick = () => {
+      const k = el.dataset.key;
+      if (k==='fix') state.fixOnly = !state.fixOnly;
+      else if (k==='all') { state.scope='all'; state.fixOnly=false; }
+      else state.scope = (state.scope===k ? 'all' : k);
+      updateAll();
+    };
+  });
 
   const counts = {}; Object.keys(REL).forEach(k=>counts[k]=0);
   sel.filter(c=>c.det!=='semrush').forEach(c=>counts[c.r]++);
@@ -663,7 +685,7 @@ function renderStats() {
   document.getElementById('relCount').textContent = Object.keys(REL).filter(k=>counts[k]).map(k=>`${counts[k]} ${REL[k].label.toLowerCase()}`).join(' · ');
 }
 
-function updateAll() { renderCats(); renderTable(); renderStats(); syncPresetHighlight(); }
+function updateAll() { renderCats(); renderTable(); renderStats(); syncPresetHighlight(); syncScopeButtons(); }
 updateAll();
 </script>
 </body>
