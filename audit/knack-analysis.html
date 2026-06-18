@@ -154,6 +154,28 @@
   .cta-bucket .labels span { font-size: 11.5px; background: var(--ink-deep); border: 1px solid var(--dust-15); border-radius: 6px; padding: 5px 9px; color: var(--dust-72); }
 
   /* SEO status + positives */
+  /* Core Web Vitals */
+  .cwv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .cwv-dev { background: var(--ink-soft2); border: 1px solid var(--dust-08); border-radius: 12px; padding: 16px 18px; }
+  .cwv-dev .dhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+  .cwv-dev .dname { font: 600 13px/1 "SF Pro Display"; letter-spacing: -0.01em; }
+  .cwv-dev .dright { display: flex; align-items: center; gap: 9px; }
+  .cwv-assess { font: 600 9.5px/1 "SF Mono", monospace; letter-spacing: 0.06em; padding: 4px 8px; border-radius: 5px; }
+  .cwv-assess.pass { background: var(--good); color: var(--ink); }
+  .cwv-assess.fail { background: var(--p1); color: var(--ink); }
+  .cwv-lab { font: 500 10px/1 "SF Mono", monospace; color: var(--dust-40); }
+  .cwv-metric { margin-bottom: 12px; }
+  .cwv-metric .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; gap: 8px; }
+  .cwv-metric .mname { font-size: 11.5px; color: var(--dust-55); }
+  .cwv-metric .mname b { color: var(--dust); font-weight: 600; margin-right: 6px; }
+  .cwv-metric.minor .mname { font-size: 10.5px; }
+  .cwv-metric .mval { font: 600 12.5px/1 "SF Mono", monospace; white-space: nowrap; }
+  .cwv-track { position: relative; height: 7px; border-radius: 4px; display: flex; }
+  .cwv-track .seg { height: 100%; }
+  .cwv-track .seg:first-child { border-radius: 4px 0 0 4px; } .cwv-track .seg:last-child { border-radius: 0 4px 4px 0; }
+  .cwv-track .marker { position: absolute; top: -3px; width: 3px; height: 13px; border-radius: 2px; background: var(--dust); box-shadow: 0 0 0 2px var(--ink-soft2); }
+  .cwv-foot { font-size: 11.5px; color: var(--dust-55); margin-top: 15px; line-height: 1.5; }
+  .cwv-foot b { color: var(--amber-light); font-weight: 600; }
   .seo-status { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
   .ss { background: var(--ink-soft2); border: 1px solid var(--dust-08); border-radius: 11px; padding: 13px 15px; font-size: 12.5px; font-weight: 600; display: flex; flex-direction: column; gap: 6px; }
   .ss .dot { width: 9px; height: 9px; border-radius: 50%; }
@@ -259,7 +281,7 @@
   <!-- KPI strip -->
   <div class="kpis">
     <div class="kpi"><div class="big">50</div><div class="lbl">site health / 100</div></div>
-    <div class="kpi"><div class="big">19</div><div class="lbl">total findings</div></div>
+    <div class="kpi"><div class="big">20</div><div class="lbl">total findings</div></div>
     <div class="kpi"><div class="big alarm">7</div><div class="lbl">P1 · high severity</div></div>
     <div class="kpi"><div class="big">5</div><div class="lbl">deterministic tensions</div></div>
     <div class="kpi"><div class="big">0.9%</div><div class="lbl">pixels carry brand magenta</div></div>
@@ -276,14 +298,14 @@
       </div>
       <div class="panel">
         <div class="ptitle">Severity mix</div>
-        <div class="pdesc">19 findings by priority.</div>
+        <div class="pdesc">20 findings by priority.</div>
         <div class="donut-wrap">
-          <div class="donut" style="background:conic-gradient(var(--p1) 0 36.8%, var(--p2) 36.8% 84.2%, var(--p3) 84.2% 100%)">
-            <div class="c"><div class="n">19</div><div class="d">findings</div></div>
+          <div class="donut" style="background:conic-gradient(var(--p1) 0 35%, var(--p2) 35% 85%, var(--p3) 85% 100%)">
+            <div class="c"><div class="n">20</div><div class="d">findings</div></div>
           </div>
           <div class="sev-legend">
             <span><i style="background:var(--p1)"></i>P1 · 7</span>
-            <span><i style="background:var(--p2)"></i>P2 · 9</span>
+            <span><i style="background:var(--p2)"></i>P2 · 10</span>
             <span><i style="background:var(--p3)"></i>P3 · 3</span>
           </div>
         </div>
@@ -395,6 +417,14 @@
   <!-- SEO -->
   <div class="block" id="seo">
     <div class="block-head"><span class="eyebrow">06</span><h2>Technical &amp; on-page SEO</h2><span class="meta">seo-audit · live fetch 2026-06-16</span></div>
+
+    <div class="panel pad-lg" id="cwvPanel" style="margin-bottom:14px;">
+      <div class="ptitle">Core Web Vitals<span class="mono" style="color:var(--dust-40);text-transform:none;letter-spacing:0;">PageSpeed Insights · CrUX field · p75 / 28-day · 2026-06-18</span></div>
+      <div class="pdesc">Real-user field data — what Google ranks on. The marker shows knack's value on the good / needs-improvement / poor scale.</div>
+      <div class="cwv-grid" id="cwv"></div>
+      <div class="cwv-foot">Both form factors <b>fail</b> the assessment. Mobile is uniformly “needs improvement”; desktop passes LCP and INP but <b>CLS 0.28 is Poor</b> — layout shift is knack's real performance problem, not load speed. <span class="mono" style="font-size:10.5px;color:var(--dust-40)">(lab scores are simulated and vary run-to-run; field is the source of truth.)</span></div>
+    </div>
+
     <div class="panel pad-lg" style="margin-bottom:14px;">
       <div class="ptitle">Status<span class="mono" style="color:var(--dust-40);text-transform:none;letter-spacing:0;">robots · sitemap · canonical · OG · schema</span></div>
       <div class="pdesc">Run with the marketing-skills seo-audit framework against a live fetch of knack.com.</div>
@@ -407,6 +437,7 @@
         <div class="ss fail"><span class="dot"></span>Open Graph<small>broken description &amp; title</small></div>
         <div class="ss warn"><span class="dot"></span>On-page polish<small>title space · keyword echo</small></div>
         <div class="ss fail"><span class="dot"></span>AI-search<small>llms.txt 404 · no OKF</small></div>
+        <div class="ss fail"><span class="dot"></span>Core Web Vitals<small>fails mobile &amp; desktop (CLS)</small></div>
       </div>
     </div>
     <div class="findings" id="findings-seo" style="margin-bottom:14px;"></div>
@@ -465,6 +496,7 @@ const SCORES = [
   ['AI-search readiness', 48, 'llms.txt 404, no OKF; generic structure'],
   ['Accessibility', 60, 'Good alt coverage; missing landmarks + zoom disabled'],
   ['SEO & semantics', 68, 'Strong crawl, sitemap & schema; broken Open Graph'],
+  ['Core Web Vitals', 45, 'Field fails: mobile all “needs improvement”, desktop CLS 0.28 Poor'],
 ];
 document.getElementById('scorecardBars').innerHTML = SCORES.map(([n,v,note]) => `
   <div class="scorerow"><div class="name">${n}</div><div class="track"><div class="fill" style="width:${v}%"></div></div><div class="val">${v}</div><div class="note">${note}</div></div>`).join('');
@@ -538,6 +570,9 @@ const ACCESS = [
    fix:'Drop <code>maximum-scale</code> and any <code>user-scalable=no</code>. Zero design cost, real accessibility gain.'},
 ];
 const SEO = [
+  {sev:'P2',method:'live',title:'Core Web Vitals assessment fails',
+   evidence:'CrUX field (p75): mobile LCP 3.5s / INP 209ms / CLS 0.16 — all “needs improvement”; desktop passes LCP &amp; INP but <code>CLS 0.28</code> is Poor. Both form factors fail.',
+   fix:'Reserve space for media, embeds and the hero (aspect-ratios / fixed dimensions) to eliminate layout shift — the dominant issue. INP improves with the leaner shipped JS; LCP is already fine in the field.'},
   {sev:'P2',method:'live',title:'Open Graph is broken for sharing',
    evidence:'<code>og:description</code> renders as a literal <code>"%"</code>, <code>og:title</code> is the generic <code>"Home"</code>, and <code>og:image</code> is an <code>.svg</code> most social platforms refuse to render. Shared links look broken.',
    fix:'Repair the OG mapping: a real description, the real title, a 1200×630 PNG/JPG image. One fix lifts every shared link.'},
@@ -561,6 +596,40 @@ document.getElementById('findings-tensions').innerHTML = TENSIONS.map(card).join
 document.getElementById('findings-design').innerHTML = DESIGN.map(card).join('');
 document.getElementById('findings-access').innerHTML = ACCESS.map(card).join('');
 document.getElementById('findings-seo').innerHTML = SEO.map(card).join('');
+
+/* ---- Core Web Vitals (PSI / CrUX field, captured 2026-06-18) ---- */
+const CWV = {
+  mobile:  { lab:34, m:{ LCP:3.5, INP:209, CLS:0.16, FCP:2.4, TTFB:1.4 } },
+  desktop: { lab:52, m:{ LCP:1.7, INP:72,  CLS:0.28, FCP:1.0, TTFB:0.6 } },
+};
+const CT = { LCP:{good:2.5,ni:4,max:6,u:'s'}, INP:{good:200,ni:500,max:600,u:'ms'}, CLS:{good:0.1,ni:0.25,max:0.5,u:''}, FCP:{good:1.8,ni:3,max:4.5,u:'s'}, TTFB:{good:0.8,ni:1.8,max:2.4,u:'s'} };
+const CNAME = { LCP:'Largest Contentful Paint', INP:'Interaction to Next Paint', CLS:'Cumulative Layout Shift', FCP:'First Contentful Paint', TTFB:'Time to First Byte' };
+const CCOL = { good:'var(--good)', ni:'var(--p2)', poor:'var(--p1)' };
+const catOf = (k,v) => { const t=CT[k]; return v<=t.good?'good':(v<=t.ni?'ni':'poor'); };
+const fmtV = (k,v) => { const u=CT[k].u; return u==='s'?v.toFixed(1)+' s':(u==='ms'?Math.round(v)+' ms':v.toFixed(2)); };
+function metricBar(k,v,minor){
+  const t=CT[k], col=CCOL[catOf(k,v)];
+  const gw=t.good/t.max*100, nw=(t.ni-t.good)/t.max*100, pw=(t.max-t.ni)/t.max*100, mk=Math.min(v,t.max)/t.max*100;
+  return `<div class="cwv-metric${minor?' minor':''}">
+    <div class="top"><span class="mname"><b>${k}</b>${CNAME[k]}</span><span class="mval" style="color:${col}">${fmtV(k,v)}</span></div>
+    <div class="cwv-track">
+      <div class="seg" style="width:${gw}%;background:rgba(111,220,140,0.35)"></div>
+      <div class="seg" style="width:${nw}%;background:rgba(255,180,84,0.35)"></div>
+      <div class="seg" style="width:${pw}%;background:rgba(255,107,107,0.32)"></div>
+      <div class="marker" style="left:calc(${mk}% - 1.5px)"></div>
+    </div></div>`;
+}
+document.getElementById('cwv').innerHTML = ['mobile','desktop'].map(dev => {
+  const D=CWV[dev], m=D.m, pass=['LCP','INP','CLS'].every(k=>catOf(k,m[k])==='good');
+  return `<div class="cwv-dev">
+    <div class="dhead">
+      <span class="dname">${dev[0].toUpperCase()+dev.slice(1)}</span>
+      <span class="dright"><span class="cwv-lab">lab ${D.lab}/100</span><span class="cwv-assess ${pass?'pass':'fail'}">${pass?'PASS':'FAIL'}</span></span>
+    </div>
+    ${['LCP','INP','CLS'].map(k=>metricBar(k,m[k],false)).join('')}
+    ${['FCP','TTFB'].map(k=>metricBar(k,m[k],true)).join('')}
+  </div>`;
+}).join('');
 
 /* ---- Scrollspy ---- */
 const links = [...document.querySelectorAll('#secnav a')];
